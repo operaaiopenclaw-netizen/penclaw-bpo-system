@@ -1,0 +1,177 @@
+{
+  "generated_at": "2026-03-27",
+  "base_date": "2025-04-30",
+  "currency": "BRL",
+  "companies": {
+    "LA ORANA": {
+      "projections": {
+        "30d": {
+          "operational": {
+            "receitas_eventos": 719100.0,
+            "outras_receitas": 126900.0,
+            "cmv": 292500.0,
+            "pessoal": 195000.0,
+            "operacional_liquido": 358500.0
+          },
+          "investment": {
+            "capex": 0,
+            "investimento_liquido": 0
+          },
+          "financing": {
+            "retiradas": 25000.0,
+            "intercompany": 0,
+            "financiamento_liquido": -25000.0
+          },
+          "summary": {
+            "total_inflow": 846000.0,
+            "total_outflow": 512500.0,
+            "net_cashflow": 333500.0,
+            "starting_balance": 892156.47,
+            "ending_balance": 1225656.47
+          },
+          "risks": []
+        },
+        "60d": {
+          "operational": {
+            "receitas_eventos": 1438200.0,
+            "outras_receitas": 253800.0,
+            "cmv": 585000.0,
+            "pessoal": 390000.0,
+            "operacional_liquido": 717000.0
+          },
+          "investment": {
+            "capex": 0,
+            "investimento_liquido": 0
+          },
+          "financing": {
+            "retiradas": 50000.0,
+            "intercompany": 0,
+            "financiamento_liquido": -50000.0
+          },
+          "summary": {
+            "total_inflow": 1692000.0,
+            "total_outflow": 1025000.0,
+            "net_cashflow": 667000.0,
+            "starting_balance": 892156.47,
+            "ending_balance": 1559156.47
+          },
+          "risks": []
+        },
+        "90d": {
+          "operational": {
+            "receitas_eventos": 2157300.0,
+            "outras_receitas": 380700.0,
+            "cmv": 877500.0,
+            "pessoal": 585000.0,
+            "operacional_liquido": 1075500.0
+          },
+          "investment": {
+            "capex": 0,
+            "investimento_liquido": 0
+          },
+          "financing": {
+            "retiradas": 75000.0,
+            "intercompany": 0,
+            "financiamento_liquido": -75000.0
+          },
+          "summary": {
+            "total_inflow": 2538000.0,
+            "total_outflow": 1537500.0,
+            "net_cashflow": 1000500.0,
+            "starting_balance": 892156.47,
+            "ending_balance": 1892656.47
+          },
+          "risks": []
+        }
+      }
+    },
+    "STATUS Opera": {
+      "projections": {
+        "30d": {
+          "operational": {
+            "receitas_eventos": 357000.0,
+            "outras_receitas": 63000.0,
+            "cmv": 216000.0,
+            "pessoal": 144000.0,
+            "operacional_liquido": 60000.0
+          },
+          "investment": {
+            "capex": 0,
+            "investimento_liquido": 0
+          },
+          "financing": {
+            "retiradas": 75000.0,
+            "intercompany": 50000.0,
+            "financiamento_liquido": -125000.0
+          },
+          "summary": {
+            "total_inflow": 420000.0,
+            "total_outflow": 485000.0,
+            "net_cashflow": -65000.0,
+            "starting_balance": 125430.88,
+            "ending_balance": 60430.88
+          },
+          "risks": [
+            "CAIXA_CRITICO"
+          ]
+        },
+        "60d": {
+          "operational": {
+            "receitas_eventos": 714000.0,
+            "outras_receitas": 126000.0,
+            "cmv": 432000.0,
+            "pessoal": 288000.0,
+            "operacional_liquido": 120000.0
+          },
+          "investment": {
+            "capex": 0,
+            "investimento_liquido": 0
+          },
+          "financing": {
+            "retiradas": 150000.0,
+            "intercompany": 100000.0,
+            "financiamento_liquido": -250000.0
+          },
+          "summary": {
+            "total_inflow": 840000.0,
+            "total_outflow": 970000.0,
+            "net_cashflow": -130000.0,
+            "starting_balance": 125430.88,
+            "ending_balance": -4569.12
+          },
+          "risks": [
+            "CAIXA_NEGATIVO"
+          ]
+        },
+        "90d": {
+          "operational": {
+            "receitas_eventos": 1071000.0,
+            "outras_receitas": 189000.0,
+            "cmv": 648000.0,
+            "pessoal": 432000.0,
+            "operacional_liquido": 180000.0
+          },
+          "investment": {
+            "capex": 0,
+            "investimento_liquido": 0
+          },
+          "financing": {
+            "retiradas": 225000.0,
+            "intercompany": 150000.0,
+            "financiamento_liquido": -375000.0
+          },
+          "summary": {
+            "total_inflow": 1260000.0,
+            "total_outflow": 1455000.0,
+            "net_cashflow": -195000.0,
+            "starting_balance": 125430.88,
+            "ending_balance": -69569.12
+          },
+          "risks": [
+            "CAIXA_NEGATIVO"
+          ]
+        }
+      }
+    }
+  }
+}

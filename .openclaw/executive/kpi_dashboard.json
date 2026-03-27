@@ -1,0 +1,146 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "generated_at": "2026-03-27T21:41:00",
+    "period": "YTD 2025 (Jan-Mar)",
+    "currency": "BRL"
+  },
+  "kpi_summary": {
+    "revenue": {
+      "planned_ytd": 3780889.01,
+      "realized_ytd": 3240583.59,
+      "variance": -540305.42,
+      "variance_percent": -14.29,
+      "status": "WARNING",
+      "projected_annual": 12962334.36,
+      "projected_vs_plan": -2.26
+    },
+    "events": {
+      "planned_ytd": 22,
+      "realized_ytd": 18,
+      "variance": -4,
+      "status": "ATTENTION",
+      "avg_value": 180032.42,
+      "projected_annual": 72
+    },
+    "gross_margin": {
+      "planned": 0.35,
+      "realized": 0.33,
+      "variance": -0.02,
+      "status": "HEALTHY"
+    },
+    "profit": {
+      "planned_ytd": 1323311.15,
+      "realized_ytd": 1029386.58,
+      "variance": -293924.57,
+      "status": "WARNING"
+    },
+    "cash": {
+      "current_balance": 1017587.35,
+      "projected_90d": 1197087.35,
+      "status": "HEALTHY"
+    }
+  },
+  "kpi_detailed": {
+    "revenue_kpis": {
+      "revenue_vs_plan": {
+        "value": 85.71,
+        "target": 100,
+        "status": "yellow"
+      },
+      "monthly_growth": {
+        "current": 15.2,
+        "trend": "up"
+      },
+      "revenue_per_event": {
+        "current": 180032.42,
+        "target": 177923.38,
+        "variance": 1.2,
+        "status": "green"
+      }
+    },
+    "financial_kpis": {
+      "gross_margin": {
+        "value": 0.33,
+        "target": 0.35,
+        "gap": -0.02,
+        "status": "yellow"
+      },
+      "operating_margin": {
+        "value": 0.18,
+        "target": 0.15,
+        "gap": 0.03,
+        "status": "green"
+      },
+      "ebitda": {
+        "value": 1029386.58,
+        "margin": 0.32,
+        "status": "green"
+      },
+      "cash_conversion": {
+        "days": 45,
+        "status": "green"
+      }
+    },
+    "operational_kpis": {
+      "events_realized": {
+        "count": 18,
+        "target": 22,
+        "attainment": 81.8,
+        "status": "yellow"
+      },
+      "avg_guest_count": {
+        "value": 125,
+        "trend": "stable"
+      },
+      "event_utilization": {
+        "value": 0.85,
+        "capacity": 21,
+        "status": "green"
+      }
+    },
+    "commercial_kpis": {
+      "conversion_rate": {
+        "leads": 45,
+        "qualified": 28,
+        "meetings": 22,
+        "proposals": 20,
+        "closed": 18,
+        "rate": 0.40,
+        "status": "green"
+      },
+      "avg_sales_cycle": {
+        "days": 35,
+        "status": "green"
+      },
+      "client_satisfaction": {
+        "score": 4.6,
+        "nps": 52,
+        "status": "green"
+      }
+    }
+  },
+  "historical_trend": {
+    "january": {"revenue": 165126.41, "profit": 49537.92, "events": 1},
+    "february": {"revenue": 404083.61, "profit": 121225.08, "events": 1},
+    "march": {"revenue": 674288.98, "profit": 202286.69, "events": 1},
+    "total_q1": {"revenue": 1243499.00, "profit": 373049.69, "events": 3}
+  },
+  "projections": {
+    "scenario_optimistic": {
+      "revenue_annual": 16500000.00,
+      "profit_annual": 5775000.00,
+      "margins": 0.35
+    },
+    "scenario_realistic": {
+      "revenue_annual": 15123487.40,
+      "profit_annual": 4547046.22,
+      "margins": 0.35
+    },
+    "scenario_pessimistic": {
+      "revenue_annual": 12000000.00,
+      "profit_annual": 3000000.00,
+      "margins": 0.30
+    }
+  }
+}

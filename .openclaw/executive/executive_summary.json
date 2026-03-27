@@ -1,0 +1,23 @@
+{
+  "status_geral": "ALERTA - Recuperação Necessária",
+  "receita_status": "14% abaixo da meta YTD. Tendência de recuperação em março.",
+  "margem_status": "Dentro do esperado (33% vs 35% plan)",
+  "caixa_status": "Status Opera crítico - ação imediata necessária",
+  "riscos_principais": [
+    "Não atingir meta anual de receita",
+    "Quebra de caixa STATUS Opera",
+    "Dependência de fornecedor único (gelo)"
+  ],
+  "oportunidades": [
+    "Aumento de preço em casamentos/corporativo",
+    "Consolidação de compras",
+    "Mix mais lucrativo"
+  ],
+  "plano_imediato": [
+    "Congelar retiradas STATUS Opera",
+    "Acelerar captação comercial",
+    "Cadastrar fornecedor alternativo",
+    "Implementar aumento de preço seletivo"
+  ],
+  "previsao_lucro_final": "R$ 4,5M (realista) a R$ 5,8M (otimista)"
+}

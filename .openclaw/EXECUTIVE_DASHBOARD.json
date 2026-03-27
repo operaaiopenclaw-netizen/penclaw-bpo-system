@@ -1,0 +1,20 @@
+{
+  "system": "OpenClaw BPO-System",
+  "version": "1.0-ENTERPRISE",
+  "status": "OPERACIONAL",
+  "modules_active": 7,
+  "last_update": "2026-03-27T21:00:00",
+  "kpis": {
+    "revenue_ytd": 3240583.59,
+    "profit_ytd": 1029386.58,
+    "margin": 0.33,
+    "cash": 1017587.35,
+    "events": 18,
+    "suppliers": 4,
+    "recipes": 8,
+    "risk_level": "MEDIUM"
+  },
+  "alerts": ["Revenue 14% below target", "STATUS cash warning", "Single gelo supplier"],
+  "actions": ["Accelerate sales", "Freeze withdrawals", "Add gelo supplier"],
+  "next_review": "2026-04-27"
+}

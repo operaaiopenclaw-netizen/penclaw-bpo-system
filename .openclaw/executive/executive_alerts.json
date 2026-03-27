@@ -1,0 +1,38 @@
+{
+  "metadata": {"version": "1.0", "generated_at": "2026-03-27T21:42:00"},
+  "alerts": [
+    {
+      "id": "EXE-001",
+      "level": "high",
+      "category": "revenue",
+      "title": "Meta de Receita Atrasada - R$ 540k",
+      "description": "Realizado YTD está 14.29% abaixo do planejado. Projeção indica risco de não bater meta anual.",
+      "metrics": {"planned": 3780889.01, "realized": 3240583.59, "gap": -540305.42},
+      "action": "Intensificar captacao de leads e acelerar fechamentos",
+      "owner": "Comercial",
+      "deadline": "2025-04-15"
+    },
+    {
+      "id": "EXE-002",
+      "level": "critical",
+      "category": "cashflow",
+      "title": "STATUS Opera com risco de caixa em 90d",
+      "description": "Projeção indica saldo negativo de R$ 249,569 sem correção.",
+      "metrics": {"current": 125430.88, "projected_90d": -249569.12},
+      "action": "Reduzir retiradas e acelerar pagamentos de LA Orana",
+      "owner": "Financeiro",
+      "deadline": "2025-03-30"
+    },
+    {
+      "id": "EXE-003",
+      "level": "high",
+      "category": "procurement",
+      "title": "Monocultura de Fornecedor - Gelo",
+      "description": "Apenas 1 fornecedor de gelo homologado. Risco de ruptura.",
+      "metrics": {"suppliers": 1, "coverage": "SUP-002"},
+      "action": "Urgente: cadastrar fornecedor alternativo de gelo",
+      "owner": "Compras",
+      "deadline": "2025-04-03"
+    }
+  ]
+}

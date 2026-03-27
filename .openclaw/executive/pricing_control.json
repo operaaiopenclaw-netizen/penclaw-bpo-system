@@ -1,0 +1,10 @@
+{
+  "underpriced_events": [
+    {"event_id": "EV-2025-03-15", "current_price": 120000, "suggested_price": 135000, "gap": 15000}
+  ],
+  "opportunities": [
+    {"category": "Casamentos", "increase": 8, "impact_annual": 504000},
+    {"category": "Corporativo", "increase": 5, "impact_annual": 150000}
+  ],
+  "justification": "Demanda estável permite aumento de preço sem perda de volume"
+}

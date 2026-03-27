@@ -1,0 +1,98 @@
+{
+  "description": "Fluxos entre STATUS Opera e LA ORANA",
+  "currency": "BRL",
+  "months": {
+    "2024-08": {
+      "status": {
+        "a_receber": 25015.58,
+        "a_pagar": 212092.72,
+        "saldo": -187077.14
+      },
+      "la_orana": {
+        "a_receber": 212092.72,
+        "a_pagar": 25015.58,
+        "saldo": 187077.14
+      }
+    },
+    "2024-09": {
+      "status": {
+        "a_receber": 139294.44,
+        "a_pagar": 137259.2,
+        "saldo": 2035.24
+      },
+      "la_orana": {
+        "a_receber": 137259.2,
+        "a_pagar": 139294.44,
+        "saldo": -2035.24
+      }
+    },
+    "2024-10": {
+      "status": {
+        "a_receber": 71321.27,
+        "a_pagar": 253569.06,
+        "saldo": -182247.79
+      },
+      "la_orana": {
+        "a_receber": 253569.06,
+        "a_pagar": 71321.27,
+        "saldo": 182247.79
+      }
+    },
+    "2024-11": {
+      "status": {
+        "a_receber": 63420.0,
+        "a_pagar": 372360.16,
+        "saldo": -308940.16
+      },
+      "la_orana": {
+        "a_receber": 372360.16,
+        "a_pagar": 63420.0,
+        "saldo": 308940.16
+      }
+    },
+    "2024-12": {
+      "status": {
+        "a_receber": 452825.0,
+        "a_pagar": 398276.0,
+        "saldo": 54549.0
+      },
+      "la_orana": {
+        "a_receber": 398276.0,
+        "a_pagar": 452825.0,
+        "saldo": -54549.0
+      }
+    },
+    "2025-01": {
+      "status": {
+        "em_eventos": 56532.0
+      },
+      "la_orana": {
+        "recebido_de_status": 56532.0
+      }
+    },
+    "2025-02": {
+      "status": {
+        "em_eventos": 103638.0
+      },
+      "la_orana": {
+        "recebido_de_status": 103638.0
+      }
+    },
+    "2025-03": {
+      "status": {
+        "em_eventos": 316729.59
+      },
+      "la_orana": {
+        "recebido_de_status": 316729.59
+      }
+    },
+    "2025-04": {
+      "status": {
+        "em_eventos": 151113.9
+      },
+      "la_orana": {
+        "recebido_de_status": 151113.9
+      }
+    }
+  }
+}

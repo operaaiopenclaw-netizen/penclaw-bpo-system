@@ -1,0 +1,20 @@
+{
+  "decisions": [
+    {
+      "problem": "Receita YTD 14% abaixo da meta",
+      "cause": "Baixa conversão de propostas e pipeline enxuto",
+      "action": "Aumentar budget de marketing em 20% para SDRs gerarem mais leads qualificados",
+      "impact": "+R$ 800k em receita projetada",
+      "urgency": "high",
+      "status": "pending_approval"
+    },
+    {
+      "problem": "Cashflow negativo STATUS Opera",
+      "cause": "Retiradas excessivas (11% da receita)",
+      "action": "Congelar retiradas por 60 dias, usar caixa consolidado grupo",
+      "impact": "R$ 450k preservados",
+      "urgency": "critical",
+      "status": "approved"
+    }
+  ]
+}

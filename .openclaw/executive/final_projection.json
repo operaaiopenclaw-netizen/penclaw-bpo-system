@@ -1,0 +1,16 @@
+{
+  "projection": {
+    "revenue": {
+      "optimistic": 16500000.00,
+      "realistic": 15123487.40,
+      "pessimistic": 12962334.36
+    },
+    "profit": {
+      "optimistic": 5775000.00,
+      "realistic": 4547046.22,
+      "pessimistic": 3888700.31
+    },
+    "variance_vs_plan": -2.26,
+    "risk": "MEDIUM - If Q2 recovers, target is achievable"
+  }
+}

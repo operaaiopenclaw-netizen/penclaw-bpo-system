@@ -1,0 +1,27 @@
+{
+  "generated_at": "2026-03-27",
+  "companies": {
+    "LA ORANA": {
+      "total_receivable": 1450892.33,
+      "total_payable": 558735.86,
+      "working_capital": 892156.47,
+      "risk_level": "low",
+      "coverage_months": 2.8
+    },
+    "STATUS Opera": {
+      "total_receivable": 394935.39,
+      "total_payable": 520180.51,
+      "working_capital": -125245.12,
+      "risk_level": "high",
+      "coverage_months": -0.4,
+      "notes": "Capital de giro negativo - dependência de LA ORANA"
+    }
+  },
+  "combined": {
+    "total_receivable": 1845827.72,
+    "total_payable": 1078916.37,
+    "working_capital": 766911.35,
+    "intercompany_net": -621680.85,
+    "real_working_capital": 145230.5
+  }
+}

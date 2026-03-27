@@ -1,0 +1,212 @@
+{
+  "company": "STATUS Opera",
+  "period": "2024-2025",
+  "currency": "BRL",
+  "months": {
+    "2024-08": {
+      "revenue": {
+        "total": 521065.99,
+        "identified": 336634.25,
+        "unidentified": 184431.74
+      },
+      "cmv": {
+        "total": 40207.52,
+        "bar": 19656.37,
+        "buffet": 20551.15
+      },
+      "personnel": 51698.68,
+      "admin": 84445.18,
+      "other_costs": 48333.96,
+      "financial": 67693.1,
+      "withdrawals": {
+        "caixa": 67530.0,
+        "socios": 29816.8
+      },
+      "intercompany": {
+        "a_receber": 25015.58,
+        "a_pagar": 212092.72
+      }
+    },
+    "2024-09": {
+      "revenue": {
+        "total": 170418.57,
+        "identified": 34633.33,
+        "unidentified": 135785.24
+      },
+      "cmv": {
+        "total": 67453.23,
+        "bar": 49672.2,
+        "buffet": 17781.03
+      },
+      "personnel": 49324.97,
+      "admin": 34495.29,
+      "other_costs": 14212.0,
+      "financial": 56637.0,
+      "withdrawals": {
+        "caixa": 56250.0,
+        "socios": 26682.26
+      },
+      "intercompany": {
+        "a_receber": 139294.44,
+        "a_pagar": 137259.2
+      }
+    },
+    "2024-10": {
+      "revenue": {
+        "total": 818626.0,
+        "identified": 684277.37,
+        "unidentified": 134348.63
+      },
+      "cmv": {
+        "total": 30547.17,
+        "bar": 28718.42,
+        "buffet": 1828.75
+      },
+      "personnel": 47543.01,
+      "admin": 89186.83,
+      "other_costs": 54039.43,
+      "financial": 16382.45,
+      "withdrawals": {
+        "caixa": 9089.16,
+        "socios": 9736.26
+      },
+      "intercompany": {
+        "a_receber": 71321.27,
+        "a_pagar": 253569.06
+      }
+    },
+    "2024-11": {
+      "revenue": {
+        "total": 973149.58,
+        "identified": 973149.58,
+        "unidentified": 0
+      },
+      "cmv": {
+        "total": 39495.1,
+        "bar": 39495.1,
+        "buffet": 0
+      },
+      "personnel": 109141.53,
+      "admin": 89922.46,
+      "other_costs": 52434.28,
+      "financial": 35919.35,
+      "withdrawals": {
+        "caixa": 19080.0,
+        "socios": 44.0
+      },
+      "intercompany": {
+        "a_receber": 63420.0,
+        "a_pagar": 372360.16
+      }
+    },
+    "2024-12": {
+      "revenue": {
+        "total": 771323.45,
+        "identified": 575410.76,
+        "unidentified": 195912.69
+      },
+      "cmv": {
+        "total": 82375.5,
+        "bar": 82375.5,
+        "buffet": 0
+      },
+      "personnel": 112042.2,
+      "admin": 95501.71,
+      "other_costs": 83816.77,
+      "financial": 175960.0,
+      "withdrawals": {
+        "caixa": 159190.0,
+        "socios": 0
+      },
+      "intercompany": {
+        "a_receber": 452825.0,
+        "a_pagar": 398276.0
+      }
+    },
+    "2025-01": {
+      "revenue": {
+        "total": 165126.41,
+        "identified": 54527.38,
+        "unidentified": 110599.03,
+        "refunds": 0
+      },
+      "expenses": {
+        "total": 343118.55,
+        "taxes": 47914.45,
+        "cmv": 36022.04,
+        "other_costs": 52822.62,
+        "personnel": 42845.29,
+        "admin": 0,
+        "financial": 0
+      },
+      "taxes_breakdown": {
+        "simples": 41643.39,
+        "fgts": 1033.48,
+        "inss": 531.71,
+        "parcelamentos": 4705.87
+      }
+    },
+    "2025-02": {
+      "revenue": {
+        "total": 404083.61,
+        "identified": 220238.6,
+        "unidentified": 183845.01,
+        "refunds": 0
+      },
+      "expenses": {
+        "total": 228118.15,
+        "taxes": 10085.35,
+        "cmv": 14043.42,
+        "other_costs": 38056.77,
+        "personnel": 55012.7
+      },
+      "taxes_breakdown": {
+        "simples": 4075.22,
+        "fgts": 815.46,
+        "inss": 1082.15,
+        "parcelamentos": 4112.52
+      }
+    },
+    "2025-03": {
+      "revenue": {
+        "total": 674288.98,
+        "identified": 505256.94,
+        "unidentified": 182909.64,
+        "refunds": 13877.6
+      },
+      "expenses": {
+        "total": 418297.02,
+        "taxes": 17627.28,
+        "cmv": 118758.34,
+        "other_costs": 38887.64,
+        "personnel": 126981.07
+      },
+      "taxes_breakdown": {
+        "simples": 11680.75,
+        "fgts": 876.88,
+        "inss": 917.56,
+        "parcelamentos": 4152.09
+      }
+    },
+    "2025-04": {
+      "revenue": {
+        "total": 458528.7,
+        "identified": 351853.2,
+        "unidentified": 106675.5,
+        "refunds": 0
+      },
+      "expenses": {
+        "total": 303210.77,
+        "taxes": 14818.82,
+        "cmv": 52595.23,
+        "other_costs": 75720.75,
+        "personnel": 60355.55
+      },
+      "taxes_breakdown": {
+        "simples": 12867.55,
+        "fgts": 876.88,
+        "inss": 1074.39
+      }
+    }
+  }
+}

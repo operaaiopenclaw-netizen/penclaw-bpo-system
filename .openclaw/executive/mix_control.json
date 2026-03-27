@@ -1,0 +1,10 @@
+{
+  "analysis": {
+    "casamentos": {"revenue_share": 41.6, "margin": 0.38, "recommendation": "INCREASE"},
+    "corporativo": {"revenue_share": 19.8, "margin": 0.42, "recommendation": "INCREASE"},
+    "aniversarios": {"revenue_share": 14.3, "margin": 0.35, "recommendation": "MAINTAIN"},
+    "formaturas": {"revenue_share": 11.6, "margin": 0.32, "recommendation": "SELECTIVE"}
+  },
+  "strategy": "Focar em casamentos e corporativo (melhor margem). Limitar formaturas que consomem muito.",
+  "impact_simulation": "Reduzir formaturas em 50% libera R$ 880k para corporativo, aumentando margem em R$ 132k"
+}

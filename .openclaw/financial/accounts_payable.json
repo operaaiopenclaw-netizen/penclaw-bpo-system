@@ -1,0 +1,320 @@
+{
+  "metadata": {
+    "generated_at": "2026-03-27",
+    "categories": [
+      "insumos",
+      "pessoal",
+      "impostos",
+      "fornecedores",
+      "intercompany"
+    ],
+    "companies": [
+      "STATUS Opera",
+      "LA ORANA"
+    ]
+  },
+  "payables": [
+    {
+      "id": "PAY-00001",
+      "company": "STATUS Opera",
+      "category": "pessoal",
+      "supplier": "FOLHA_PAGAMENTO",
+      "amount": 51698.68,
+      "due_date": "2024-08-20",
+      "event_id": null,
+      "is_fixed": true,
+      "status": "paid"
+    },
+    {
+      "id": "PAY-00002",
+      "company": "STATUS Opera",
+      "category": "insumos",
+      "supplier": "FORNECEDORES_BAR",
+      "amount": 40207.52,
+      "due_date": "2024-08-20",
+      "event_id": "EV-202408",
+      "is_fixed": false,
+      "status": "paid"
+    },
+    {
+      "id": "PAY-00003",
+      "company": "STATUS Opera",
+      "category": "pessoal",
+      "supplier": "FOLHA_PAGAMENTO",
+      "amount": 49324.97,
+      "due_date": "2024-09-20",
+      "event_id": null,
+      "is_fixed": true,
+      "status": "paid"
+    },
+    {
+      "id": "PAY-00004",
+      "company": "STATUS Opera",
+      "category": "insumos",
+      "supplier": "FORNECEDORES_BAR",
+      "amount": 67453.23,
+      "due_date": "2024-09-20",
+      "event_id": "EV-202409",
+      "is_fixed": false,
+      "status": "paid"
+    },
+    {
+      "id": "PAY-00005",
+      "company": "STATUS Opera",
+      "category": "pessoal",
+      "supplier": "FOLHA_PAGAMENTO",
+      "amount": 47543.01,
+      "due_date": "2024-10-20",
+      "event_id": null,
+      "is_fixed": true,
+      "status": "paid"
+    },
+    {
+      "id": "PAY-00006",
+      "company": "STATUS Opera",
+      "category": "insumos",
+      "supplier": "FORNECEDORES_BAR",
+      "amount": 30547.17,
+      "due_date": "2024-10-20",
+      "event_id": "EV-202410",
+      "is_fixed": false,
+      "status": "paid"
+    },
+    {
+      "id": "PAY-00007",
+      "company": "STATUS Opera",
+      "category": "pessoal",
+      "supplier": "FOLHA_PAGAMENTO",
+      "amount": 109141.53,
+      "due_date": "2024-11-20",
+      "event_id": null,
+      "is_fixed": true,
+      "status": "paid"
+    },
+    {
+      "id": "PAY-00008",
+      "company": "STATUS Opera",
+      "category": "insumos",
+      "supplier": "FORNECEDORES_BAR",
+      "amount": 39495.1,
+      "due_date": "2024-11-20",
+      "event_id": "EV-202411",
+      "is_fixed": false,
+      "status": "paid"
+    },
+    {
+      "id": "PAY-00009",
+      "company": "STATUS Opera",
+      "category": "pessoal",
+      "supplier": "FOLHA_PAGAMENTO",
+      "amount": 112042.2,
+      "due_date": "2024-12-20",
+      "event_id": null,
+      "is_fixed": true,
+      "status": "paid"
+    },
+    {
+      "id": "PAY-00010",
+      "company": "STATUS Opera",
+      "category": "insumos",
+      "supplier": "FORNECEDORES_BAR",
+      "amount": 82375.5,
+      "due_date": "2024-12-20",
+      "event_id": "EV-202412",
+      "is_fixed": false,
+      "status": "paid"
+    },
+    {
+      "id": "PAY-00011",
+      "company": "STATUS Opera",
+      "category": "pessoal",
+      "supplier": "FOLHA_PAGAMENTO",
+      "amount": 42845.29,
+      "due_date": "2025-01-20",
+      "event_id": null,
+      "is_fixed": true,
+      "status": "paid"
+    },
+    {
+      "id": "PAY-00012",
+      "company": "STATUS Opera",
+      "category": "insumos",
+      "supplier": "FORNECEDORES_BAR",
+      "amount": 36022.04,
+      "due_date": "2025-01-20",
+      "event_id": "EV-202501",
+      "is_fixed": false,
+      "status": "paid"
+    },
+    {
+      "id": "PAY-00013",
+      "company": "STATUS Opera",
+      "category": "impostos",
+      "supplier": "RECEITA_FEDERAL",
+      "amount": 47914.45,
+      "due_date": "2025-01-20",
+      "event_id": null,
+      "is_fixed": true,
+      "status": "paid"
+    },
+    {
+      "id": "PAY-00014",
+      "company": "STATUS Opera",
+      "category": "pessoal",
+      "supplier": "FOLHA_PAGAMENTO",
+      "amount": 55012.7,
+      "due_date": "2025-02-20",
+      "event_id": null,
+      "is_fixed": true,
+      "status": "paid"
+    },
+    {
+      "id": "PAY-00015",
+      "company": "STATUS Opera",
+      "category": "insumos",
+      "supplier": "FORNECEDORES_BAR",
+      "amount": 14043.42,
+      "due_date": "2025-02-20",
+      "event_id": "EV-202502",
+      "is_fixed": false,
+      "status": "paid"
+    },
+    {
+      "id": "PAY-00016",
+      "company": "STATUS Opera",
+      "category": "impostos",
+      "supplier": "RECEITA_FEDERAL",
+      "amount": 10085.35,
+      "due_date": "2025-02-20",
+      "event_id": null,
+      "is_fixed": true,
+      "status": "paid"
+    },
+    {
+      "id": "PAY-00017",
+      "company": "STATUS Opera",
+      "category": "pessoal",
+      "supplier": "FOLHA_PAGAMENTO",
+      "amount": 126981.07,
+      "due_date": "2025-03-20",
+      "event_id": null,
+      "is_fixed": true,
+      "status": "paid"
+    },
+    {
+      "id": "PAY-00018",
+      "company": "STATUS Opera",
+      "category": "insumos",
+      "supplier": "FORNECEDORES_BAR",
+      "amount": 118758.34,
+      "due_date": "2025-03-20",
+      "event_id": "EV-202503",
+      "is_fixed": false,
+      "status": "paid"
+    },
+    {
+      "id": "PAY-00019",
+      "company": "STATUS Opera",
+      "category": "impostos",
+      "supplier": "RECEITA_FEDERAL",
+      "amount": 17627.28,
+      "due_date": "2025-03-20",
+      "event_id": null,
+      "is_fixed": true,
+      "status": "paid"
+    },
+    {
+      "id": "PAY-00020",
+      "company": "STATUS Opera",
+      "category": "pessoal",
+      "supplier": "FOLHA_PAGAMENTO",
+      "amount": 60355.55,
+      "due_date": "2025-04-20",
+      "event_id": null,
+      "is_fixed": true,
+      "status": "pending"
+    },
+    {
+      "id": "PAY-00021",
+      "company": "STATUS Opera",
+      "category": "insumos",
+      "supplier": "FORNECEDORES_BAR",
+      "amount": 52595.23,
+      "due_date": "2025-04-20",
+      "event_id": "EV-202504",
+      "is_fixed": false,
+      "status": "pending"
+    },
+    {
+      "id": "PAY-00022",
+      "company": "STATUS Opera",
+      "category": "impostos",
+      "supplier": "RECEITA_FEDERAL",
+      "amount": 14818.82,
+      "due_date": "2025-04-20",
+      "event_id": null,
+      "is_fixed": true,
+      "status": "pending"
+    },
+    {
+      "id": "PAY-00023",
+      "company": "STATUS Opera",
+      "category": "intercompany",
+      "supplier": "LA ORANA",
+      "amount": 212092.72,
+      "due_date": "2024-08-30",
+      "event_id": null,
+      "is_fixed": false,
+      "status": "paid",
+      "notes": "Eventos a pagar entre empresas"
+    },
+    {
+      "id": "PAY-00024",
+      "company": "STATUS Opera",
+      "category": "intercompany",
+      "supplier": "LA ORANA",
+      "amount": 137259.2,
+      "due_date": "2024-09-30",
+      "event_id": null,
+      "is_fixed": false,
+      "status": "paid",
+      "notes": "Eventos a pagar entre empresas"
+    },
+    {
+      "id": "PAY-00025",
+      "company": "STATUS Opera",
+      "category": "intercompany",
+      "supplier": "LA ORANA",
+      "amount": 253569.06,
+      "due_date": "2024-10-30",
+      "event_id": null,
+      "is_fixed": false,
+      "status": "paid",
+      "notes": "Eventos a pagar entre empresas"
+    },
+    {
+      "id": "PAY-00026",
+      "company": "STATUS Opera",
+      "category": "intercompany",
+      "supplier": "LA ORANA",
+      "amount": 372360.16,
+      "due_date": "2024-11-30",
+      "event_id": null,
+      "is_fixed": false,
+      "status": "paid",
+      "notes": "Eventos a pagar entre empresas"
+    },
+    {
+      "id": "PAY-00027",
+      "company": "STATUS Opera",
+      "category": "intercompany",
+      "supplier": "LA ORANA",
+      "amount": 398276.0,
+      "due_date": "2024-12-30",
+      "event_id": null,
+      "is_fixed": false,
+      "status": "paid",
+      "notes": "Eventos a pagar entre empresas"
+    }
+  ]
+}

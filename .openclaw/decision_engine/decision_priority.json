@@ -1,0 +1,223 @@
+{
+  "problems": [
+    {
+      "id": "PROB-001",
+      "type": "cashflow_negative",
+      "severity": "critical",
+      "financial_impact": 69569.12,
+      "affected_company": "STATUS Opera",
+      "affected_events": null,
+      "description": "Projeção de caixa negativo em 90 dias",
+      "current_value": 125430.88,
+      "projected_value": -69569.12,
+      "risk_factors": [
+        "retiradas_elevadas",
+        "intercompany_pendente",
+        "receitas_fracas"
+      ]
+    },
+    {
+      "id": "PROB-002",
+      "type": "working_capital_negative",
+      "severity": "high",
+      "financial_impact": 125245.12,
+      "affected_company": "STATUS Opera",
+      "description": "Capital de giro negativo - dependência de LA ORANA",
+      "current_value": -125245.12,
+      "threshold": 0,
+      "coverage_months": -0.4
+    },
+    {
+      "id": "PROB-003",
+      "type": "intercompany_imbalance",
+      "severity": "high",
+      "financial_impact": 621680.85,
+      "affected_company": "Grupo",
+      "description": "Fluxos intercompany irregulares sem política definida",
+      "balance": -621680.85,
+      "debtor": "STATUS Opera",
+      "creditor": "LA ORANA",
+      "months_overdue": 4
+    },
+    {
+      "id": "PROB-004",
+      "type": "unidentified_revenue",
+      "severity": "high",
+      "financial_impact": 1283584.52,
+      "affected_company": "LA ORANA",
+      "description": "12.6% das receitas sem vinculação a contrato",
+      "percentage": 12.6,
+      "risk": "fiscal_auditoria"
+    },
+    {
+      "id": "PROB-005",
+      "type": "excessive_withdrawals",
+      "severity": "medium",
+      "financial_impact": 377418.48,
+      "affected_company": "STATUS Opera",
+      "description": "Taxa de retirada acima do benchmark (11.6% vs 5%)",
+      "current_rate": 11.6,
+      "benchmark": 5.0,
+      "excess": 6.6
+    },
+    {
+      "id": "PROB-006",
+      "type": "seasonality_concentration",
+      "severity": "medium",
+      "financial_impact": 3336615.8499999996,
+      "affected_company": "LA ORANA",
+      "description": "Concentração de 32.8% da receita em Nov/Dez",
+      "concentration": 32.82523990614894,
+      "risk": "dependencia_sazonal"
+    }
+  ],
+  "actions": [
+    {
+      "id": "ACT-004",
+      "problem_id": "PROB-004",
+      "problem": "Receitas não identificadas",
+      "action": "Cruzar R$ 1.28M com event_dataset e identificar N CTT faltantes",
+      "expected_impact": {
+        "revenue_identified": 1283584,
+        "fiscal_risk": "eliminado",
+        "audit_readiness": "ok"
+      },
+      "difficulty": "medium",
+      "time_to_implement": "30d",
+      "stakeholders": [
+        "financeiro",
+        "operacional"
+      ],
+      "priority_score": 1925376.0,
+      "priority_rank": 1
+    },
+    {
+      "id": "ACT-002",
+      "problem_id": "PROB-002",
+      "problem": "CG negativo STATUS",
+      "action": "Criar conta conjunta Opera/La Orana com gestão unificada",
+      "expected_impact": {
+        "combined_liquidity": 1017587,
+        "wc_status": 0,
+        "simplification": "alta"
+      },
+      "difficulty": "medium",
+      "time_to_implement": "15d",
+      "stakeholders": [
+        "direcao",
+        "contabilidade"
+      ],
+      "priority_score": 1526380.5,
+      "priority_rank": 2
+    },
+    {
+      "id": "ACT-001",
+      "problem_id": "PROB-001",
+      "problem": "Cashflow negativo STATUS",
+      "action": "Reduzir retiradas de sócios de R$ 75k para R$ 30k/mês",
+      "expected_impact": {
+        "cash_90d": 135000,
+        "wc_improvement": 135000,
+        "break_even_months": 2
+      },
+      "difficulty": "high",
+      "time_to_implement": "30d",
+      "stakeholders": [
+        "sócios"
+      ],
+      "dependencies": [
+        "negociacao_interna"
+      ],
+      "priority_score": 180000.0,
+      "priority_rank": 3
+    },
+    {
+      "id": "ACT-005",
+      "problem_id": "PROB-003",
+      "problem": "Falta de política intercompany",
+      "action": "Definir: eventos LA em STATUS faturam 80% direto, 20% rateio",
+      "expected_impact": {
+        "transparency": "alta",
+        "monthly_reconciliation": true,
+        "disputes": 0
+      },
+      "difficulty": "low",
+      "time_to_implement": "7d",
+      "stakeholders": [
+        "direcao"
+      ],
+      "priority_score": 3.0,
+      "priority_rank": 4
+    },
+    {
+      "id": "ACT-003",
+      "problem_id": "PROB-003",
+      "problem": "Intercompany desbalanceado",
+      "action": "Liquidar R$ 621k em 3 parcelas: ago/250k, set/250k, out/121k",
+      "expected_impact": {
+        "ic_cleared": true,
+        "la_cash_inflow": 621680,
+        "status_cash_outflow": -621680
+      },
+      "difficulty": "medium",
+      "time_to_implement": "90d",
+      "stakeholders": [
+        "direcao",
+        "contabilidade"
+      ],
+      "priority_score": 1.5,
+      "priority_rank": 5
+    },
+    {
+      "id": "ACT-006",
+      "problem_id": "PROB-006",
+      "problem": "Concentração sazonal",
+      "action": "Criar pacotes 'Low Season' com desconto 15% para Jan-Abr",
+      "expected_impact": {
+        "revenue_smoothing": "15%",
+        "nov_dez_concentration": "reduzido",
+        "cashflow_stability": "alta"
+      },
+      "difficulty": "low",
+      "time_to_implement": "60d",
+      "stakeholders": [
+        "comercial",
+        "marketing"
+      ],
+      "priority_score": 0.0,
+      "priority_rank": 6
+    }
+  ],
+  "scenarios": {
+    "baseline": {
+      "description": "Sem mudanças - continuidade atual",
+      "status_90d": -69569,
+      "la_orana_90d": 1892656,
+      "grupo_liquido": 1823087,
+      "risk": "STATUS quebra caixa"
+    },
+    "scenario_1_reduce_withdrawals": {
+      "description": "Reduzir retiradas STATUS (ACT-001)",
+      "status_90d": 65431,
+      "la_orana_90d": 1892656,
+      "grupo_liquido": 1958087,
+      "impact": "STATUS evita negativo"
+    },
+    "scenario_2_consolidate_cash": {
+      "description": "Consolidar caixa + liquidar intercompany (ACT-002 + ACT-003)",
+      "status_90d": 1200000,
+      "la_orana_90d": 1270976,
+      "grupo_liquido": 2470976,
+      "impact": "Grupo mais saudável, mas STATUS depende de LA"
+    },
+    "scenario_3_complete_plan": {
+      "description": "Executar todas as ações de alta prioridade",
+      "status_90d": 300000,
+      "la_orana_90d": 2500000,
+      "grupo_liquido": 2800000,
+      "ic_regularizado": true,
+      "receitas_identificadas": true,
+      "impact": "Saudável e investível"
+    }
+  }
+}

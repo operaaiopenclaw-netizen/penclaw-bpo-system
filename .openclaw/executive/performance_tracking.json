@@ -1,0 +1,48 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "generated_at": "2026-03-27T21:42:00",
+    "tracking_period": "2025-YTD"
+  },
+  "revenue_tracking": {
+    "planned_ytd": 3780889.01,
+    "realized_ytd": 3240583.59,
+    "variance": -540305.42,
+    "variance_percent": -14.29,
+    "status": "yellow",
+    "trend": "recovering",
+    "monthly_attainment": [
+      {"month": "2025-01", "planned": 1260232.28, "realized": 165126.41, "attainment": 13.1, "status": "red"},
+      {"month": "2025-02", "planned": 1134219.05, "realized": 404083.61, "attainment": 35.6, "status": "red"},
+      {"month": "2025-03", "planned": 1386255.68, "realized": 674288.98, "attainment": 48.6, "status": "red"}
+    ]
+  },
+  "margin_tracking": {
+    "planned": 0.35,
+    "realized": 0.33,
+    "variance": -0.02,
+    "status": "yellow",
+    "by_company": {
+      "LA ORANA": {"planned": 0.28, "realized": 0.26},
+      "STATUS Opera": {"planned": 0.45, "realized": 0.42}
+    }
+  },
+  "event_tracking": {
+    "planned_ytd": 22,
+    "realized_ytd": 18,
+    "variance": -4,
+    "status": "yellow",
+    "avg_ticket": {
+      "planned": 177923.38,
+      "realized": 180032.42,
+      "variance": 1.2,
+      "status": "green"
+    }
+  },
+  "cash_tracking": {
+    "current": 1017587.35,
+    "projected": 1197087.35,
+    "status": "green",
+    "warnings": ["STATUS Opera com caixa abaixo do ideal"]
+  }
+}

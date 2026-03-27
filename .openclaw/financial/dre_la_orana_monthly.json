@@ -1,0 +1,271 @@
+{
+  "company": "LA ORANA",
+  "period": "2025",
+  "currency": "BRL",
+  "months": {
+    "2025-01": {
+      "revenue": {
+        "total": 478326.06,
+        "identified": 400689.06,
+        "unidentified": 21105.0,
+        "buffet_status": 56532.0,
+        "status_events": 0
+      },
+      "cmv": {
+        "total": 233707.54,
+        "bar": 21380.06,
+        "buffet": 209682.92,
+        "others": 2644.56
+      },
+      "taxes": {
+        "total": 5203.05,
+        "simples": 3037.1,
+        "inss": 974.1,
+        "fgts": 1191.85
+      },
+      "ebitda": null
+    },
+    "2025-02": {
+      "revenue": {
+        "total": 926576.39,
+        "identified": 493264.74,
+        "unidentified": 329673.65,
+        "buffet_status": 103638.0,
+        "status_events": 0
+      },
+      "cmv": {
+        "total": 0,
+        "bar": 0,
+        "buffet": 0,
+        "others": 0
+      },
+      "taxes": {
+        "total": 2662.51,
+        "simples": 1043.95,
+        "inss": 858.56,
+        "fgts": 760.0
+      },
+      "ebitda": null
+    },
+    "2025-03": {
+      "revenue": {
+        "total": 793148.72,
+        "identified": 385531.63,
+        "unidentified": 90887.5,
+        "buffet_status": 316729.59,
+        "status_events": 0
+      },
+      "cmv": {
+        "total": 0,
+        "bar": 0,
+        "buffet": 0,
+        "others": 0
+      },
+      "taxes": {
+        "total": 14454.52,
+        "simples": 12623.99,
+        "inss": 886.5,
+        "fgts": 944.03
+      },
+      "ebitda": null
+    },
+    "2025-04": {
+      "revenue": {
+        "total": 1089172.74,
+        "identified": 919427.1,
+        "unidentified": 18631.74,
+        "buffet_status": 151113.9,
+        "status_events": 70000
+      },
+      "cmv": {
+        "total": 0,
+        "bar": 0,
+        "buffet": 0,
+        "others": 0
+      },
+      "taxes": {
+        "total": 4323.11,
+        "simples": 2832.27,
+        "inss": 744.18,
+        "fgts": 746.66
+      },
+      "ebitda": null
+    },
+    "2025-05": {
+      "revenue": {
+        "total": 653522.14,
+        "identified": 531619.14,
+        "unidentified": 44775.0,
+        "buffet_status": 77128.0,
+        "status_events": 0
+      },
+      "cmv": {
+        "total": 0,
+        "bar": 0,
+        "buffet": 0,
+        "others": 0
+      },
+      "taxes": {
+        "total": 1415.61,
+        "simples": 90.9,
+        "inss": 646.68,
+        "fgts": 678.03
+      },
+      "ebitda": null
+    },
+    "2025-06": {
+      "revenue": {
+        "total": 428749.09,
+        "identified": 231828.09,
+        "unidentified": 64200.0,
+        "buffet_status": 124921.0,
+        "status_events": 7800
+      },
+      "cmv": {
+        "total": 0,
+        "bar": 0,
+        "buffet": 0,
+        "others": 0
+      },
+      "taxes": {
+        "total": 3805.94,
+        "simples": 2512.48,
+        "inss": 597.98,
+        "fgts": 695.48
+      },
+      "ebitda": null
+    },
+    "2025-07": {
+      "revenue": {
+        "total": 514175.51,
+        "identified": 452818.51,
+        "unidentified": 8392.0,
+        "buffet_status": 52545.0,
+        "status_events": 420
+      },
+      "cmv": {
+        "total": 0,
+        "bar": 0,
+        "buffet": 0,
+        "others": 0
+      },
+      "taxes": {
+        "total": 5181.62,
+        "simples": 3471.48,
+        "inss": 956.81,
+        "fgts": 753.33
+      },
+      "ebitda": null
+    },
+    "2025-08": {
+      "revenue": {
+        "total": 796267.91,
+        "identified": 523915.31,
+        "unidentified": 41070.0,
+        "buffet_status": 231282.6,
+        "status_events": 0
+      },
+      "cmv": {
+        "total": 0,
+        "bar": 0,
+        "buffet": 0,
+        "others": 0
+      },
+      "taxes": {
+        "total": 30026.81,
+        "simples": 28302.5,
+        "inss": 964.31,
+        "fgts": 760.0
+      },
+      "ebitda": null
+    },
+    "2025-09": {
+      "revenue": {
+        "total": 669016.93,
+        "identified": 501339.33,
+        "unidentified": 1300.0,
+        "buffet_status": 166377.6,
+        "status_events": 0
+      },
+      "cmv": {
+        "total": 0,
+        "bar": 0,
+        "buffet": 0,
+        "others": 0
+      },
+      "taxes": {
+        "total": 17583.21,
+        "simples": 15443.16,
+        "inss": 1379.33,
+        "fgts": 760.72
+      },
+      "ebitda": null
+    },
+    "2025-10": {
+      "revenue": {
+        "total": 479216.06,
+        "identified": 240147.07,
+        "unidentified": 55385.19,
+        "buffet_status": 183683.8,
+        "status_events": 0
+      },
+      "cmv": {
+        "total": 0,
+        "bar": 0,
+        "buffet": 0,
+        "others": 0
+      },
+      "taxes": {
+        "total": 11024.86,
+        "simples": 9707.53,
+        "inss": 726.45,
+        "fgts": 590.88
+      },
+      "ebitda": null
+    },
+    "2025-11": {
+      "revenue": {
+        "total": 1573359.39,
+        "identified": 920888.7,
+        "unidentified": 217201.25,
+        "buffet_status": 435269.44,
+        "status_events": 3668
+      },
+      "cmv": {
+        "total": 0,
+        "bar": 0,
+        "buffet": 0,
+        "others": 0
+      },
+      "taxes": {
+        "total": 36424.99,
+        "simples": 33381.26,
+        "inss": 2361.15,
+        "fgts": 682.58
+      },
+      "ebitda": null
+    },
+    "2025-12": {
+      "revenue": {
+        "total": 1763256.46,
+        "identified": 878596.87,
+        "unidentified": 390963.19,
+        "buffet_status": 490028.4,
+        "status_events": 0
+      },
+      "cmv": {
+        "total": 0,
+        "bar": 0,
+        "buffet": 0,
+        "others": 0
+      },
+      "taxes": {
+        "total": 16155.3,
+        "simples": 11870.68,
+        "inss": 2260.3,
+        "fgts": 2024.32
+      },
+      "ebitda": null
+    }
+  }
+}
