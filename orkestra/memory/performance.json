@@ -1,0 +1,159 @@
+{
+  "records": [
+    {
+      "id": "PERF_20260115_000000",
+      "timestamp": "2026-01-15T00:00:00",
+      "event": "casamento_silva_marques",
+      "period": "event",
+      "revenue": 25000,
+      "costs": 20500,
+      "margin_pct": 0.18,
+      "targets_met": [
+        "delivery_on_time"
+      ],
+      "targets_missed": [
+        "margin_above_30"
+      ],
+      "kpis": {
+        "protein_cost_pct": 28,
+        "beverages_cost_pct": 32,
+        "staff_cost_pct": 22,
+        "ambiance_cost_pct": 18
+      }
+    },
+    {
+      "id": "PERF_20260203_000000",
+      "timestamp": "2026-02-03T00:00:00",
+      "event": "formatura_medicina_unesp",
+      "period": "event",
+      "revenue": 45000,
+      "costs": 35100,
+      "margin_pct": 0.22,
+      "targets_met": [
+        "food_quality",
+        "service_rating"
+      ],
+      "targets_missed": [
+        "margin_above_30",
+        "zero_waste"
+      ],
+      "kpis": {
+        "protein_cost_pct": 42,
+        "beverages_cost_pct": 25,
+        "staff_cost_pct": 18,
+        "ambiance_cost_pct": 15
+      }
+    },
+    {
+      "id": "PERF_20260220_000000",
+      "timestamp": "2026-02-20T00:00:00",
+      "event": "confraternizacao_techcorp",
+      "period": "event",
+      "revenue": 30000,
+      "costs": 25500,
+      "margin_pct": 0.15,
+      "targets_met": [
+        "client_satisfaction"
+      ],
+      "targets_missed": [
+        "margin_above_30",
+        "cost_within_budget"
+      ],
+      "kpis": {
+        "protein_cost_pct": 24,
+        "beverages_cost_pct": 28,
+        "staff_cost_pct": 35,
+        "ambiance_cost_pct": 13
+      }
+    },
+    {
+      "id": "PERF_20260305_000000",
+      "timestamp": "2026-03-05T00:00:00",
+      "event": "aniversario_50anos_roberto",
+      "period": "event",
+      "revenue": 18000,
+      "costs": 14400,
+      "margin_pct": 0.2,
+      "targets_met": [
+        "decor_quality"
+      ],
+      "targets_missed": [
+        "margin_above_30"
+      ],
+      "kpis": {
+        "protein_cost_pct": 25,
+        "beverages_cost_pct": 22,
+        "staff_cost_pct": 20,
+        "ambiance_cost_pct": 33
+      }
+    },
+    {
+      "id": "PERF_20260315_000000",
+      "timestamp": "2026-03-15T00:00:00",
+      "event": "formatura_direito_puc",
+      "period": "event",
+      "revenue": 40000,
+      "costs": 32400,
+      "margin_pct": 0.19,
+      "targets_met": [
+        "attendance"
+      ],
+      "targets_missed": [
+        "margin_above_30"
+      ],
+      "kpis": {
+        "protein_cost_pct": 30,
+        "beverages_cost_pct": 38,
+        "staff_cost_pct": 17,
+        "ambiance_cost_pct": 15
+      }
+    },
+    {
+      "id": "PERF_20260320_000000",
+      "timestamp": "2026-03-20T00:00:00",
+      "event": "casamento_fernanda_pedro",
+      "period": "event",
+      "revenue": 50000,
+      "costs": 32500,
+      "margin_pct": 0.35,
+      "targets_met": [
+        "margin_above_30",
+        "client_satisfaction",
+        "on_time"
+      ],
+      "targets_missed": [],
+      "kpis": {
+        "protein_cost_pct": 26,
+        "beverages_cost_pct": 24,
+        "staff_cost_pct": 20,
+        "ambiance_cost_pct": 15
+      }
+    },
+    {
+      "id": "PERF_20260322_000000",
+      "timestamp": "2026-03-22T00:00:00",
+      "event": "festa_fim_ano_startup",
+      "period": "event",
+      "revenue": 20000,
+      "costs": 21000,
+      "margin_pct": -0.05,
+      "targets_met": [],
+      "targets_missed": [
+        "margin_positive",
+        "cost_within_budget",
+        "profit_target"
+      ],
+      "kpis": {
+        "protein_cost_pct": 22,
+        "beverages_cost_pct": 27,
+        "staff_cost_pct": 25,
+        "ambiance_cost_pct": 26
+      }
+    }
+  ],
+  "metadata": {
+    "version": "1.0",
+    "last_update": "2026-03-26T10:52:11.450105",
+    "count": 7
+  }
+}

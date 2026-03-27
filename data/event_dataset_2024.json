@@ -1,0 +1,127 @@
+{
+  "metadata": {
+    "year": "2024",
+    "generated_at": "2024-12-31T23:59:59",
+    "source": "planilha_2024"
+  },
+  "contracts": [
+    {
+      "contract_id": "CTT2024001",
+      "date": "2024-03-15",
+      "status": "EXECUTED",
+      "revenue_total": 45000,
+      "revenue_locacao": 15000,
+      "revenue_catering": 30000,
+      "people": 120,
+      "_raw": {
+        "people": 120,
+        "agencia": false
+      }
+    },
+    {
+      "contract_id": "CTT2024002",
+      "date": "2024-04-22",
+      "status": "EXECUTED",
+      "revenue_total": 62000,
+      "revenue_locacao": 22000,
+      "revenue_catering": 40000,
+      "people": 180,
+      "_raw": {
+        "people": 180,
+        "agencia": false
+      }
+    },
+    {
+      "contract_id": "CTT2024003",
+      "date": "2024-05-10",
+      "status": "EXECUTED",
+      "revenue_total": 38000,
+      "revenue_locacao": 8000,
+      "revenue_catering": 30000,
+      "people": 100,
+      "_raw": {
+        "people": 100,
+        "agencia": true
+      }
+    },
+    {
+      "contract_id": "CTT2024004",
+      "date": "2024-06-15",
+      "status": "EXECUTED",
+      "revenue_total": 85000,
+      "revenue_locacao": 35000,
+      "revenue_catering": 50000,
+      "people": 250,
+      "_raw": {
+        "people": 250,
+        "agencia": false
+      }
+    },
+    {
+      "contract_id": "CTT2024005",
+      "date": "2024-08-20",
+      "status": "CANCELLED",
+      "revenue_total": 0,
+      "revenue_locacao": 0,
+      "revenue_catering": 0,
+      "people": 150,
+      "_raw": {
+        "people": 150,
+        "agencia": false
+      }
+    },
+    {
+      "contract_id": "CTT2024006",
+      "date": "2024-09-12",
+      "status": "EXECUTED",
+      "revenue_total": 55000,
+      "revenue_locacao": 0,
+      "revenue_catering": 55000,
+      "people": 140,
+      "_raw": {
+        "people": 140,
+        "agencia": false,
+        "only_catering": true
+      }
+    },
+    {
+      "contract_id": "CTT2024007",
+      "date": "2024-10-05",
+      "status": "EXECUTED",
+      "revenue_total": 72000,
+      "revenue_locacao": 25000,
+      "revenue_catering": 47000,
+      "people": 200,
+      "_raw": {
+        "people": 200,
+        "agencia": false
+      }
+    },
+    {
+      "contract_id": "CTT2024008",
+      "date": "2024-11-18",
+      "status": "EXECUTED",
+      "revenue_total": 95000,
+      "revenue_locacao": 45000,
+      "revenue_catering": 50000,
+      "people": 300,
+      "_raw": {
+        "people": 300,
+        "agencia": false
+      }
+    },
+    {
+      "contract_id": "CTT2024009",
+      "date": "2024-12-10",
+      "status": "EXECUTED",
+      "revenue_total": 42000,
+      "revenue_locacao": 12000,
+      "revenue_catering": 30000,
+      "people": 110,
+      "_raw": {
+        "people": 110,
+        "agencia": true
+      }
+    }
+  ]
+}

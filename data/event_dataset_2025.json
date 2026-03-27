@@ -1,0 +1,101 @@
+{
+  "metadata": {
+    "year": "2025",
+    "generated_at": "2025-03-26T20:00:00",
+    "source": "planilha_2025"
+  },
+  "contracts": [
+    {
+      "contract_id": "CTT2025001",
+      "date": "2025-02-14",
+      "status": "EXECUTED",
+      "revenue_total": 58000,
+      "revenue_locacao": 20000,
+      "revenue_catering": 38000,
+      "people": 150,
+      "_raw": {
+        "people": 150,
+        "agencia": false
+      }
+    },
+    {
+      "contract_id": "CTT2025002",
+      "date": "2025-02-28",
+      "status": "EXECUTED",
+      "revenue_total": 45000,
+      "revenue_locacao": 0,
+      "revenue_catering": 45000,
+      "people": 120,
+      "_raw": {
+        "people": 120,
+        "agencia": false,
+        "only_catering": true
+      }
+    },
+    {
+      "contract_id": "CTT2025003",
+      "date": "2025-03-15",
+      "status": "CONFIRMED",
+      "revenue_total": 75000,
+      "revenue_locacao": 30000,
+      "revenue_catering": 45000,
+      "people": 220,
+      "_raw": {
+        "people": 220,
+        "agencia": false
+      }
+    },
+    {
+      "contract_id": "CTT2025004",
+      "date": "2025-04-10",
+      "status": "PENDING",
+      "revenue_total": 92000,
+      "revenue_locacao": 42000,
+      "revenue_catering": 50000,
+      "people": 280,
+      "_raw": {
+        "people": 280,
+        "agencia": false
+      }
+    },
+    {
+      "contract_id": "CTT2025005",
+      "date": "2025-05-20",
+      "status": "CONFIRMED",
+      "revenue_total": 65000,
+      "revenue_locacao": 25000,
+      "revenue_catering": 40000,
+      "people": 180,
+      "_raw": {
+        "people": 180,
+        "agencia": true
+      }
+    },
+    {
+      "contract_id": "CTT2025006",
+      "date": "2025-06-08",
+      "status": "CANCELLED",
+      "revenue_total": 0,
+      "revenue_locacao": 0,
+      "revenue_catering": 0,
+      "people": 200,
+      "_raw": {
+        "people": 200,
+        "agencia": false
+      }
+    },
+    {
+      "contract_id": "CTT2025007",
+      "date": "2025-07-15",
+      "status": "CONFIRMED",
+      "revenue_total": 88000,
+      "revenue_locacao": 38000,
+      "revenue_catering": 50000,
+      "people": 250,
+      "_raw": {
+        "people": 250,
+        "agencia": false
+      }
+    }
+  ]
+}

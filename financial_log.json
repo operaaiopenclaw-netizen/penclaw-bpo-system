@@ -1,0 +1,25 @@
+{
+  "transactions": [
+    {
+      "type": "income",
+      "value": 900000,
+      "category": "evento",
+      "event": "Formatura Medicina",
+      "has_alerts": false
+    },
+    {
+      "type": "expense",
+      "value": 300000,
+      "category": "bebidas",
+      "event": "Formatura Medicina",
+      "has_alerts": false
+    },
+    {
+      "type": "expense",
+      "value": 150000,
+      "category": "staff",
+      "event": "Formatura Medicina",
+      "has_alerts": true
+    }
+  ]
+}

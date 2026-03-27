@@ -1,0 +1,170 @@
+{
+  "version": "1.1",
+  "lastUpdated": "2026-03-25T14:41:09.555174",
+  "events": {
+    "Medicina_2026-03-27": {
+      "nome": "Medicina",
+      "data": "2026-03-27",
+      "receita_total": 15000,
+      "custo_total": 15200,
+      "margem": -200,
+      "custos_por_categoria": {
+        "proteina": 8200,
+        "bebida": 4500,
+        "outros": 2500
+      },
+      "historico_operacoes": [
+        {
+          "id": 1,
+          "timestamp": "2026-03-24T13:07:00-03:00",
+          "tipo": "COMPRA",
+          "descricao": "carne",
+          "valor": 2000,
+          "categoria": "proteina",
+          "fornecedor": "não informado",
+          "forma_pagamento": "PIX"
+        },
+        {
+          "id": 2,
+          "timestamp": "2026-03-24T13:09:00-03:00",
+          "tipo": "COMPRA",
+          "descricao": "carne",
+          "valor": 3200,
+          "categoria": "proteina",
+          "fornecedor": "Açougue Silva",
+          "forma_pagamento": "PIX"
+        },
+        {
+          "id": 3,
+          "timestamp": "2026-03-24T13:15:00-03:00",
+          "tipo": "COMPRA",
+          "descricao": "não informado",
+          "valor": 3000,
+          "categoria": "proteina",
+          "fornecedor": "não informado",
+          "forma_pagamento": "não informado"
+        },
+        {
+          "id": 4,
+          "timestamp": "2026-03-24T13:15:00-03:00",
+          "tipo": "COMPRA",
+          "descricao": "não informado",
+          "valor": 2000,
+          "categoria": "bebida",
+          "fornecedor": "não informado",
+          "forma_pagamento": "não informado"
+        },
+        {
+          "id": 5,
+          "timestamp": "2026-03-24T13:15:00-03:00",
+          "tipo": "RECEBIMENTO",
+          "descricao": "receita do evento",
+          "valor": 15000,
+          "categoria": "receita",
+          "cliente": "não informado",
+          "forma_recebimento": "não informado"
+        },
+        {
+          "id": 6,
+          "timestamp": "2026-03-24T13:30:00-03:00",
+          "tipo": "COMPRA",
+          "descricao": "não informado",
+          "valor": 2500,
+          "categoria": "bebida",
+          "fornecedor": "não informado",
+          "forma_pagamento": "PIX"
+        },
+        {
+          "id": 7,
+          "timestamp": "2026-03-24T13:59:00-03:00",
+          "tipo": "PAGAMENTO",
+          "descricao": "Pagamento via PIX",
+          "valor": 2500,
+          "categoria": "outros",
+          "beneficiario": "não informado",
+          "forma_pagamento": "PIX",
+          "status": "liquidado"
+        }
+      ],
+      "status": "ativo",
+      "notas": "PREJUÍZO DETECTADO: margem negativa",
+      "analise": {
+        "categoria_dominante": "proteina",
+        "percentual_proteina": 53.9,
+        "percentual_bebida": 29.6,
+        "percentual_outros": 16.4,
+        "alertas": [
+          "🚨 EVENTO COM PREJUÍZO: margem negativa de R$ -200",
+          "Custo total (R$ 15.200) excede receita (R$ 15.000)"
+        ],
+        "margem_percentual": -1.3
+      },
+      "resumo_contas": {
+        "contas_pagar_pendentes": 5,
+        "total_pagar_pendente": 12700,
+        "contas_recebidas": 1,
+        "total_recebido": 15000
+      }
+    }
+  },
+  "resumo_geral": {
+    "total_eventos": 1,
+    "receita_geral": 15000,
+    "custo_geral": 15200,
+    "margem_geral": -200
+  },
+  "pending_transactions": [
+    {
+      "transaction_id": "TXN-20260325143555-2",
+      "type": "expense",
+      "value": null,
+      "category": "outros",
+      "source": "Together Computer",
+      "description": "Your receipt from Together Computer, Inc #2527-7983",
+      "date": "2026-03-25",
+      "payment_method": null,
+      "event": null,
+      "status": "needs_event_mapping",
+      "detected_at": "2026-03-25T14:35:55.091213"
+    },
+    {
+      "transaction_id": "TXN-20260325143556-3",
+      "type": "expense",
+      "value": null,
+      "category": "outros",
+      "source": "Together Computer",
+      "description": "Your receipt from Together Computer, Inc #2438-3063",
+      "date": "2026-03-25",
+      "payment_method": null,
+      "event": null,
+      "status": "needs_event_mapping",
+      "detected_at": "2026-03-25T14:35:56.878595"
+    },
+    {
+      "transaction_id": "TXN-20260325143559-4",
+      "type": "expense",
+      "value": null,
+      "category": "outros",
+      "source": "Together Computer",
+      "description": "Your receipt from Together Computer, Inc #2131-6741",
+      "date": "2026-03-25",
+      "payment_method": null,
+      "event": null,
+      "status": "needs_event_mapping",
+      "detected_at": "2026-03-25T14:35:59.184065"
+    },
+    {
+      "transaction_id": "TXN-20260325144109-5",
+      "type": "expense",
+      "value": null,
+      "category": "outros",
+      "source": "Together Computer",
+      "description": "Your receipt from Together Computer, Inc #2131-6741",
+      "date": "2026-03-25",
+      "payment_method": null,
+      "event": null,
+      "status": "needs_event_mapping",
+      "detected_at": "2026-03-25T14:41:09.555158"
+    }
+  ]
+}

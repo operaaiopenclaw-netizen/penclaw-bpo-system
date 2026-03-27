@@ -1,0 +1,30 @@
+{
+  "timestamp": "2026-03-26T23:02:40.405185",
+  "summary": {
+    "events_analyzed": 1,
+    "approved": 1,
+    "review": 0,
+    "rejected": 0,
+    "total_revenue": 900000,
+    "total_cost": 450000,
+    "avg_margin": 0.5,
+    "profit": 450000
+  },
+  "events": [
+    {
+      "event": "Formatura Medicina",
+      "income": 900000,
+      "expense": 450000,
+      "margin": 0.5,
+      "decision": "APPROVE"
+    }
+  ],
+  "pre_event_simulation": {
+    "event": "Formatura Medicina FUTURO",
+    "receita": 900000,
+    "custo_estimado": 720000.0,
+    "margem": 0.2,
+    "decision": "REVIEW",
+    "cost_ratio": 0.8
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "recipes": {
+    "proteina_principal": {
+      "rendimento": 100,
+      "ingredientes": [
+        {"nome": "frango desfiado", "quantidade": 2.5, "unidade": "kg"},
+        {"nome": "cebola", "quantidade": 0.5, "unidade": "kg"},
+        {"nome": "alho", "quantidade": 0.1, "unidade": "kg"}
+      ]
+    },
+    "arroz_base": {
+      "rendimento": 100,
+      "ingredientes": [
+        {"nome": "arroz", "quantidade": 10, "unidade": "kg"},
+        {"nome": "óleo", "quantidade": 0.2, "unidade": "L"},
+        {"nome": "sal", "quantidade": 0.1, "unidade": "kg"}
+      ]
+    }
+  }
+}

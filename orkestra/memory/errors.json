@@ -1,0 +1,53 @@
+{
+  "errors": [
+    {
+      "id": "ERR_20260210_083000",
+      "timestamp": "2026-02-10T08:30:00",
+      "event": "formatura_engenharia",
+      "error_type": "stockout",
+      "severity": "high",
+      "description": "Falta de refrigerante durante evento",
+      "impact": "Cliente insatisfeito, pedido emergencial custo 40% maior",
+      "resolution": "Compra emergência fornecedor local",
+      "prevention": "Aumentar margem segurança estoque para 25%"
+    },
+    {
+      "id": "ERR_20260225_190000",
+      "timestamp": "2026-02-25T19:00:00",
+      "event": "casamento_fernanda",
+      "error_type": "portion_calculation",
+      "severity": "medium",
+      "description": "Cálculo errado de carne, sobra 15kg",
+      "impact": "Desperdício R$ 450,00",
+      "resolution": "Doado para instituição caritativa",
+      "prevention": "Validar calculadora de porções antes evento"
+    },
+    {
+      "id": "ERR_20260310_120000",
+      "timestamp": "2026-03-10T12:00:00",
+      "event": "confraternizacao_empresa_x",
+      "error_type": "staff_no_show",
+      "severity": "high",
+      "description": "2 garçons não compareceram",
+      "impact": "Restante equipe sobrecarregado, serviço lento",
+      "resolution": "Staff interno cobriu com hora extra",
+      "prevention": "Contratar +20% staff com cláusula penal"
+    },
+    {
+      "id": "ERR_20260318_210000",
+      "timestamp": "2026-03-18T21:00:00",
+      "event": "festa_debutante",
+      "error_type": "stockout",
+      "severity": "critical",
+      "description": "Falta copos descartáveis meio evento",
+      "impact": "Uso copos improvisados, imagem prejudicada",
+      "resolution": "Compra urgente distribuidor 24h",
+      "prevention": "Checklist estoque obrigatório 48h antes"
+    }
+  ],
+  "metadata": {
+    "version": "1.0",
+    "last_update": "2026-03-26T10:52:11.449803",
+    "count": 4
+  }
+}

@@ -1,0 +1,88 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Orkestra Financial Transaction Schema",
+  "description": "Schema para transações financeiras do Orkestra",
+  "type": "object",
+  "required": ["tipo", "evento", "valor", "categoria"],
+  "properties": {
+    "tipo": {
+      "type": "string",
+      "enum": ["conta_pagar", "conta_receber", "ajuste_estoque"],
+      "description": "Tipo de operação financeira"
+    },
+    "operacao_origem": {
+      "type": "string",
+      "enum": ["COMPRA", "PAGAMENTO", "RECEBIMENTO", "ESTOQUE_ENTRADA", "ESTOQUE_SAIDA"],
+      "description": "Operação de origem que gerou o registro"
+    },
+    "evento": {
+      "type": "string",
+      "description": "Nome do evento vinculado"
+    },
+    "evento_data": {
+      "type": "string",
+      "format": "date",
+      "description": "Data do evento (YYYY-MM-DD)"
+    },
+    "valor": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Valor monetário da operação"
+    },
+    "descricao": {
+      "type": "string",
+      "description": "Descrição detalhada do item/serviço"
+    },
+    "categoria": {
+      "type": "string",
+      "enum": ["protein", "beverages", "staff", "ambiance", "supplies", "infrastructure", "event"],
+      "description": "Categoria classificada automaticamente"
+    },
+    "fornecedor": {
+      "type": "string",
+      "description": "Nome do fornecedor (para despesas)"
+    },
+    "cliente": {
+      "type": "string",
+      "description": "Nome do cliente (para receitas)"
+    },
+    "forma_pagamento": {
+      "type": "string",
+      "enum": ["PIX", "Dinheiro", "Cartao", "Boleto", "Transferencia"],
+      "description": "Forma de pagamento utilizada"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["pendente", "liquidado", "recebido", "entrada", "saida"],
+      "description": "Status da operação"
+    },
+    "data_operacao": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp da operação (ISO 8601)"
+    },
+    "id_operacao": {
+      "type": "string",
+      "description": "Identificador único sequencial"
+    },
+    "meta": {
+      "type": "object",
+      "properties": {
+        "percentual_custo": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Percentual que este item representa do custo total do evento"
+        },
+        "categoria_dominante": {
+          "type": "boolean",
+          "description": "Se esta categoria é a dominante no evento"
+        },
+        "alerta": {
+          "type": "string",
+          "description": "Mensagem de alerta se aplicável"
+        }
+      }
+    }
+  }
+}

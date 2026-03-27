@@ -1,0 +1,89 @@
+{
+  "timestamp": "2026-03-26T11:02:30.177579",
+  "insights_count": 7,
+  "rules_count": 4,
+  "insights": [
+    {
+      "type": "positive_pattern",
+      "action": "change_supplier",
+      "frequency": 2,
+      "avg_improvement": -0.08,
+      "recommendation": "✅ 'change_supplier' melhora margem em 2 eventos"
+    },
+    {
+      "type": "positive_pattern",
+      "action": "optimize_team_size",
+      "frequency": 2,
+      "avg_improvement": 0.0,
+      "recommendation": "✅ 'optimize_team_size' melhora margem em 2 eventos"
+    },
+    {
+      "type": "negative_pattern",
+      "cause": "high_beverage_cost",
+      "frequency": 2,
+      "recommendation": "⚠️  'high_beverage_cost' causa margem baixa em 2 eventos"
+    },
+    {
+      "type": "negative_pattern",
+      "cause": "high_staff_cost",
+      "frequency": 2,
+      "recommendation": "⚠️  'high_staff_cost' causa margem baixa em 2 eventos"
+    },
+    {
+      "type": "trend",
+      "metric": "margin",
+      "value": 0.177,
+      "trend": "estável",
+      "delta": -0.011,
+      "recommendation": "➡️ Margem média 17.7% - tendência estável"
+    },
+    {
+      "type": "critical",
+      "count": 1,
+      "recommendation": "🚨 1 evento(s) com prejuízo no histórico"
+    },
+    {
+      "type": "recurring_error",
+      "error_type": "stockout",
+      "count": 2,
+      "avg_severity": 3.5,
+      "recommendation": "🔴 'stockout' ocorreu 2x (severidade média: 3.5)"
+    }
+  ],
+  "rules": [
+    {
+      "priority": "HIGH",
+      "type": "REVIEW",
+      "target": "PRICING_STRATEGY",
+      "action": "Revisar tabela de preços - margem média abaixo de 25%",
+      "rationale": "Margem média atual: 17.7%"
+    },
+    {
+      "priority": "CRITICAL",
+      "type": "PROCESS",
+      "target": "INVENTORY_MANAGEMENT",
+      "action": "Implementar checklist estoque 48h antes do evento",
+      "rationale": "2 rupturas no histórico"
+    },
+    {
+      "priority": "LOW",
+      "type": "AUTOSUGGEST",
+      "target": "DECISION_SUPPORT",
+      "action": "Sugerir automaticamente 'change_supplier' quando margem < 30%",
+      "rationale": "Ação melhorou margem em 2 eventos"
+    },
+    {
+      "priority": "LOW",
+      "type": "AUTOSUGGEST",
+      "target": "DECISION_SUPPORT",
+      "action": "Sugerir automaticamente 'optimize_team_size' quando margem < 30%",
+      "rationale": "Ação melhorou margem em 2 eventos"
+    }
+  ],
+  "summary": {
+    "critical": 1,
+    "high": 1,
+    "medium": 0,
+    "low": 2
+  }
+}
