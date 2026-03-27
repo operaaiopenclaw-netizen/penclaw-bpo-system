@@ -1,13 +1,28 @@
+# Python
 venv/
 __pycache__/
 *.pyc
+
+# Environment
 .env
 .env.*
 *.log
-processed_ids.txt
-*.bak
-node_modules/
-.openclaw.json
+
+# OpenClaw secrets
 auth-profiles.json
+openclaw.json
+.openclaw.json
+
+# Data bruta (não versionar)
 data/real_financial/
 data/operational/
+
+# Outputs pesados
+*.tar.gz
+*.zip
+
+# Cache / temporários
+processed_ids.txt
+*.bak
+.DS_Store
+node_modules/
