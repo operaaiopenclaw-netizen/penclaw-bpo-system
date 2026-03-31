@@ -1,7 +1,7 @@
 import { FastifyInstance } from "fastify";
 import { z } from "zod";
+import { memoryController } from "../controllers/memory-controller";
 import { memoryService } from "../services/memory-service";
-import { jsonLogger as logger } from "../utils/logger";
 import { AppError } from "../utils/app-error";
 
 const CreateMemorySchema = z.object({
@@ -24,11 +24,7 @@ export async function memoryRoutes(app: FastifyInstance) {
     if (!parsed.success) {
       throw new AppError(parsed.error.message, 422, "VALIDATION_ERROR");
     }
-    
-    const memory = await memoryService.create(parsed.data);
-
-    logger.info("Memory created", { id: memory.id, type: parsed.data.memoryType });
-    return { success: true, data: memory };
+    return memoryController.create(req as any, res);
   });
 
   // GET /memory/search?q=...&companyId=...
@@ -37,10 +33,7 @@ export async function memoryRoutes(app: FastifyInstance) {
     if (!parsed.success) {
       throw new AppError(parsed.error.message, 422, "VALIDATION_ERROR");
     }
-    
-    const results = await memoryService.search(parsed.data.companyId, parsed.data.q);
-
-    return { success: true, total: results.length, query: parsed.data.q, results };
+    return memoryController.search(req as any, res);
   });
 
   // GET /memory/recent?companyId=...
