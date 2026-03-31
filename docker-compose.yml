@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: openclaw-api
+    ports:
+      - "3333:3333"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/openclaw
+      - NODE_ENV=production
+      - PORT=3333
+      - JWT_SECRET=${JWT_SECRET:-default-secret}
+      - LOG_LEVEL=info
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./storage:/app/storage
+    networks:
+      - openclaw-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3333/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  db:
+    image: postgres:15-alpine
+    container_name: openclaw-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=openclaw
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./schema_v1_2.sql:/docker-entrypoint-initdb.d/schema.sql
+    networks:
+      - openclaw-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # Python engines service
+  engines:
+    build:
+      context: .
+      dockerfile: engines.Dockerfile
+    container_name: openclaw-engines
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/openclaw
+      - STORAGE_PATH=/app/storage
+    volumes:
+      - ./engines:/app/engines
+      - ./kitchen_data:/app/kitchen_data
+      - ./storage:/app/storage
+    depends_on:
+      - db
+    networks:
+      - openclaw-network
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
+
+networks:
+  openclaw-network:
+    driver: bridge

@@ -1,5 +1,5 @@
 event_id,empresa,mes,revenue,total_fixed_month,total_revenue_month,fixed_allocated,allocation_rate,trace_mode,source,timestamp
-EVT002,la_orana,2026-04,18000.0,13500.0,30000.0,8100.0,0.6,direct,fixed_cost_engine,2026-03-31T13:51:42.262084
-EVT004,la_orana,2026-04,12000.0,13500.0,30000.0,5400.0,0.4,direct,fixed_cost_engine,2026-03-31T13:51:42.262096
-EVT001,opera,2026-04,25000.0,17500.0,40000.0,10937.5,0.625,direct,fixed_cost_engine,2026-03-31T13:51:42.262026
-EVT003,opera,2026-04,15000.0,17500.0,40000.0,6562.5,0.375,direct,fixed_cost_engine,2026-03-31T13:51:42.262057
+EVT002,la_orana,2026-04,18000.0,13500.0,30000.0,8100.0,0.6,direct,fixed_cost_engine,2026-03-31T18:54:51.531748
+EVT004,la_orana,2026-04,12000.0,13500.0,30000.0,5400.0,0.4,direct,fixed_cost_engine,2026-03-31T18:54:51.531756
+EVT001,opera,2026-04,25000.0,17500.0,40000.0,10937.5,0.625,direct,fixed_cost_engine,2026-03-31T18:54:51.531705
+EVT003,opera,2026-04,15000.0,17500.0,40000.0,6562.5,0.375,direct,fixed_cost_engine,2026-03-31T18:54:51.531729

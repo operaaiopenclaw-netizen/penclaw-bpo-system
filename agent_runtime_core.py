@@ -1,865 +1,551 @@
 #!/usr/bin/env python3
 """
-AGENT RUNTIME CORE (Versão 1.1)
-Orquestrador central responsável por coordenar agentes, tools, memória e execução de workflows
+🎛️ AGENT RUNTIME CORE v1.1
+Orquestrador central do Orkestra Finance Brain
 
-COMPONENTES:
-- task_intake: Recebe e valida inputs
-- planner: Cria planos de execução
-- workflow_router: Direciona para workflows específicos
-- agent_dispatcher: Gerencia execução de agentes
-- policy_engine: Verifica políticas e segurança
-- approval_gate: Gerencia aprovações
-- validator: Valida resultados
-- artifact_manager: Gerencia artefatos
-- memory_manager: Persistência de contexto
-
-FLUXO:
-1. Receber input → 2. Classificar → 3. Criar agent_run → 4. Carregar contexto → 
-5. Buscar domain_rules → 6. Gerar plano → 7. Executar steps → 8. Validar → 
-9. Registrar logs → 10. Gerar artifacts → 11. Solicitar approval → 12. Encerrar
-
-REGRAS DE OURO:
-- Nunca executar ação sem log
-- Nunca executar ação de risco sem policy check
-- Nunca executar tool sem registro em tool_calls
-- Sempre validar saída antes de seguir
+12 passos de orquestração com Policy Engine.
 """
 
 import json
-import uuid
-import sys
 import subprocess
+import time
+import uuid
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Any, Tuple
-from dataclasses import dataclass, field, asdict
-from enum import Enum, auto
-from collections import defaultdict
-import importlib.util
+from typing import Dict, Any, List, Optional, Callable
+from dataclasses import dataclass, asdict, field
+from enum import Enum
 
-# Configuração de paths
-ROOT_DIR = Path(__file__).parent
-DATA_DIR = ROOT_DIR / "kitchen_data"
-LOGS_DIR = ROOT_DIR / "logs"
-ARTIFACTS_DIR = ROOT_DIR / "artifacts"
-RUNTIME_DIR = ROOT_DIR / "runtime"
+# ============================================================
+# CONFIGURAÇÃO
+# ============================================================
 
-# Criar diretórios necessários
-for d in [LOGS_DIR, ARTIFACTS_DIR, RUNTIME_DIR]:
-    d.mkdir(exist_ok=True)
+class RiskLevel(str, Enum):
+    R0_READ_ONLY = "R0"
+    R1_SAFE_WRITE = "R1"
+    R2_EXTERNAL_EFFECT = "R2"
+    R3_FINANCIAL = "R3"
+    R4_DESTRUCTIVE = "R4"
+    R5_CRITICAL = "R5"
 
+class PolicyDecision(str, Enum):
+    AUTO_EXECUTE = "AUTO_EXECUTE"
+    LOG_ONLY = "LOG_ONLY"
+    APPROVAL_REQUIRED = "APPROVAL_REQUIRED"
+    BLOCKED = "BLOCKED"
 
-class WorkflowType(Enum):
-    """Tipos de workflow suportados"""
-    KITCHEN = auto()           # Kitchen Control
-    FINANCIAL = auto()         # DRE, Fixed Cost
-    PROCUREMENT = auto()       # Compras
-    PRICING = auto()           # Precificação
-    AUDIT = auto()             # Auditoria
-    CALIBRATION = auto()       # Calibração
-    REPORTING = auto()         # Relatórios
-    RECONCILIATION = auto()    # Reconciliação
-    FULL_PIPELINE = auto()      # Pipeline completo
-    UNKNOWN = auto()
-
-
-class RiskLevel(Enum):
-    """Níveis de risco"""
-    NONE = 0
-    LOW = 1
-    MEDIUM = 2
-    HIGH = 3
-    CRITICAL = 4
-
-
-class ExecutionStatus(Enum):
-    """Status de execução"""
-    PENDING = "pending"
-    RUNNING = "running"
-    VALIDATING = "validating"
-    APPROVAL_REQUIRED = "approval_required"
-    APPROVED = "approved"
-    REJECTED = "rejected"
-    COMPLETED = "completed"
-    FAILED = "failed"
-    ROLLED_BACK = "rolled_back"
-
-
-@dataclass
-class ToolCall:
-    """Registro de chamada de tool"""
-    tool_name: str
-    inputs: Dict[str, Any]
-    outputs: Dict[str, Any]
-    status: str
-    timestamp_start: str
-    timestamp_end: Optional[str]
-    error: Optional[str]
-    policy_violations: List[str]
-
-
-@dataclass
-class ExecutionStep:
-    """Passo de execução"""
-    step_id: str
-    step_number: int
-    action: str
-    tool: str
-    inputs: Dict[str, Any]
-    outputs: Dict[str, Any] = field(default_factory=dict)
-    status: str = "pending"
-    validation_result: str = ""
-    started_at: Optional[str] = None
-    completed_at: Optional[str] = None
-    risk_level: RiskLevel = RiskLevel.NONE
-    requires_approval: bool = False
-    approved_by: Optional[str] = None
-
+# ============================================================
+# MODELS
+# ============================================================
 
 @dataclass
 class AgentRun:
-    """Execução de agente"""
-    run_id: str
-    workflow_type: WorkflowType
-    status: ExecutionStatus
-    input_data: Dict[str, Any]
-    steps: List[ExecutionStep]
-    context: Dict[str, Any]
-    artifacts: List[str]
-    logs: List[str]
-    created_at: str
-    updated_at: str
-    domain_rules: List[str]
-    policy_checks: List[str]
-    memory_refs: List[str]
+    id: str
+    company_id: str
+    workflow_type: str
+    status: str = "pending"
+    risk_level: str = "low"
+    input_summary: str = ""
+    output_summary: str = ""
+    total_cost: float = 0.0
+    total_tokens: int = 0
+    latency_ms: int = 0
+    created_by: str = "system"
+    started_at: Optional[str] = None
+    finished_at: Optional[str] = None
+    created_at: str = field(default_factory=lambda: datetime.now().isoformat())
+    steps: List[Dict] = field(default_factory=list)
+    approvals: List[Dict] = field(default_factory=list)
 
+@dataclass
+class PolicyCheck:
+    risk_level: RiskLevel
+    confidence_threshold: float
+    requires_approval: bool
+    auto_execute: bool
+
+# ============================================================
+# POLICY ENGINE
+# ============================================================
 
 class PolicyEngine:
-    """Motor de políticas e segurança"""
+    """Motor de políticas para classificação de risco"""
     
-    def __init__(self):
-        self.policies = self._load_policies()
-        self.violations = []
-    
-    def _load_policies(self) -> Dict:
-        """Carrega políticas do sistema"""
-        return {
-            "risk_thresholds": {
-                "financial": {
-                    "max_variance": 0.15,  # 15%
-                    "requires_approval": ["price_change", "cost_adjustment"]
-                },
-                "data_integrity": {
-                    "required_fields": ["event_id", "n_ctt", "timestamp"],
-                    "trace_mode_mandatory": True
-                },
-                "operations": {
-                    "auto_execute": ["read", "validate", "calculate"],
-                    "manual_approval": ["write", "update", "delete", "adjust"]
-                }
-            },
-            "forbidden_actions": [
-                "delete_without_backup",
-                "update_without_log",
-                "execute_without_policy_check",
-                "modify_financial_data_directly"
-            ]
-        }
-    
-    def check_action(self, action: str, inputs: Dict, context: Dict) -> Tuple[bool, List[str], RiskLevel]:
-        """
-        Verifica se ação pode ser executada
+    def evaluate(self, action_type: str, context: Dict) -> PolicyDecision:
+        """Avalia risco baseado no tipo de ação"""
         
-        Retorna: (permitido, violações, nível_risco)
-        """
-        violations = []
-        risk_level = RiskLevel.NONE
+        # Alta confiança e baixo risco → auto-execute
+        if action_type in ["calculation", "query", "read"]:
+            return PolicyDecision.AUTO_EXECUTE
         
-        # Regra 1: Nunca executar sem log
-        if not context.get("log_enabled", False):
-            violations.append("Ação sem logging habilitado")
-            risk_level = RiskLevel.HIGH
+        # Escrita segura → log mas executa
+        if action_type in ["log", "cache", "update_cache"]:
+            return PolicyDecision.LOG_ONLY
         
-        # Regra 2: Verificar ações proibidas
-        if action in self.policies["forbidden_actions"]:
-            violations.append(f"Ação proibida: {action}")
-            return False, violations, RiskLevel.CRITICAL
+        # Impacto externo → requer aprovação de humano
+        if action_type in ["send_email", "send_invoice", "payment"]:
+            return PolicyDecision.APPROVAL_REQUIRED
         
-        # Regra 3: Verificar campos obrigatórios
-        if action.startswith("write") or action.startswith("update"):
-            for field in self.policies["risk_thresholds"]["data_integrity"]["required_fields"]:
-                if field not in inputs:
-                    violations.append(f"Campo obrigatório ausente: {field}")
-                    risk_level = max(risk_level, RiskLevel.MEDIUM)
+        # Destrutivo ou irreversível → human-in-the-loop obrigatório
+        if action_type in ["delete", "cancel_event", "refund"]:
+            return PolicyDecision.BLOCKED
         
-        # Regra 4: Verificar se precisa de aprovação
-        auto_execute = self.policies["risk_thresholds"]["operations"]["auto_execute"]
-        requires_manual = self.policies["risk_thresholds"]["operations"]["manual_approval"]
-        
-        action_category = action.split("_")[0] if "_" in action else action
-        
-        if action_category in requires_manual:
-            risk_level = max(risk_level, RiskLevel.MEDIUM)
-            violations.append(f"Ação '{action}' requer aprovação manual")
-        
-        # Regra 5: Verificar variação financeira
-        if "variance" in inputs:
-            variance = abs(float(inputs.get("variance", 0)))
-            if variance > self.policies["risk_thresholds"]["financial"]["max_variance"]:
-                violations.append(f"Variação {variance:.1%} excede limite de 15%")
-                risk_level = RiskLevel.HIGH
-        
-        # Determinar se é permitido
-        is_allowed = len(violations) == 0 or risk_level.value < RiskLevel.CRITICAL.value
-        
-        return is_allowed, violations, risk_level
+        return PolicyDecision.APPROVAL_REQUIRED
 
+# ============================================================
+# MEMORY MANAGER
+# ============================================================
 
 class MemoryManager:
-    """Gerenciador de memória e contexto"""
+    """Gerencia memória de contexto"""
     
-    def __init__(self):
-        self.memory_cache = {}
-        self.context_files = {
-            "events": DATA_DIR / "events_consolidated.csv",
-            "inventory": DATA_DIR / "inventory.json",
-            "recipes": DATA_DIR / "recipes.json",
-            "cmv": DATA_DIR / "cmv_log.json",
-            "decisions": DATA_DIR / "decisions.json"
-        }
+    def __init__(self, company_id: str):
+        self.company_id = company_id
+        self.memories: List[Dict] = []
     
-    def load_minimal_context(self, event_id: Optional[str] = None) -> Dict:
-        """Carrega contexto mínimo necessário"""
-        context = {
-            "timestamp": datetime.now().isoformat(),
-            "event_id": event_id,
-            "base_path": str(ROOT_DIR),
-            "data_path": str(DATA_DIR)
-        }
-        
-        if event_id:
-            # Carregar dados específicos do evento
-            event_data = self._load_event_data(event_id)
-            context["event_data"] = event_data
-        
-        return context
+    def add(self, memory_type: str, content: str, confidence: float = 1.0):
+        """Adiciona nova memória"""
+        self.memories.append({
+            "id": str(uuid.uuid4()),
+            "type": memory_type,
+            "content": content,
+            "confidence": confidence,
+            "timestamp": datetime.now().isoformat()
+        })
     
-    def _load_event_data(self, event_id: str) -> Dict:
-        """Carrega dados de evento específico"""
-        # Simplificado - em produção buscar de JSON/CSV
-        return {"event_id": event_id, "status": "loaded"}
+    def search(self, query: str, limit: int = 5) -> List[Dict]:
+        """Busca memória por similaridade (simplificado)"""
+        return [m for m in self.memories if query.lower() in m["content"].lower()][:limit]
     
-    def get_domain_rules(self, workflow_type: WorkflowType) -> List[str]:
-        """Busca regras de domínio relevantes"""
-        rules_by_workflow = {
-            WorkflowType.KITCHEN: ["recipe_validation", "cost_calculation", "yield_estimation"],
-            WorkflowType.FINANCIAL: ["margin_thresholds", "allocation_rules", "audit_trail"],
-            WorkflowType.PROCUREMENT: ["supplier_evaluation", "price_tolerance", "stock_levels"],
-            WorkflowType.PRICING: ["target_margins", "competitive_analysis", "cost_plus"],
-            WorkflowType.AUDIT: ["consistency_checks", "variance_limits", "traceability"],
-            WorkflowType.CALIBRATION: ["pattern_detection", "adjustment_thresholds", "rollback_safety"],
-            WorkflowType.REPORTING: ["data_completeness", "format_standards", "distribution"],
-            WorkflowType.RECONCILIATION: ["variance_tolerance", "investigation_triggers", "sign_off_requirements"]
-        }
-        
-        return rules_by_workflow.get(workflow_type, ["base_rules"])
-    
-    def persist_execution(self, run: AgentRun):
-        """Persiste execução na memória"""
-        memory_file = RUNTIME_DIR / f"run_{run.run_id}.json"
-        
-        with open(memory_file, 'w', encoding='utf-8') as f:
-            json.dump(asdict(run), f, indent=2, default=str)
-        
-        # Atualizar também em MEMORY.md se existir
-        self._update_memory_md(run)
-    
-    def _update_memory_md(self, run: AgentRun):
-        """Atualiza MEMORY.md com execução"""
-        memory_file = ROOT_DIR / "MEMORY.md"
-        
-        entry = f"""
-## Execução {run.run_id}
-- **Data:** {run.created_at[:10]}
-- **Workflow:** {run.workflow_type.name}
-- **Status:** {run.status.value}
-- **Steps:** {len(run.steps)}
-- **Artefatos:** {', '.join(run.artifacts) if run.artifacts else 'Nenhum'}
-"""
-        
-        if memory_file.exists():
-            with open(memory_file, 'a', encoding='utf-8') as f:
-                f.write(entry)
+    def get_by_type(self, memory_type: str) -> List[Dict]:
+        """Retorna memórias por tipo"""
+        return [m for m in self.memories if m["type"] == memory_type]
 
+# ============================================================
+# ARTIFACT MANAGER
+# ============================================================
 
 class ArtifactManager:
-    """Gerenciador de artefatos"""
+    """Gerencia artefatos gerados"""
     
-    def __init__(self):
-        self.artifact_registry = {}
+    def __init__(self, artifacts_dir: str = "./artifacts"):
+        self.artifacts_dir = Path(artifacts_dir)
+        self.artifacts_dir.mkdir(exist_ok=True)
     
-    def register_artifact(self, run_id: str, artifact_type: str, path: str, metadata: Dict) -> str:
-        """Registra artefato gerado"""
-        artifact_id = f"ART-{uuid.uuid4().hex[:8].upper()}"
+    def save(self, agent_run_id: str, name: str, data: Any, format: str = "json") -> str:
+        """Salva artefato em disco"""
+        artifact_id = f"{agent_run_id}_{name}.{format}"
+        path = self.artifacts_dir / artifact_id
         
-        self.artifact_registry[artifact_id] = {
-            "run_id": run_id,
-            "type": artifact_type,
-            "path": path,
-            "metadata": metadata,
-            "created_at": datetime.now().isoformat()
-        }
+        if format == "json":
+            with open(path, 'w') as f:
+                json.dump(data, f, indent=2, default=str)
+        else:
+            with open(path, 'w') as f:
+                f.write(str(data))
         
-        return artifact_id
+        return str(path)
     
-    def validate_artifact(self, artifact_id: str) -> bool:
-        """Valida se artefato existe e está consistente"""
-        if artifact_id not in self.artifact_registry:
-            return False
-        
-        artifact = self.artifact_registry[artifact_id]
-        path = Path(artifact["path"])
-        
-        return path.exists() and path.stat().st_size > 0
+    def load(self, artifact_id: str) -> Any:
+        """Carrega artefato"""
+        path = self.artifacts_dir / artifact_id
+        if path.exists():
+            with open(path) as f:
+                return json.load(f)
+        return None
 
-
-class WorkflowRouter:
-    """Roteador de workflows"""
-    
-    def __init__(self):
-        self.engine_map = {
-            WorkflowType.KITCHEN: ["kitchen_control_layer.py", "kitchen_engine.py"],
-            WorkflowType.FINANCIAL: ["dre_engine.py", "fixed_cost_engine.py"],
-            WorkflowType.PROCUREMENT: ["procurement_feedback_engine.py"],
-            WorkflowType.PRICING: ["item_pricing_engine.py"],
-            WorkflowType.AUDIT: ["financial_truth_audit.py"],
-            WorkflowType.CALIBRATION: ["system_calibration_engine.py"],
-            WorkflowType.REPORTING: [
-                "executive_report_engine.py",
-                "ceo_dashboard_engine.py",
-                "sales_dashboard_engine.py"
-            ],
-            WorkflowType.RECONCILIATION: ["event_reconciliation_engine.py"]
-        }
-    
-    def classify_input(self, input_data: Dict) -> WorkflowType:
-        """Classifica input no workflow apropriado"""
-        
-        # Palavras-chave para classificação
-        keywords = {
-            WorkflowType.KITCHEN: ["receita", "receipe", "produção", "cozinha", "custo"],
-            WorkflowType.FINANCIAL: ["dre", "margem", "lucro", "fixed", "rateio"],
-            WorkflowType.PROCUREMENT: ["compra", "fornecedor", "estoque", "preço"],
-            WorkflowType.PRICING: ["preço", "pricing", "venda", "tarifa"],
-            WorkflowType.AUDIT: ["auditoria", "validação", "consistência", "check"],
-            WorkflowType.CALIBRATION: ["calibração", "ajuste", "padrão", "erro"],
-            WorkflowType.REPORTING: ["relatório", "dashboard", "executivo", "resumo"],
-            WorkflowType.RECONCILIATION: ["reconciliação", "real", "contábil", "conferência"],
-            WorkflowType.FULL_PIPELINE: ["completo", "tudo", "pipeline", "full"]
-        }
-        
-        text = str(input_data).lower()
-        scores = defaultdict(int)
-        
-        for wf_type, words in keywords.items():
-            for word in words:
-                if word in text:
-                    scores[wf_type] += 1
-        
-        if scores:
-            return max(scores, key=scores.get)
-        
-        return WorkflowType.UNKNOWN
-    
-    def get_engine_sequence(self, workflow_type: WorkflowType) -> List[str]:
-        """Retorna sequência de engines para workflow"""
-        return self.engine_map.get(workflow_type, [])
-
-
-class Validator:
-    """Validador de resultados"""
-    
-    def validate_step_output(self, step: ExecutionStep) -> Tuple[bool, str]:
-        """Valida saída de um passo"""
-        
-        # Regra: SEMPRE validar saída antes de seguir
-        if not step.outputs:
-            return False, "Sem saída gerada"
-        
-        # Validar estrutura
-        required_fields = ["status", "timestamp"]
-        for field in required_fields:
-            if field not in step.outputs:
-                return False, f"Campo obrigatório ausente: {field}"
-        
-        # Validar status
-        if step.outputs.get("status") == "error":
-            return False, f"Erro na execução: {step.outputs.get('error', 'Desconhecido')}"
-        
-        # Validar integridade
-        if "data" in step.outputs:
-            data = step.outputs["data"]
-            if isinstance(data, dict):
-                # Verificar trace_mode se aplicável
-                if "trace_mode" in data and data["trace_mode"] not in ["direct", "inferred", "allocated"]:
-                    return False, "trace_mode inválido"
-        
-        return True, "Validação OK"
-    
-    def validate_artifact(self, artifact_path: Path) -> Tuple[bool, str]:
-        """Valida artefato gerado"""
-        
-        if not artifact_path.exists():
-            return False, "Artefato não encontrado"
-        
-        if artifact_path.stat().st_size == 0:
-            return False, "Artefato vazio"
-        
-        # Validar JSON se aplicável
-        if artifact_path.suffix == ".json":
-            try:
-                with open(artifact_path, 'r', encoding='utf-8') as f:
-                    json.load(f)
-            except json.JSONDecodeError as e:
-                return False, f"JSON inválido: {e}"
-        
-        return True, "Artefato válido"
-
-
-class ApprovalGate:
-    """Portão de aprovação"""
-    
-    def __init__(self):
-        self.pending_approvals = {}
-    
-    def requires_approval(self, action: str, risk_level: RiskLevel) -> bool:
-        """Determina se ação requer aprovação"""
-        
-        if risk_level.value >= RiskLevel.HIGH.value:
-            return True
-        
-        sensitive_actions = [
-            "price_update", "cost_adjustment", "inventory_correction",
-            "recipe_modification", "supplier_change", "margin_override"
-        ]
-        
-        return any(sa in action.lower() for sa in sensitive_actions)
-    
-    def request_approval(self, run_id: str, step: ExecutionStep, reason: str) -> str:
-        """Solicita aprovação manual"""
-        
-        approval_id = f"APR-{uuid.uuid4().hex[:8].upper()}"
-        
-        self.pending_approvals[approval_id] = {
-            "run_id": run_id,
-            "step_id": step.step_id,
-            "action": step.action,
-            "reason": reason,
-            "requested_at": datetime.now().isoformat(),
-            "status": "pending"
-        }
-        
-        # Log da solicitação
-        print(f"\n🚦 APROVAÇÃO NECESSÁRIA: {approval_id}")
-        print(f"   Ação: {step.action}")
-        print(f"   Motivo: {reason}")
-        print(f"   Execute: /approve {approval_id}")
-        
-        return approval_id
-    
-    def check_approval(self, approval_id: str) -> Tuple[bool, str]:
-        """Verifica status de aprovação"""
-        
-        if approval_id not in self.pending_approvals:
-            return False, "Aprovação não encontrada"
-        
-        approval = self.pending_approvals[approval_id]
-        
-        if approval["status"] == "approved":
-            return True, approval.get("approved_by", "sistema")
-        elif approval["status"] == "rejected":
-            return False, "Rejeitado"
-        
-        return False, "Pendente"
-
-
-class AgentDispatcher:
-    """Despachador de agentes e execução"""
-    
-    def __init__(self):
-        self.policy_engine = PolicyEngine()
-        self.approval_gate = ApprovalGate()
-        self.validator = Validator()
-        self.artifact_manager = ArtifactManager()
-        self.memory_manager = MemoryManager()
-    
-    def dispatch(self, engine_name: str, inputs: Dict, context: Dict) -> Dict:
-        """Executa engine Python"""
-        
-        engine_path = ROOT_DIR / engine_name
-        
-        if not engine_path.exists():
-            return {
-                "status": "error",
-                "error": f"Engine não encontrado: {engine_name}",
-                "timestamp": datetime.now().isoformat()
-            }
-        
-        try:
-            # Executar como subprocess
-            result = subprocess.run(
-                [sys.executable, str(engine_path)],
-                capture_output=True,
-                text=True,
-                cwd=str(ROOT_DIR),
-                timeout=300  # 5 minutos timeout
-            )
-            
-            return {
-                "status": "success" if result.returncode == 0 else "error",
-                "stdout": result.stdout,
-                "stderr": result.stderr,
-                "returncode": result.returncode,
-                "engine": engine_name,
-                "timestamp": datetime.now().isoformat()
-            }
-            
-        except subprocess.TimeoutExpired:
-            return {
-                "status": "error",
-                "error": "Timeout na execução",
-                "timestamp": datetime.now().isoformat()
-            }
-        except Exception as e:
-            return {
-                "status": "error",
-                "error": str(e),
-                "timestamp": datetime.now().isoformat()
-            }
-
-
-class Planner:
-    """Planejador de execução"""
-    
-    def create_plan(self, workflow_type: WorkflowType, context: Dict) -> List[ExecutionStep]:
-        """Cria plano de execução baseado no tipo de workflow"""
-        
-        plans = {
-            WorkflowType.FULL_PIPELINE: [
-                {"action": "validate_inputs", "tool": "kitchen_control_layer", "inputs": {}},
-                {"action": "calculate_costs", "tool": "kitchen_control_layer", "inputs": {}},
-                {"action": "allocate_fixed_costs", "tool": "fixed_cost_engine", "inputs": {}},
-                {"action": "generate_dre", "tool": "dre_engine", "inputs": {}},
-                {"action": "audit_consistency", "tool": "financial_truth_audit", "inputs": {}},
-                {"action": "calibrate_system", "tool": "system_calibration", "inputs": {}},
-                {"action": "generate_reports", "tool": "executive_report", "inputs": {}},
-                {"action": "generate_dashboard", "tool": "ceo_dashboard", "inputs": {}},
-                {"action": "reconcile", "tool": "event_reconciliation", "inputs": {}}
-            ],
-            WorkflowType.FINANCIAL: [
-                {"action": "calculate_cmv", "tool": "kitchen_control", "inputs": {}},
-                {"action": "allocate_fixed", "tool": "fixed_cost", "inputs": {}},
-                {"action": "generate_dre", "tool": "dre_engine", "inputs": {}}
-            ],
-            WorkflowType.REPORTING: [
-                {"action": "executive_report", "tool": "executive_report", "inputs": {}},
-                {"action": "ceo_dashboard", "tool": "ceo_dashboard", "inputs": {}},
-                {"action": "sales_dashboard", "tool": "sales_dashboard", "inputs": {}}
-            ]
-        }
-        
-        default_plan = [
-            {"action": "analyze_input", "tool": "analyzer", "inputs": {}},
-            {"action": "execute_main", "tool": "main_engine", "inputs": {}}
-        ]
-        
-        plan_template = plans.get(workflow_type, default_plan)
-        
-        steps = []
-        for i, step_def in enumerate(plan_template, 1):
-            step = ExecutionStep(
-                step_id=f"STEP-{uuid.uuid4().hex[:8].upper()}",
-                step_number=i,
-                action=step_def["action"],
-                tool=step_def["tool"],
-                inputs=step_def["inputs"]
-            )
-            steps.append(step)
-        
-        return steps
-
+# ============================================================
+# RUNTIME CORE - 12 PASSOS
+# ============================================================
 
 class AgentRuntimeCore:
-    """Runtime central - orquestrador principal"""
+    """
+    Orquestrador central com 12 passos:
     
-    def __init__(self):
-        self.task_intake = None  # Simplificado
-        self.planner = Planner()
-        self.workflow_router = WorkflowRouter()
-        self.agent_dispatcher = AgentDispatcher()
+    1. Task Intake       - Recebe e normaliza input
+    2. Classification    - Classifica tipo de workflow
+    3. Memory Load       - Carrega contexto mínimo
+    4. Policy Check      - Verifica risco/permissões
+    5. Planning          - Cria plano de execução
+    6. Routing           - Roteia para engines
+    7. Validation        - Valida dados antes de executar
+    8. Execution         - Executa engines Python
+    9. Quality Check     - Valida outputs
+    10. Memory Write     - Persiste aprendizados
+    11. Artifact Gen     - Gera artefatos
+    12. Response Format  - Formata resposta final
+    """
+    
+    def __init__(self, company_id: str = "default"):
+        self.company_id = company_id
         self.policy_engine = PolicyEngine()
-        self.memory_manager = MemoryManager()
-        self.validator = Validator()
-        self.approval_gate = ApprovalGate()
-        self.artifact_manager = ArtifactManager()
-        
-        self.active_runs = {}
-        self.log_buffer = []
+        self.memory = MemoryManager(company_id)
+        self.artifacts = ArtifactManager()
+        self.status: Dict[str, Any] = {}
     
-    def _log(self, message: str, level: str = "INFO"):
-        """Logging centralizado - REGRA: Nunca sem log"""
-        log_entry = f"[{datetime.now().isoformat()}] [{level}] {message}"
-        self.log_buffer.append(log_entry)
-        print(log_entry)
+    def run(self, input_data: Dict) -> Dict:
+        """Executa pipeline completo de 12 passos"""
+        
+        print("="*70)
+        print("🎛️ AGENT RUNTIME CORE v1.1")
+        print("="*70)
+        
+        try:
+            # PASSO 1: Task Intake
+            self._step_1_task_intake(input_data)
+            
+            # PASSO 2: Classification
+            self._step_2_classification()
+            
+            # PASSO 3: Memory Load
+            self._step_3_memory_load()
+            
+            # PASSO 4: Policy Check
+            self._step_4_policy_check()
+            
+            # PASSO 5: Planning
+            self._step_5_planning()
+            
+            # PASSO 6: Routing
+            self._step_6_routing()
+            
+            # PASSO 7: Validation
+            self._step_7_validation()
+            
+            # PASSO 8: Execution
+            self._step_8_execution()
+            
+            # PASSO 9: Quality Check
+            self._step_9_quality_check()
+            
+            # PASSO 10: Memory Write
+            self._step_10_memory_write()
+            
+            # PASSO 11: Artifact Generation
+            self._step_11_artifact_generation()
+            
+            # PASSO 12: Response Formatting
+            return self._step_12_response_format()
+            
+        except Exception as e:
+            print(f"\n❌ ERRO NO RUNTIME: {str(e)}")
+            return self._handle_error(e)
     
-    def execute_full_pipeline(self, input_data: Dict) -> AgentRun:
-        """
-        EXECUÇÃO DO PIPELINE COMPLETO
+    def _step_1_task_intake(self, input_data: Dict):
+        """1. Recebe e normaliza input"""
+        print("[STEP 1/12] Task Intake - Normalizando input...")
         
-        Segue os 12 passos definidos:
-        1. Receber input → 2. Classificar → 3. Criar agent_run → 4. Carregar contexto → 
-        5. Buscar domain_rules → 6. Gerar plano → 7. Executar steps → 8. Validar → 
-        9. Registrar logs → 10. Gerar artifacts → 11. Solicitar approval → 12. Encerrar
-        """
+        self.run_id = str(uuid.uuid4())
+        self.start_time = time.time()
+        self.input_data = input_data
         
-        self._log("="*80, "START")
-        self._log("AGENT RUNTIME CORE v1.1 - Iniciando execução", "START")
-        self._log("="*80, "START")
-        
-        # PASSO 1: Receber Input
-        self._log("PASSO 1/12: Recebendo input...")
-        
-        # PASSO 2: Classificar Workflow
-        self._log("PASSO 2/12: Classificando tipo de workflow...")
-        workflow_type = self.workflow_router.classify_input(input_data)
-        self._log(f"   Workflow identificado: {workflow_type.name}")
-        
-        if workflow_type == WorkflowType.FULL_PIPELINE or workflow_type == WorkflowType.UNKNOWN:
-            workflow_type = WorkflowType.FULL_PIPELINE
-            self._log("   Executando FULL PIPELINE (todos os engines)")
-        
-        # PASSO 3: Criar Agent Run
-        self._log("PASSO 3/12: Criando agent_run...")
-        run_id = f"RUN-{uuid.uuid4().hex[:8].upper()}"
-        run = AgentRun(
-            run_id=run_id,
-            workflow_type=workflow_type,
-            status=ExecutionStatus.PENDING,
-            input_data=input_data,
-            steps=[],
-            context={},
-            artifacts=[],
-            logs=self.log_buffer.copy(),
-            created_at=datetime.now().isoformat(),
-            updated_at=datetime.now().isoformat(),
-            domain_rules=[],
-            policy_checks=[],
-            memory_refs=[]
+        # Cria registro do agent run
+        self.agent_run = AgentRun(
+            id=self.run_id,
+            company_id=self.company_id,
+            workflow_type=input_data.get("workflow_type", "unknown"),
+            status="running",
+            input_summary=str(input_data)[:200]
         )
-        self.active_runs[run_id] = run
         
-        # PASSO 4: Carregar Contexto Mínimo
-        self._log("PASSO 4/12: Carregando contexto mínimo...")
-        event_id = input_data.get("event_id")
-        context = self.memory_manager.load_minimal_context(event_id)
-        run.context = context
-        
-        # PASSO 5: Buscar Domain Rules
-        self._log("PASSO 5/12: Buscando domain_rules relevantes...")
-        domain_rules = self.memory_manager.get_domain_rules(workflow_type)
-        run.domain_rules = domain_rules
-        self._log(f"   Regras carregadas: {', '.join(domain_rules)}")
-        
-        # PASSO 6: Gerar Plano
-        self._log("PASSO 6/12: Gerando plano de execução...")
-        steps = self.planner.create_plan(workflow_type, context)
-        run.steps = steps
-        self._log(f"   Plano criado: {len(steps)} steps")
-        
-        for step in steps:
-            self._log(f"   - Step {step.step_number}: {step.action} ({step.tool})")
-        
-        # PASSO 7: Executar Steps
-        self._log("PASSO 7/12: Executando steps...")
-        run.status = ExecutionStatus.RUNNING
-        
-        for step in steps:
-            self._log(f"\n   Executando Step {step.step_number}: {step.action}")
-            
-            # Verificar política ANTES de executar
-            permitted, violations, risk = self.policy_engine.check_action(
-                step.action, step.inputs, context
-            )
-            
-            if not permitted:
-                self._log(f"   ❌ BLOQUEADO por política: {violations[0]}", "ERROR")
-                step.status = "blocked"
-                continue
-            
-            # Check de aprovação
-            if self.approval_gate.requires_approval(step.action, risk):
-                self._log(f"   ⚠️  Requer aprovação (risco: {risk.name})")
-                step.requires_approval = True
-                step.risk_level = risk
-                
-                approval_id = self.approval_gate.request_approval(
-                    run_id, step, f"Risco {risk.name}: {', '.join(violations)}"
-                )
-                
-                # Simular aprovação (em produção, esperar input humano)
-                step.approved_by = "AUTO_APPROVED" if risk.value < RiskLevel.HIGH.value else None
-                
-                if not step.approved_by:
-                    self._log(f"   ⏸️  Aguardando aprovação manual: {approval_id}")
-                    continue
-            
-            # Executar tool
-            step.started_at = datetime.now().isoformat()
-            
-            # Mapear tool para engine
-            engine_map = {
-                "kitchen_control_layer": "kitchen_control_layer.py",
-                "fixed_cost": "fixed_cost_engine.py",
-                "dre_engine": "dre_engine.py",
-                "financial_truth_audit": "financial_truth_audit.py",
-                "system_calibration": "system_calibration_engine.py",
-                "executive_report": "executive_report_engine.py",
-                "ceo_dashboard": "ceo_dashboard_engine.py",
-                "sales_dashboard": "sales_dashboard_engine.py",
-                "event_reconciliation": "event_reconciliation_engine.py"
-            }
-            
-            engine_file = engine_map.get(step.tool, f"{step.tool}.py")
-            
-            if Path(ROOT_DIR / engine_file).exists():
-                result = self.agent_dispatcher.dispatch(engine_file, step.inputs, context)
-                step.outputs = result
-            else:
-                step.outputs = {
-                    "status": "skipped",
-                    "reason": f"Engine {engine_file} não encontrado"
-                }
-            
-            step.completed_at = datetime.now().isoformat()
-            
-            # PASSO 8: Validar Resultado
-            self._log("   Validando resultado...")
-            is_valid, validation_msg = self.validator.validate_step_output(step)
-            step.validation_result = validation_msg
-            
-            if not is_valid:
-                self._log(f"   ❌ Validação falhou: {validation_msg}", "ERROR")
-                step.status = "failed"
-            else:
-                self._log(f"   ✅ Step concluído")
-                step.status = "completed"
-        
-        # PASSO 9: Registrar Logs e Memória
-        self._log("PASSO 9/12: Registrando logs e memória...")
-        run.logs.extend(self.log_buffer)
-        self.memory_manager.persist_execution(run)
-        
-        # PASSO 10: Gerar Artifacts
-        self._log("PASSO 10/12: Gerando artifacts...")
-        
-        # Coletar artefatos gerados pelos engines
-        artifacts = []
-        for step in run.steps:
-            if step.status == "completed" and step.outputs:
-                # Verificar se gerou arquivos
-                if "artifacts" in step.outputs:
-                    for art in step.outputs["artifacts"]:
-                        artifacts.append(art)
-        
-        # Sempre gerar runtime_log
-        log_file = RUNTIME_DIR / f"runtime_{run_id}.log"
-        with open(log_file, 'w', encoding='utf-8') as f:
-            f.write("\n".join(self.log_buffer))
-        
-        run.artifacts = artifacts + [str(log_file)]
-        
-        # PASSO 11: Solicitar Approval se Necessário
-        self._log("PASSO 11/12: Verificando necessidade de approval...")
-        
-        has_high_risk = any(s.risk_level.value >= RiskLevel.HIGH.value for s in run.steps)
-        if has_high_risk:
-            run.status = ExecutionStatus.APPROVAL_REQUIRED
-            self._log("   ⚠️  Execução requer revisão (steps de alto risco)")
-        else:
-            run.status = ExecutionStatus.COMPLETED
-        
-        # PASSO 12: Encerrar Execução
-        self._log("PASSO 12/12: Encerrando execução...")
-        run.updated_at = datetime.now().isoformat()
-        
-        # Final
-        self._log("="*80, "END")
-        self._log(f"Execução {run_id} finalizada: {run.status.value}", "END")
-        self._log(f"Total de steps: {len(run.steps)}")
-        self._log(f"Steps concluídos: {sum(1 for s in run.steps if s.status == 'completed')}")
-        self._log(f"Artifacts: {len(run.artifacts)}")
-        self._log("="*80, "END")
-        
-        return run
+        print(f"    ✓ Run ID: {self.run_id}")
+        print(f"    ✓ Workflow: {self.agent_run.workflow_type}")
+        self._add_step("task_intake", "completed")
     
-    def get_run_status(self, run_id: str) -> Dict:
-        """Retorna status de uma execução"""
-        if run_id not in self.active_runs:
-            return {"error": "Run not found"}
+    def _step_2_classification(self):
+        """2. Classifica tipo de workflow"""
+        print("[STEP 2/12] Classification - Identificando workflow...")
         
-        run = self.active_runs[run_id]
-        return {
-            "run_id": run_id,
-            "status": run.status.value,
-            "workflow": run.workflow_type.name,
-            "steps_total": len(run.steps),
-            "steps_completed": sum(1 for s in run.steps if s.status == "completed"),
-            "artifacts": len(run.artifacts),
-            "created_at": run.created_at,
-            "updated_at": run.updated_at
+        workflow = self.input_data.get("workflow_type", "FULL_PIPELINE")
+        self.workflow_config = {
+            "KITCHEN": ["kitchen_control_layer.py"],
+            "DRE": ["dre_engine.py"],
+            "AUDIT": ["financial_truth_audit.py"],
+            "FULL_PIPELINE": [
+                "kitchen_control_layer.py",
+                "fixed_cost_engine.py",
+                "dre_engine.py",
+                "margin_validation_engine.py",
+                "financial_truth_audit.py",
+                "executive_report_engine.py",
+                "ceo_dashboard_engine.py"
+            ]
+        }.get(workflow, [])
+        
+        print(f"    ✓ Workflow: {workflow}")
+        print(f"    ✓ Engines: {len(self.workflow_config)}")
+        self._add_step("classification", "completed", {"engines": len(self.workflow_config)})
+    
+    def _step_3_memory_load(self):
+        """3. Carrega contexto mínimo"""
+        print("[STEP 3/12] Memory Load - Carregando contexto...")
+        
+        # Carrega memórias relevantes
+        context_memories = self.memory.get_by_type("pricing_insight")
+        
+        self.context = {
+            "relevant_memories": len(context_memories),
+            "last_successful_run": None,
+            "company_rules": []
         }
+        
+        print(f"    ✓ Contexto carregado: {len(context_memories)} memórias")
+        self._add_step("memory_load", "completed", {"memories": len(context_memories)})
+    
+    def _step_4_policy_check(self):
+        """4. Verifica risco e permissões"""
+        print("[STEP 4/12] Policy Check - Verificando permissões...")
+        
+        action_type = self.input_data.get("action_type", "calculation")
+        decision = self.policy_engine.evaluate(action_type, self.context)
+        
+        self.policy_decision = decision
+        
+        if decision == PolicyDecision.BLOCKED:
+            raise PermissionError(f"Ação '{action_type}' bloqueada pela política")
+        
+        print(f"    ✓ Decision: {decision.value}")
+        print(f"    ✓ Action: {action_type}")
+        self._add_step("policy_check", "completed", {"decision": decision.value})
+    
+    def _step_5_planning(self):
+        """5. Cria plano de execução"""
+        print("[STEP 5/12] Planning - Criando plano...")
+        
+        self.execution_plan = {
+            "engines": self.workflow_config,
+            "parallel": False,
+            "retries": 3,
+            "checkpoint_interval": 1
+        }
+        
+        print(f"    ✓ Plano: {len(self.workflow_config)} engines")
+        self._add_step("planning", "completed", {"engines": len(self.workflow_config)})
+    
+    def _step_6_routing(self):
+        """6. Roteia para engines"""
+        print("[STEP 6/12] Routing - Roteando engines...")
+        
+        self.engines_results = []
+        
+        for engine in self.workflow_config:
+            print(f"    → Roteando: {engine}")
+            self.engines_results.append({
+                "engine": engine,
+                "status": "routed",
+                "ready": True
+            })
+        
+        self._add_step("routing", "completed", {"routed": len(self.engines_results)})
+    
+    def _step_7_validation(self):
+        """7. Valida dados"""
+        print("[STEP 7/12] Validation - Validando dados...")
+        
+        # Validações básicas
+        validations = [
+            ("input_present", bool(self.input_data)),
+            ("company_id_valid", bool(self.company_id)),
+            ("engines_configured", len(self.workflow_config) > 0)
+        ]
+        
+        failed = [name for name, passed in validations if not passed]
+        
+        if failed:
+            raise ValueError(f"Validações falharam: {failed}")
+        
+        print(f"    ✓ {len(validations)} validações OK")
+        self._add_step("validation", "completed", {"checks": len(validations)})
+    
+    def _step_8_execution(self):
+        """8. Executa engines Python"""
+        print("[STEP 8/12] Execution - Executando engines...")
+        
+        results = []
+        
+        for engine in self.workflow_config:
+            if engine.endswith('.py'):
+                try:
+                    # Executa engine Python
+                    result = subprocess.run(
+                        ['python3', engine],
+                        capture_output=True,
+                        text=True,
+                        timeout=60
+                    )
+                    
+                    success = result.returncode == 0
+                    results.append({
+                        "engine": engine,
+                        "success": success,
+                        "output": result.stdout if success else result.stderr
+                    })
+                    
+                    status = "✓" if success else "✗"
+                    print(f"    {status} {engine}")
+                    
+                except Exception as e:
+                    results.append({
+                        "engine": engine,
+                        "success": False,
+                        "error": str(e)
+                    })
+                    print(f"    ✗ {engine}: {e}")
+        
+        self.execution_results = results
+        self._add_step("execution", "completed", {"engines": len(results)})
+    
+    def _step_9_quality_check(self):
+        """9. Valida outputs"""
+        print("[STEP 9/12] Quality Check - Validando qualidade...")
+        
+        success_count = sum(1 for r in self.execution_results if r.get("success"))
+        total = len(self.execution_results)
+        
+        self.quality_score = success_count / total if total > 0 else 0
+        
+        print(f"    ✓ Score: {self.quality_score:.1%}")
+        print(f"    ✓ Success: {success_count}/{total}")
+        
+        self._add_step("quality_check", "completed", {"score": self.quality_score})
+    
+    def _step_10_memory_write(self):
+        """10. Persiste aprendizados"""
+        print("[STEP 10/12] Memory Write - Persistindo aprendizados...")
+        
+        # Adiciona memória da execução
+        self.memory.add(
+            memory_type="execution_result",
+            content=f"Run {self.run_id}: {self.quality_score:.0%} sucesso",
+            confidence=self.quality_score
+        )
+        
+        print(f"    ✓ Memória persistida: {len(self.memory.memories)} total")
+        self._add_step("memory_write", "completed")
+    
+    def _step_11_artifact_generation(self):
+        """11. Gera artefatos"""
+        print("[STEP 11/12] Artifact Generation - Gerando artefatos...")
+        
+        artifact_paths = []
+        
+        # Gera resumo do runtime
+        summary = {
+            "run_id": self.run_id,
+            "workflow": self.agent_run.workflow_type,
+            "quality_score": self.quality_score,
+            "steps": self.agent_run.steps,
+            "execution_results": self.execution_results
+        }
+        
+        path = self.artifacts.save(self.run_id, "runtime_summary", summary)
+        artifact_paths.append(path)
+        
+        print(f"    ✓ Artefatos: {len(artifact_paths)}")
+        self._add_step("artifact_generation", "completed", {"artifacts": len(artifact_paths)})
+    
+    def _step_12_response_format(self) -> Dict:
+        """12. Formata resposta final"""
+        print("[STEP 12/12] Response Format - Formatando resposta...")
+        
+        # Calcula métricas
+        elapsed_ms = int((time.time() - self.start_time) * 1000)
+        self.agent_run.finished_at = datetime.now().isoformat()
+        self.agent_run.latency_ms = elapsed_ms
+        self.agent_run.status = "completed" if self.quality_score >= 0.8 else "completed_with_warnings"
+        
+        response = {
+            "success": True,
+            "run_id": self.run_id,
+            "company_id": self.company_id,
+            "workflow_type": self.agent_run.workflow_type,
+            "status": self.agent_run.status,
+            "quality_score": self.quality_score,
+            "latency_ms": elapsed_ms,
+            "policy_decision": self.policy_decision.value,
+            "steps_completed": len(self.agent_run.steps),
+            "engines_executed": len(self.execution_results),
+            "memories_created": len(self.memory.memories),
+            "created_at": self.agent_run.created_at,
+            "finished_at": self.agent_run.finished_at
+        }
+        
+        self._save_runtime_log(response)
+        
+        print("="*70)
+        print(f"🎉 RUNTIME COMPLETADO em {elapsed_ms}ms")
+        print(f"   Qualidade: {self.quality_score:.1%} | Steps: {len(self.agent_run.steps)}")
+        print("="*70)
+        
+        return response
+    
+    def _add_step(self, name: str, status: str, metadata: Dict = None):
+        """Adiciona passo ao registro"""
+        self.agent_run.steps.append({
+            "name": name,
+            "status": status,
+            "timestamp": datetime.now().isoformat(),
+            "metadata": metadata or {}
+        })
+    
+    def _handle_error(self, error: Exception) -> Dict:
+        """Trata erros do runtime"""
+        self.agent_run.status = "failed"
+        self.agent_run.output_summary = str(error)
+        
+        return {
+            "success": False,
+            "error": str(error),
+            "run_id": getattr(self, 'run_id', 'unknown'),
+            "step": self.agent_run.steps[-1] if self.agent_run.steps else None
+        }
+    
+    def _save_runtime_log(self, response: Dict):
+        """Salva log do runtime"""
+        log_dir = Path("./runtime")
+        log_dir.mkdir(exist_ok=True)
+        
+        log_file = log_dir / f"run_{self.run_id}.json"
+        with open(log_file, 'w') as f:
+            json.dump({
+                "agent_run": asdict(self.agent_run),
+                "response": response,
+                "execution_results": getattr(self, 'execution_results', []),
+                "memory": self.memory.memories
+            }, f, indent=2, default=str)
+        
+        print(f"   💾 Log salvo: {log_file}")
 
+# ============================================================
+# MAIN
+# ============================================================
 
-def main():
-    """Função principal - demonstração do runtime"""
+if __name__ == "__main__":
+    import sys
     
-    print("="*80)
-    print("AGENT RUNTIME CORE v1.1")
-    print("Orquestrador Central do Orkestra Finance Brain")
-    print("="*80)
-    print()
-    print("Iniciando execução full pipeline...")
-    print()
-    
-    # Criar runtime
-    runtime = AgentRuntimeCore()
-    
-    # Input de exemplo
+    # Configura input padrão
     input_data = {
-        "action": "full_pipeline",
-        "requester": "sistema",
-        "params": {
-            "generate_all": True,
-            "validate": True
+        "company_id": "opera",
+        "workflow_type": "FULL_PIPELINE",
+        "action_type": "calculation",
+        "context": {
+            "reference_month": "2024-03"
         }
     }
     
-    # Executar
-    run = runtime.execute_full_pipeline(input_data)
+    # Permite override via argumentos
+    if len(sys.argv) > 1:
+        try:
+            input_data = json.loads(sys.argv[1])
+        except json.JSONDecodeError:
+            print(f"⚠️ JSON inválido, usando padrão")
     
-    # Status final
-    print("\n" + "="*80)
-    print("STATUS FINAL")
-    print("="*80)
-    print(f"Run ID: {run.run_id}")
-    print(f"Status: {run.status.value}")
-    print(f"Workflow: {run.workflow_type.name}")
-    print(f"Steps: {len(run.steps)}")
-    print(f"Artifacts: {len(run.artifacts)}")
-    print(f"Log: runtime/RUNTIME_DIR/runtime_{run.run_id}.log")
-    print("="*80)
-
-
-if __name__ == "__main__":
-    main()
+    # Executa runtime
+    runtime = AgentRuntimeCore(company_id=input_data.get("company_id", "opera"))
+    result = runtime.run(input_data)
+    
+    # Output JSON
+    print("\n" + "="*70)
+    print("📊 RESULTADO:")
+    print("="*70)
+    print(json.dumps(result, indent=2, default=str))

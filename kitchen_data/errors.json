@@ -1,7 +1,7 @@
 {
   "_meta": {
-    "last_updated": "2026-03-31T13:58:46.371334",
-    "total_errors": 12
+    "last_updated": "2026-03-31T18:54:51.734722",
+    "total_errors": 40
   },
   "errors": [
     {
@@ -99,6 +99,230 @@
       "event_id": null,
       "description": "Nenhum dado de consumo encontrado - executar engines de produção primeiro",
       "source": "generate_procurement_suggestions"
+    },
+    {
+      "timestamp": "2026-03-31T18:54:51.432714",
+      "type": "item_not_found",
+      "severity": "high",
+      "event_id": null,
+      "description": "Item CAR-001: não existe no inventario",
+      "source": "calculate_weighted_average_cost"
+    },
+    {
+      "timestamp": "2026-03-31T18:54:51.434231",
+      "type": "item_not_found",
+      "severity": "high",
+      "event_id": null,
+      "description": "Item LEG-001: não existe no inventario",
+      "source": "calculate_weighted_average_cost"
+    },
+    {
+      "timestamp": "2026-03-31T18:54:51.434886",
+      "type": "item_not_found",
+      "severity": "high",
+      "event_id": null,
+      "description": "Item LAZ-001: não existe no inventario",
+      "source": "calculate_weighted_average_cost"
+    },
+    {
+      "timestamp": "2026-03-31T18:54:51.435592",
+      "type": "item_not_found",
+      "severity": "high",
+      "event_id": null,
+      "description": "Item QUE-001: não existe no inventario",
+      "source": "calculate_weighted_average_cost"
+    },
+    {
+      "timestamp": "2026-03-31T18:54:51.436691",
+      "type": "item_not_found",
+      "severity": "high",
+      "event_id": null,
+      "description": "Item FRG-001: não existe no inventario",
+      "source": "calculate_weighted_average_cost"
+    },
+    {
+      "timestamp": "2026-03-31T18:54:51.437618",
+      "type": "item_not_found",
+      "severity": "high",
+      "event_id": null,
+      "description": "Item VEG-001: não existe no inventario",
+      "source": "calculate_weighted_average_cost"
+    },
+    {
+      "timestamp": "2026-03-31T18:54:51.438342",
+      "type": "item_not_found",
+      "severity": "high",
+      "event_id": null,
+      "description": "Item MOL-001: não existe no inventario",
+      "source": "calculate_weighted_average_cost"
+    },
+    {
+      "timestamp": "2026-03-31T18:54:51.439320",
+      "type": "item_not_found",
+      "severity": "high",
+      "event_id": null,
+      "description": "Item PAO-001: não existe no inventario",
+      "source": "calculate_weighted_average_cost"
+    },
+    {
+      "timestamp": "2026-03-31T18:54:51.440019",
+      "type": "item_not_found",
+      "severity": "high",
+      "event_id": null,
+      "description": "Item QUE-002: não existe no inventario",
+      "source": "calculate_weighted_average_cost"
+    },
+    {
+      "timestamp": "2026-03-31T18:54:51.441795",
+      "type": "item_not_found",
+      "severity": "high",
+      "event_id": null,
+      "description": "Item GRA-001: não existe no inventario",
+      "source": "calculate_weighted_average_cost"
+    },
+    {
+      "timestamp": "2026-03-31T18:54:51.442743",
+      "type": "item_not_found",
+      "severity": "high",
+      "event_id": null,
+      "description": "Item VEG-002: não existe no inventario",
+      "source": "calculate_weighted_average_cost"
+    },
+    {
+      "timestamp": "2026-03-31T18:54:51.443588",
+      "type": "item_not_found",
+      "severity": "high",
+      "event_id": null,
+      "description": "Item LAZ-002: não existe no inventario",
+      "source": "calculate_weighted_average_cost"
+    },
+    {
+      "timestamp": "2026-03-31T18:54:51.444848",
+      "type": "item_not_found",
+      "severity": "high",
+      "event_id": null,
+      "description": "Item CAR-002: não existe no inventario",
+      "source": "calculate_weighted_average_cost"
+    },
+    {
+      "timestamp": "2026-03-31T18:54:51.445547",
+      "type": "item_not_found",
+      "severity": "high",
+      "event_id": null,
+      "description": "Item PAO-002: não existe no inventario",
+      "source": "calculate_weighted_average_cost"
+    },
+    {
+      "timestamp": "2026-03-31T18:54:51.446281",
+      "type": "item_not_found",
+      "severity": "high",
+      "event_id": null,
+      "description": "Item VEG-003: não existe no inventario",
+      "source": "calculate_weighted_average_cost"
+    },
+    {
+      "timestamp": "2026-03-31T18:54:51.446968",
+      "type": "item_not_found",
+      "severity": "high",
+      "event_id": null,
+      "description": "Item LAZ-003: não existe no inventario",
+      "source": "calculate_weighted_average_cost"
+    },
+    {
+      "timestamp": "2026-03-31T18:54:51.447652",
+      "type": "item_not_found",
+      "severity": "high",
+      "event_id": null,
+      "description": "Item PEI-001: não existe no inventario",
+      "source": "calculate_weighted_average_cost"
+    },
+    {
+      "timestamp": "2026-03-31T18:54:51.448340",
+      "type": "item_not_found",
+      "severity": "high",
+      "event_id": null,
+      "description": "Item FRU-001: não existe no inventario",
+      "source": "calculate_weighted_average_cost"
+    },
+    {
+      "timestamp": "2026-03-31T18:54:51.449140",
+      "type": "item_not_found",
+      "severity": "high",
+      "event_id": null,
+      "description": "Item VEG-004: não existe no inventario",
+      "source": "calculate_weighted_average_cost"
+    },
+    {
+      "timestamp": "2026-03-31T18:54:51.449884",
+      "type": "item_not_found",
+      "severity": "high",
+      "event_id": null,
+      "description": "Item VEG-005: não existe no inventario",
+      "source": "calculate_weighted_average_cost"
+    },
+    {
+      "timestamp": "2026-03-31T18:54:51.450647",
+      "type": "item_not_found",
+      "severity": "high",
+      "event_id": null,
+      "description": "Item LAZ-004: não existe no inventario",
+      "source": "calculate_weighted_average_cost"
+    },
+    {
+      "timestamp": "2026-03-31T18:54:51.532015",
+      "type": "dre_not_found",
+      "severity": "low",
+      "event_id": null,
+      "description": "DRE não encontrado - gerando apenas alocações fixas",
+      "source": "update_dre_with_fixed_allocations"
+    },
+    {
+      "timestamp": "2026-03-31T18:54:51.636400",
+      "type": "input_validation",
+      "severity": "high",
+      "event_id": null,
+      "description": "cmv_log.json vazio ou não encontrado - CMV será marcado como incompleto",
+      "source": "dre_engine"
+    },
+    {
+      "timestamp": "2026-03-31T18:54:51.638215",
+      "type": "cmv_missing",
+      "severity": "high",
+      "event_id": "EVT001",
+      "description": "CMV não encontrado para evento - gross_profit não calculado",
+      "source": "dre_engine"
+    },
+    {
+      "timestamp": "2026-03-31T18:54:51.639030",
+      "type": "cmv_missing",
+      "severity": "high",
+      "event_id": "EVT002",
+      "description": "CMV não encontrado para evento - gross_profit não calculado",
+      "source": "dre_engine"
+    },
+    {
+      "timestamp": "2026-03-31T18:54:51.639882",
+      "type": "cmv_missing",
+      "severity": "high",
+      "event_id": "EVT003",
+      "description": "CMV não encontrado para evento - gross_profit não calculado",
+      "source": "dre_engine"
+    },
+    {
+      "timestamp": "2026-03-31T18:54:51.641195",
+      "type": "cmv_missing",
+      "severity": "high",
+      "event_id": "EVT004",
+      "description": "CMV não encontrado para evento - gross_profit não calculado",
+      "source": "dre_engine"
+    },
+    {
+      "timestamp": "2026-03-31T18:54:51.734708",
+      "type": "NO_DRE_DATA",
+      "severity": "CRITICAL",
+      "event_id": null,
+      "description": "Nenhum dado financeiro disponível para validação",
+      "source": "validate_margins"
     }
   ]
 }

@@ -1,0 +1,38 @@
+{
+  "generated_at": "2026-03-31T18:54:51.451852",
+  "recipes": {
+    "mais_caras": [
+      {
+        "recipe_id": "REC001",
+        "name": "Escondidinho de Carne Seca",
+        "cost": 0.0
+      },
+      {
+        "recipe_id": "REC002",
+        "name": "Salada Caesar com Frango",
+        "cost": 0.0
+      },
+      {
+        "recipe_id": "REC003",
+        "name": "Arroz com Brócolis",
+        "cost": 0.0
+      },
+      {
+        "recipe_id": "REC004",
+        "name": "Mini Hamburguer Premium",
+        "cost": 0.0
+      },
+      {
+        "recipe_id": "REC005",
+        "name": "Ceviche de Peixe Branco",
+        "cost": 0.0
+      }
+    ]
+  },
+  "events": {
+    "cmv_totals": []
+  },
+  "waste": {
+    "maior_desperdicio": []
+  }
+}

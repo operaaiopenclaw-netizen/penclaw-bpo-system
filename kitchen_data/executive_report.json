@@ -1,0 +1,103 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "generated_at": "2026-03-31T18:54:52.017361",
+    "format": "executive storytelling",
+    "language": "business",
+    "disclaimer": "Relatório gerado automaticamente. Decisões estratégicas requerem validação humana.",
+    "total_insights": 3,
+    "stories_generated": 1
+  },
+  "executive_summary": {
+    "story_type": "executive_summary",
+    "status": "✅ OPERACIONALMENTE SAUDÁVEL",
+    "summary": "Os indicadores mostram operação dentro dos parâmetros aceitáveis. Foco deve ser em otimização e crescimento. ",
+    "top_priorities": [
+      {
+        "headline": "ℹ️ Dados de financial insuficientes para storytelling completo",
+        "why_it_matters": "Sem dados históricos, o sistema não consegue identificar padrões. Recomendações ficam genéricas.",
+        "action": "Popular bases de dados com histórico de eventos antes da próxima análise."
+      },
+      {
+        "headline": "ℹ️ Dados de operational insuficientes para storytelling completo",
+        "why_it_matters": "Sem dados históricos, o sistema não consegue identificar padrões. Recomendações ficam genéricas.",
+        "action": "Popular bases de dados com histórico de eventos antes da próxima análise."
+      },
+      {
+        "headline": "ℹ️ Dados de strategic insuficientes para storytelling completo",
+        "why_it_matters": "Sem dados históricos, o sistema não consegue identificar padrões. Recomendações ficam genéricas.",
+        "action": "Popular bases de dados com histórico de eventos antes da próxima análise."
+      }
+    ],
+    "total_insights": 3,
+    "by_category": {
+      "financial": 1,
+      "operational": 1,
+      "strategic": 1
+    },
+    "timestamp": "2026-03-31T18:54:52.017354"
+  },
+  "insights": [
+    {
+      "category": "financial",
+      "headline": "ℹ️ Dados de financial insuficientes para storytelling completo",
+      "what_happened": "Dados financeiros insuficientes para análise completa. Execute financial_truth_audit.py.",
+      "why_it_matters": "Sem dados históricos, o sistema não consegue identificar padrões. Recomendações ficam genéricas.",
+      "numbers": {},
+      "recommendation": "Popular bases de dados com histórico de eventos antes da próxima análise.",
+      "priority": "LOW",
+      "timestamp": "2026-03-31T18:54:52.017292"
+    },
+    {
+      "category": "operational",
+      "headline": "ℹ️ Dados de operational insuficientes para storytelling completo",
+      "what_happened": "Dados operacionais limitados. Execute production_execution e waste_log.",
+      "why_it_matters": "Sem dados históricos, o sistema não consegue identificar padrões. Recomendações ficam genéricas.",
+      "numbers": {},
+      "recommendation": "Popular bases de dados com histórico de eventos antes da próxima análise.",
+      "priority": "LOW",
+      "timestamp": "2026-03-31T18:54:52.017321"
+    },
+    {
+      "category": "strategic",
+      "headline": "ℹ️ Dados de strategic insuficientes para storytelling completo",
+      "what_happened": "Estratégia não definida. Execute menu_optimization_engine.py para matriz BCG.",
+      "why_it_matters": "Sem dados históricos, o sistema não consegue identificar padrões. Recomendações ficam genéricas.",
+      "numbers": {},
+      "recommendation": "Popular bases de dados com histórico de eventos antes da próxima análise.",
+      "priority": "LOW",
+      "timestamp": "2026-03-31T18:54:52.017331"
+    }
+  ],
+  "stories": [
+    {
+      "story_type": "executive_summary",
+      "status": "✅ OPERACIONALMENTE SAUDÁVEL",
+      "summary": "Os indicadores mostram operação dentro dos parâmetros aceitáveis. Foco deve ser em otimização e crescimento. ",
+      "top_priorities": [
+        {
+          "headline": "ℹ️ Dados de financial insuficientes para storytelling completo",
+          "why_it_matters": "Sem dados históricos, o sistema não consegue identificar padrões. Recomendações ficam genéricas.",
+          "action": "Popular bases de dados com histórico de eventos antes da próxima análise."
+        },
+        {
+          "headline": "ℹ️ Dados de operational insuficientes para storytelling completo",
+          "why_it_matters": "Sem dados históricos, o sistema não consegue identificar padrões. Recomendações ficam genéricas.",
+          "action": "Popular bases de dados com histórico de eventos antes da próxima análise."
+        },
+        {
+          "headline": "ℹ️ Dados de strategic insuficientes para storytelling completo",
+          "why_it_matters": "Sem dados históricos, o sistema não consegue identificar padrões. Recomendações ficam genéricas.",
+          "action": "Popular bases de dados com histórico de eventos antes da próxima análise."
+        }
+      ],
+      "total_insights": 3,
+      "by_category": {
+        "financial": 1,
+        "operational": 1,
+        "strategic": 1
+      },
+      "timestamp": "2026-03-31T18:54:52.017354"
+    }
+  ]
+}

@@ -1,0 +1,175 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "generated_at": "2026-03-31T18:54:52.140918",
+    "period": "current",
+    "disclaimer": "Dados consolidados para decisão estratégica"
+  },
+  "kpi_summary": {
+    "last_updated": "2026-03-31T18:54:52.141642",
+    "currency": "BRL",
+    "indicators": [
+      {
+        "kpi_id": "REV_TOTAL",
+        "name": "Receita Total",
+        "value": 70000.0,
+        "formatted": "R$ 70,000.00",
+        "unit": "reais",
+        "trend": "stable",
+        "target": null,
+        "status": "good",
+        "context": "Receita consolidada de 0 eventos"
+      },
+      {
+        "kpi_id": "LUCRO_TOTAL",
+        "name": "Lucro Total",
+        "value": 0,
+        "formatted": "R$ 0.00",
+        "unit": "reais",
+        "trend": "down",
+        "target": null,
+        "status": "critical",
+        "context": "Lucro líquido após custos fixos"
+      },
+      {
+        "kpi_id": "MARGEM_MEDIA",
+        "name": "Margem Média",
+        "value": 0,
+        "formatted": "0.0%",
+        "unit": "percentual",
+        "trend": "stable",
+        "target": 30.0,
+        "status": "critical",
+        "context": "Margem bruta média dos eventos"
+      },
+      {
+        "kpi_id": "PCT_LUCRATIVOS",
+        "name": "% Eventos Lucrativos",
+        "value": 0,
+        "formatted": "0.0%",
+        "unit": "percentual",
+        "trend": "stable",
+        "target": 80.0,
+        "status": "critical",
+        "context": "0 de 0 eventos com lucro"
+      },
+      {
+        "kpi_id": "PCT_PREJUIZO",
+        "name": "% Eventos com Prejuízo",
+        "value": 0,
+        "formatted": "0.0%",
+        "unit": "percentual",
+        "trend": "stable",
+        "target": 0.0,
+        "status": "good",
+        "context": "0 eventos operando com prejuízo"
+      },
+      {
+        "kpi_id": "CMV_MEDIO",
+        "name": "CMV Médio por Evento",
+        "value": 0,
+        "formatted": "R$ 0.00",
+        "unit": "reais",
+        "trend": "stable",
+        "target": null,
+        "status": "warning",
+        "context": "Custo médio de mercadoria por evento"
+      },
+      {
+        "kpi_id": "DESPERDICIO_MEDIO",
+        "name": "Desperdício Médio",
+        "value": 0,
+        "formatted": "0.0%",
+        "unit": "percentual",
+        "trend": "down",
+        "target": 5.0,
+        "status": "good",
+        "context": "0 unidades desperdiçadas no período"
+      },
+      {
+        "kpi_id": "ITENS_CRITICOS",
+        "name": "Itens em Estado Crítico",
+        "value": 0,
+        "formatted": "0",
+        "unit": "count",
+        "trend": "down",
+        "target": 0,
+        "status": "good",
+        "context": "Itens com margem <10% ou desperdício >20%"
+      },
+      {
+        "kpi_id": "VOLUME_TOTAL",
+        "name": "Volume Total Vendido",
+        "value": 0,
+        "formatted": "0",
+        "unit": "unidades",
+        "trend": "up",
+        "target": null,
+        "status": "warning",
+        "context": "Total de unidades vendidas no período"
+      }
+    ]
+  },
+  "financial_performance": {
+    "receita_total": 70000.0,
+    "lucro_total": 0,
+    "cmv_total": 0,
+    "lucratividade_liquida": 0.0,
+    "eficiencia_operacional": 100.0,
+    "eventos_analisados": 0,
+    "eventos_lucrativos": 0,
+    "eventos_prejuizo": 0,
+    "pct_lucrativos": 0,
+    "pct_prejuizo": 0
+  },
+  "operational_health": {
+    "volume_total": 0,
+    "desperdicio_medio_pct": 0,
+    "total_desperdicio_unidades": 0,
+    "itens_criticos": 0,
+    "itens_saudaveis": 0,
+    "taxa_eficiencia": 100
+  },
+  "strategic_insights": {
+    "summary": [
+      {
+        "category": "financial_health",
+        "status": "CRITICO",
+        "description": "Alerta: Apenas 0% eventos lucrativos",
+        "recommendation": "Revisar precificação e custos"
+      },
+      {
+        "category": "operational_efficiency",
+        "status": "OTIMO",
+        "description": "Operação otimizada: desperdício de 0.0%",
+        "recommendation": "Manter boas práticas"
+      },
+      {
+        "category": "portfolio_health",
+        "status": "SAUDAVEL",
+        "description": "Todos os itens em estado operacional aceitável",
+        "recommendation": "Manter cardápio"
+      }
+    ],
+    "status_geral": "ATENCAO - Revisao prioritaria recomendada",
+    "alerts": [
+      {
+        "level": "critical",
+        "area": "financial",
+        "message": "Situação crítica: 100% eventos em prejuízo"
+      }
+    ]
+  },
+  "rankings": {
+    "top_lucro_eventos": [],
+    "top_prejuizo_eventos": []
+  },
+  "alerts": [
+    {
+      "level": "critical",
+      "area": "financial",
+      "message": "Situação crítica: 100% eventos em prejuízo"
+    }
+  ],
+  "timestamp": "2026-03-31T18:54:52.140949"
+}
