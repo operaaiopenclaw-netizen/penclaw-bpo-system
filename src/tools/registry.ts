@@ -3,6 +3,7 @@ import { EventAnalyzerTool } from "./event-analyzer";
 import { CalculatorTool } from "./calculator";
 import { RecipeCostTool } from "./recipe-cost";
 import { FileReadTool } from "./file-read";
+import { FileWriteTool } from "./file-write";
 import { logger } from "../utils/logger";
 
 /**
