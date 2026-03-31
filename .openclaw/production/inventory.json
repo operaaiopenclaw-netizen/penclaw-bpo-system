@@ -1,0 +1,160 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "last_update": "2026-03-27T19:08:00",
+    "warehouse": "Central_STATUS",
+    "categories": ["bebidas", "insumos_bar", "proteinas", "frios", "hortifruti", "descartaveis", "gelo"]
+  },
+  "stock": [
+    {
+      "product_id": "INV-BEB-001",
+      "sku_reference": "BEB-001",
+      "name": "Cerveja Artesanal Lager",
+      "category": "bebidas",
+      "current_stock": 120,
+      "min_stock": 50,
+      "max_stock": 200,
+      "unit": "caixa",
+      "location": "CD-01-A",
+      "last_movement": "2026-03-27",
+      "avg_consumption_per_event": 15
+    },
+    {
+      "product_id": "INV-GEL-001",
+      "sku_reference": "GEL-001",
+      "name": "Gelo Cubo 5kg",
+      "category": "gelo",
+      "current_stock": 45,
+      "min_stock": 20,
+      "max_stock": 80,
+      "unit": "saco",
+      "location": "FREEZER-CENTRAL",
+      "last_movement": "2026-03-27",
+      "avg_consumption_per_event": 8
+    },
+    {
+      "product_id": "INV-CAR-001",
+      "sku_reference": "BUF-001",
+      "name": "Picanha Premium",
+      "category": "proteinas",
+      "current_stock": 35,
+      "min_stock": 15,
+      "max_stock": 50,
+      "unit": "kg",
+      "location": "COLD-ROOM-A",
+      "last_movement": "2026-03-27",
+      "avg_consumption_per_event": 5
+    },
+    {
+      "product_id": "INV-LIM-001",
+      "name": "Limão Tahiti",
+      "category": "hortifruti",
+      "current_stock": 12,
+      "min_stock": 5,
+      "max_stock": 20,
+      "unit": "kg",
+      "location": "COLD-ROOM-B",
+      "last_movement": "2026-03-27",
+      "avg_consumption_per_event": 2
+    },
+    {
+      "product_id": "INV-CAC-001",
+      "name": "Cachaça 51",
+      "category": "bebidas",
+      "current_stock": 8,
+      "min_stock": 3,
+      "max_stock": 15,
+      "unit": "garrafa",
+      "location": "CD-01-B",
+      "last_movement": "2026-03-27",
+      "avg_consumption_per_event": 1.5
+    },
+    {
+      "product_id": "INV-HOR-001",
+      "name": "Hortelã Fresca",
+      "category": "hortifruti",
+      "current_stock": 0.8,
+      "min_stock": 0.5,
+      "max_stock": 2,
+      "unit": "kg",
+      "location": "COLD-ROOM-B",
+      "last_movement": "2026-03-27",
+      "avg_consumption_per_event": 0.3
+    },
+    {
+      "product_id": "INV-COP-001",
+      "name": "Copo Acrílico 300ml",
+      "category": "descartaveis",
+      "current_stock": 2500,
+      "min_stock": 500,
+      "max_stock": 5000,
+      "unit": "unidade",
+      "location": "DEP-03",
+      "last_movement": "2026-03-27",
+      "avg_consumption_per_event": 400
+    },
+    {
+      "product_id": "INV-VOD-001",
+      "sku_reference": "BEB-003",
+      "name": "Vodka Premium",
+      "category": "bebidas",
+      "current_stock": 6,
+      "min_stock": 3,
+      "max_stock": 12,
+      "unit": "garrafa",
+      "location": "CD-01-B",
+      "last_movement": "2026-03-26",
+      "avg_consumption_per_event": 1
+    },
+    {
+      "product_id": "INV-GIN-001",
+      "name": "Gin London Dry",
+      "category": "bebidas",
+      "current_stock": 4,
+      "min_stock": 2,
+      "max_stock": 8,
+      "unit": "garrafa",
+      "location": "CD-01-B",
+      "last_movement": "2026-03-25",
+      "avg_consumption_per_event": 0.8
+    },
+    {
+      "product_id": "INV-RUM-001",
+      "name": "Rum Branco",
+      "category": "bebidas",
+      "current_stock": 3,
+      "min_stock": 2,
+      "max_stock": 6,
+      "unit": "garrafa",
+      "location": "CD-01-B",
+      "last_movement": "2026-03-24",
+      "avg_consumption_per_event": 0.5
+    }
+  ],
+  "stock_alerts": [
+    {
+      "level": "WARNING",
+      "product_id": "INV-HOR-001",
+      "name": "Hortelã Fresca",
+      "current": 0.8,
+      "min": 0.5,
+      "message": "Estoque próximo do mínimo",
+      "action": "Solicitar compra 1kg"
+    },
+    {
+      "level": "CRITICAL",
+      "product_id": "INV-RUM-001",
+      "name": "Rum Branco",
+      "current": 3,
+      "min": 2,
+      "message": "Rum abaixo do ideal para próximo evento",
+      "action": "Compra URGENTE - 3 garrafas"
+    }
+  ],
+  "valuation": {
+    "total_items": 10,
+    "total_value": 8750.45,
+    "last_inventory_date": "2026-03-27",
+    "next_inventory_date": "2026-04-27"
+  }
+}

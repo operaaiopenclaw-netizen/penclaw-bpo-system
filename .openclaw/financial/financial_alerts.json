@@ -1,0 +1,80 @@
+{
+  "generated_at": "2026-03-27",
+  "alerts": [
+    {
+      "id": "ALT-001",
+      "level": "critical",
+      "category": "cashflow",
+      "company": "STATUS Opera",
+      "title": "Projeção de Caixa Negativa - 90d",
+      "description": "STATUS projetado com saldo negativo em 90 dias sem correção de fluxo",
+      "metrics": {
+        "current": 125430.88,
+        "projected_90d": -249569.12
+      },
+      "action": "URGENTE: Renegociar intercompany ou reduzir retiradas",
+      "deadline": "2025-05-15"
+    },
+    {
+      "id": "ALT-002",
+      "level": "high",
+      "category": "reconciliation",
+      "company": "LA ORANA",
+      "title": "R$ 1.28M em Receitas Não Identificadas",
+      "description": "12.6% das receitas 2025 sem vinculação a contrato ou N CTT",
+      "metrics": {
+        "amount": 1283584.52,
+        "percentage": 12.6
+      },
+      "action": "Cruzar com event_dataset e planilha operacional",
+      "deadline": "2025-04-30"
+    },
+    {
+      "id": "ALT-003",
+      "level": "high",
+      "category": "intercompany",
+      "company": "Grupo",
+      "title": "Desbalanceamento Intercompany - R$ 621k",
+      "description": "STATUS deve R$ 621.680,85 para LA ORANA sem regularização",
+      "metrics": {
+        "balance": -621680.85,
+        "months_overdue": 4
+      },
+      "action": "Definir política de rateios e liquidar saldos",
+      "deadline": "2025-06-30"
+    },
+    {
+      "id": "ALT-004",
+      "level": "medium",
+      "category": "withdrawals",
+      "company": "STATUS Opera",
+      "title": "Retiradas acima de 11% da Receita",
+      "description": "Taxa de retirada superior à saúde financeira da empresa",
+      "metrics": {
+        "withdrawal_rate": 11.6,
+        "industry_benchmark": 5.0
+      },
+      "action": "Reduzir distribuições até normalização de caixa",
+      "deadline": "2025-12-31"
+    },
+    {
+      "id": "ALT-005",
+      "level": "medium",
+      "category": "data_quality",
+      "company": "Grupo",
+      "title": "Dados Financeiros Incompletos",
+      "description": "STATUS 2025 incompleto (só Jan-Abr), LA ORANA 2024 não processado",
+      "metrics": {
+        "missing_months": 7
+      },
+      "action": "Extrair PDFs restantes",
+      "deadline": "2025-04-15"
+    }
+  ],
+  "summary": {
+    "critical": 1,
+    "high": 2,
+    "medium": 2,
+    "low": 0
+  }
+}

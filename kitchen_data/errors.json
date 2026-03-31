@@ -1,0 +1,104 @@
+{
+  "_meta": {
+    "last_updated": "2026-03-31T13:58:46.371334",
+    "total_errors": 12
+  },
+  "errors": [
+    {
+      "timestamp": "2026-03-31T13:49:34.844845",
+      "type": "input_validation",
+      "severity": "high",
+      "event_id": null,
+      "description": "cmv_log.json vazio ou não encontrado - CMV será marcado como incompleto",
+      "source": "dre_engine"
+    },
+    {
+      "timestamp": "2026-03-31T13:49:34.845685",
+      "type": "cmv_missing",
+      "severity": "high",
+      "event_id": "EVT001",
+      "description": "CMV não encontrado para evento - gross_profit não calculado",
+      "source": "dre_engine"
+    },
+    {
+      "timestamp": "2026-03-31T13:49:34.846197",
+      "type": "cmv_missing",
+      "severity": "high",
+      "event_id": "EVT002",
+      "description": "CMV não encontrado para evento - gross_profit não calculado",
+      "source": "dre_engine"
+    },
+    {
+      "timestamp": "2026-03-31T13:49:34.846678",
+      "type": "cmv_missing",
+      "severity": "high",
+      "event_id": "EVT003",
+      "description": "CMV não encontrado para evento - gross_profit não calculado",
+      "source": "dre_engine"
+    },
+    {
+      "timestamp": "2026-03-31T13:51:17.442277",
+      "type": "invalid_company",
+      "severity": "medium",
+      "event_id": null,
+      "description": "Empresa deve ser 'opera' ou 'la_orana': ",
+      "source": "load_fixed_costs_by_month"
+    },
+    {
+      "timestamp": "2026-03-31T13:51:17.443062",
+      "type": "invalid_company",
+      "severity": "medium",
+      "event_id": null,
+      "description": "Empresa deve ser 'opera' ou 'la_orana': ",
+      "source": "load_fixed_costs_by_month"
+    },
+    {
+      "timestamp": "2026-03-31T13:51:17.443803",
+      "type": "invalid_company",
+      "severity": "medium",
+      "event_id": null,
+      "description": "Empresa deve ser 'opera' ou 'la_orana': ",
+      "source": "load_fixed_costs_by_month"
+    },
+    {
+      "timestamp": "2026-03-31T13:51:17.444760",
+      "type": "invalid_company",
+      "severity": "medium",
+      "event_id": null,
+      "description": "Empresa deve ser 'opera' ou 'la_orana': ",
+      "source": "load_fixed_costs_by_month"
+    },
+    {
+      "timestamp": "2026-03-31T13:51:17.445561",
+      "type": "invalid_company",
+      "severity": "medium",
+      "event_id": null,
+      "description": "Empresa deve ser 'opera' ou 'la_orana': ",
+      "source": "load_fixed_costs_by_month"
+    },
+    {
+      "timestamp": "2026-03-31T13:51:35.665133",
+      "type": "dre_not_found",
+      "severity": "low",
+      "event_id": null,
+      "description": "DRE não encontrado - gerando apenas alocações fixas",
+      "source": "update_dre_with_fixed_allocations"
+    },
+    {
+      "timestamp": "2026-03-31T13:51:42.262345",
+      "type": "dre_not_found",
+      "severity": "low",
+      "event_id": null,
+      "description": "DRE não encontrado - gerando apenas alocações fixas",
+      "source": "update_dre_with_fixed_allocations"
+    },
+    {
+      "timestamp": "2026-03-31T13:58:46.371321",
+      "type": "no_consumption_data",
+      "severity": "high",
+      "event_id": null,
+      "description": "Nenhum dado de consumo encontrado - executar engines de produção primeiro",
+      "source": "generate_procurement_suggestions"
+    }
+  ]
+}

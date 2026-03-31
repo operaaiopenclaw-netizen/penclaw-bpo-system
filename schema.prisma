@@ -1,0 +1,353 @@
+// ============================================================
+// PRISMA SCHEMA v1.3
+// Backend TypeScript/Node.js para Orkestra Finance Brain
+// ============================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================
+// CORE: Agent Runtime
+// ============================================================
+
+model AgentRun {
+  id            String    @id @default(uuid())
+  companyId     String?
+  workflowType  String
+  status        String    @default("pending")
+  riskLevel     String    @default("low")
+  inputSummary  String?
+  outputSummary String?
+  totalCost     Float?
+  totalTokens   Int?
+  latencyMs     Int?
+  createdBy     String?
+  startedAt     DateTime?
+  finishedAt    DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relações
+  steps      AgentStep[]
+  approvals  ApprovalRequest[]
+  artifacts  Artifact[]
+  costs      CostEvent[]
+
+  // Eventos (Orkestra)
+  events Event[]
+
+  @@index([companyId])
+  @@index([status])
+  @@index([workflowType])
+  @@index([createdAt])
+  @@map("agent_runs")
+}
+
+model AgentStep {
+  id            String    @id @default(uuid())
+  agentRunId    String
+  stepOrder     Int
+  agentName     String
+  actionType    String
+  inputPayload  Json?
+  outputPayload Json?
+  status        String    @default("pending")
+  startedAt     DateTime?
+  finishedAt    DateTime?
+
+  // Relações
+  agentRun   AgentRun    @relation(fields: [agentRunId], references: [id], onDelete: Cascade)
+  toolCalls  ToolCall[]
+
+  @@unique([agentRunId, stepOrder])
+  @@index([agentRunId])
+  @@index([status])
+  @@index([actionType])
+  @@map("agent_steps")
+}
+
+model ToolCall {
+  id            String    @id @default(uuid())
+  agentStepId   String
+  toolName      String
+  toolInput     Json?
+  toolOutput    Json?
+  status        String    @default("pending")
+  latencyMs     Int?
+  costEstimate  Float?
+  createdAt     DateTime  @default(now())
+
+  // Relações
+  agentStep AgentStep @relation(fields: [agentStepId], references: [id], onDelete: Cascade)
+
+  @@index([agentStepId])
+  @@index([toolName])
+  @@index([status])
+  @@index([createdAt])
+  @@map("tool_calls")
+}
+
+model ApprovalRequest {
+  id              String    @id @default(uuid())
+  agentRunId      String
+  riskLevel       String
+  requestedAction String
+  justification   String
+  status          String    @default("pending")
+  approvedBy      String?
+  approvedAt      DateTime?
+  requestedAt     DateTime  @default(now())
+
+  // Relações
+  agentRun AgentRun @relation(fields: [agentRunId], references: [id], onDelete: Cascade)
+
+  @@index([agentRunId])
+  @@index([status])
+  @@index([riskLevel])
+  @@map("approval_requests")
+}
+
+// ============================================================
+// INFRA: Memory, Rules, Artifacts
+// ============================================================
+
+model MemoryItem {
+  id                String    @id @default(uuid())
+  companyId         String?
+  memoryType        String
+  title             String
+  content           String
+  tags              String[]  @default([])
+  sourceType        String?
+  sourceRef         String?
+  confidenceScore   Float?
+  // embedding_vector  Unsupported("vector")?  // Requer extensão pgvector
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([companyId])
+  @@index([memoryType])
+  @@index([tags])
+  @@index([createdAt])
+  @@map("memory_items")
+}
+
+model DomainRule {
+  id              String    @id @default(uuid())
+  companyId       String?
+  domain          String
+  ruleName        String
+  ruleDescription String?
+  ruleLogic       Json
+  priority        Int       @default(100)
+  active          Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@unique([companyId, domain, ruleName])
+  @@index([companyId])
+  @@index([domain])
+  @@index([active])
+  @@map("domain_rules")
+}
+
+model Artifact {
+  id            String    @id @default(uuid())
+  agentRunId    String
+  artifactType  String
+  fileName      String
+  storageUrl    String?
+  checksum      String?
+  sizeBytes     Int?
+  contentType   String?
+  version       Int       @default(1)
+  metadata      Json?
+  createdAt     DateTime  @default(now())
+
+  // Relações
+  agentRun AgentRun @relation(fields: [agentRunId], references: [id], onDelete: Cascade)
+
+  @@index([agentRunId])
+  @@index([artifactType])
+  @@index([createdAt])
+  @@map("artifacts")
+}
+
+model CostEvent {
+  id            String    @id @default(uuid())
+  agentRunId    String
+  modelName     String?
+  tokensIn      Int       @default(0)
+  tokensOut     Int       @default(0)
+  monetaryCost  Float     @default(0)
+  costCategory  String    @default("inference")
+  createdAt     DateTime  @default(now())
+
+  // Relações
+  agentRun AgentRun @relation(fields: [agentRunId], references: [id], onDelete: Cascade)
+
+  @@index([agentRunId])
+  @@index([modelName])
+  @@index([createdAt])
+  @@map("cost_events")
+}
+
+// ============================================================
+// ORKESTRA: Negócio
+// ============================================================
+
+model Event {
+  id            String    @id @default(uuid())
+  eventId       String    @unique  // EVT-XXXXX
+  nCtt          String            // Número CTT
+  companyId     String?
+  companyName   String
+  clientName    String?
+  eventType     String?
+  eventDate     DateTime?
+  numGuests     Int?
+  status        String    @default("proposal")
+  
+  // Financeiro
+  revenueTotal  Float?
+  cmvTotal      Float?
+  netProfit     Float?
+  marginPct     Float?
+  
+  // Rastreabilidade
+  agentRunId    String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relações
+  agentRun AgentRun? @relation(fields: [agentRunId], references: [id])
+
+  @@index([companyId])
+  @@index([status])
+  @@index([eventDate])
+  @@index([nCtt])
+  @@index([agentRunId])
+  @@map("events")
+}
+
+model Recipe {
+  id              String    @id @default(uuid())
+  recipeId        String    @unique  // REC###
+  name            String
+  category        String?
+  yield           Int?
+  prepTimeMin     Int?
+  complexity      String?
+  ingredients     Json?     // Array de ingredientes
+  costPerServing  Float?
+  instructions    String?
+  active          Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([category])
+  @@index([active])
+  @@map("recipes")
+}
+
+model InventoryItem {
+  id                String    @id @default(uuid())
+  code              String    @unique  // CAR-001, LEG-001, etc
+  name              String
+  currentQty        Float     @default(0)
+  unit              String
+  unitPrice         Float?
+  supplier          String?
+  minStockLevel     Float?
+  reorderPoint      Float?
+  
+  // Histórico de entradas
+  entryHistory      Json?     // Array de entradas
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([supplier])
+  @@index([currentQty])
+  @@map("inventory_items")
+}
+
+// ============================================================
+// VIEWS (Como modelos de leitura)
+// ============================================================
+
+// Nota: Views no Prisma são modelos marcados como @@ignore ou query raw
+// Aqui definimos como modelos de dados para referência
+
+model AgentRunSummary {
+  id              String
+  workflowType    String
+  status          String
+  riskLevel       String
+  totalCost       Float?
+  totalTokens     Int?
+  latencyMs       Int?
+  totalSteps      Int?
+  completedSteps  Int?
+  pendingApprovals Int?
+  createdAt       DateTime?
+  startedAt       DateTime?
+  finishedAt      DateTime?
+
+  @@ignore  // View não gerenciada pelo Prisma
+}
+
+model FinancialEvent {
+  id            String
+  eventId       String
+  nCtt          String
+  companyName   String
+  clientName    String?
+  eventType     String?
+  eventDate     DateTime?
+  status        String
+  revenueTotal  Float?
+  cmvTotal      Float?
+  netProfit     Float?
+  marginPct     Float?
+  marginStatus  String?
+
+  @@ignore  // View não gerenciada pelo Prisma
+}
+
+// ============================================================
+// ENUMS (Como tabelas de referência)
+// ============================================================
+
+// Opcional: Criar tabelas de lookup para enums
+model WorkflowType {
+  id    String @id
+  name  String
+  description String?
+}
+
+model RiskLevel {
+  id    String @id
+  name  String
+  minValue Int
+  maxValue Int
+}
+
+// ============================================================
+// ÍNDICES COMPOSTOS E OTIMIZAÇÕES
+// ============================================================
+
+// Adicionar índice composto para buscas comuns
+// migration SQL será gerada automaticamente pelo Prisma
+
+// ============================================================
+// FIM DO SCHEMA
+// Versão: 1.3
+// Compatível com schema_v1_2.sql
+// ============================================================

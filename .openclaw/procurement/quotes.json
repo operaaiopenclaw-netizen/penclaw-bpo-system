@@ -1,0 +1,254 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "parser_engine": "pattern_based_extraction",
+    "last_updated": "2026-03-27T21:18:00",
+    "total_quotes_parsed": 3,
+    "pending_validation": 0
+  },
+  "parser_patterns": {
+    "price_patterns": {
+      "unitary": [
+        "R\\$\\s*([0-9.,]+)",
+        "([0-9.,]+)\\s*reais",
+        "valor.*R\\$\\s*([0-9.,]+)",
+        "custa.*R\\$\\s*([0-9.,]+)",
+        "preço.*([0-9.,]+)"
+      ],
+      "total": [
+        "total.*R\\$\\s*([0-9.,]+)",
+        "totalizando.*R\\$\\s*([0-9.,]+)",
+        "fica.*R\\$\\s*([0-9.,]+)",
+        "sai.*por.*R\\$\\s*([0-9.,]+)"
+      ]
+    },
+    "delivery_patterns": [
+      "(\\d+)\\s*dias?",
+      "entrega.*(\\d+).*dias?",
+      "prazo.*(\\d+)\\s*dias?",
+      "entregamos.*em.*(\\d+)"
+    ],
+    "payment_patterns": {
+      "à_vista": ["à vista", "a vista", "pix", "dinheiro", "no ato"],
+      "30_dias": ["30 dias", "trinta dias", "30d", "prazo 30"],
+      "15_dias": ["15 dias", "quinze dias", "15d"],
+      "parcelado": ["parcela", "dividido", "vezes", "x no cartão"]
+    },
+    "quantity_patterns": [
+      "(\\d+)\\s*(caixas?|sacos?|unidades?|kg|garrafas?|litros?)",
+      "tem.*(\\d+)",
+      "disponível.*(\\d+)"
+    ]
+  },
+  "parsed_quotes": [
+    {
+      "quote_id": "QT-2025-03-28-001",
+      "rfq_reference": "RFQ-2025-03-27-001",
+      "supplier": {
+        "id": "SUP-002",
+        "name": "Gelo Express São Paulo",
+        "whatsapp": "+55-11-98888-2222"
+      },
+      "raw_message": "Oi! Tudo sim. Gelo cubo 5kg sai por R$ 13,50 cada saco. Total de 35 sacos = R$ 472,50. Entregamos em 24h. Pagamento PIX ou 7 dias.",
+      "extracted_data": {
+        "items": [
+          {
+            "sku": "GEL-001",
+            "product": "Gelo Cubo 5kg",
+            "quantity": 35,
+            "unit": "saco",
+            "unit_price": 13.50,
+            "total_price": 472.50,
+            "currency": "BRL"
+          }
+        ],
+        "delivery": {
+          "time_hours": 24,
+          "time_days": 1,
+          "same_day": true,
+          "delivery_fee": 0
+        },
+        "payment_terms": {
+          "primary": "PIX (à vista)",
+          "alternative": "7 dias",
+          "options": ["PIX", "7 dias"]
+        },
+        "validity": {
+          "days": 7,
+          "expires_at": "2025-04-04T00:00:00"
+        }
+      },
+      "confidence_score": 0.95,
+      "validation_status": "valid",
+      "parsed_at": "2026-03-27T21:18:00",
+      "notes": "Resposta completa, todos os dados extraídos"
+    },
+    {
+      "quote_id": "QT-2025-03-28-002",
+      "rfq_reference": "RFQ-2025-03-27-002",
+      "supplier": {
+        "id": "SUP-001",
+        "name": "Bebidas Premium Distribuidora",
+        "whatsapp": "+55-11-99999-1111"
+      },
+      "raw_message": "Boa tarde! Cerveja artesanal R$ 48,00/cx com 12 unidades. Valor total 65 caixas = R$ 3.120,00. Vodka R$ 110,00 garrafa, total R$ 880,00. Entrega 48h. Condicoes: 30 dias com boleto.",
+      "extracted_data": {
+        "items": [
+          {
+            "sku": "BEB-001",
+            "product": "Cerveja Artesanal Lager",
+            "quantity": 65,
+            "unit": "caixa",
+            "unit_price": 48.00,
+            "total_price": 3120.00,
+            "currency": "BRL"
+          },
+          {
+            "sku": "BEB-003",
+            "product": "Vodka Premium",
+            "quantity": 8,
+            "unit": "garrafa",
+            "unit_price": 110.00,
+            "total_price": 880.00,
+            "currency": "BRL"
+          }
+        ],
+        "delivery": {
+          "time_hours": 48,
+          "time_days": 2,
+          "same_day": false,
+          "delivery_fee": null
+        },
+        "payment_terms": {
+          "primary": "30 dias (boleto)",
+          "alternative": null,
+          "options": ["30 dias"]
+        },
+        "validity": {
+          "days": 7,
+          "note": "Não informado, assumindo 7 dias padrão"
+        },
+        "grand_total": 4000.00
+      },
+      "confidence_score": 0.92,
+      "validation_status": "valid",
+      "parsed_at": "2026-03-27T21:18:00",
+      "notes": "Múltiplos itens identificados, preços claros"
+    },
+    {
+      "quote_id": "QT-2025-03-28-003",
+      "rfq_reference": "RFQ-2025-03-27-003",
+      "supplier": {
+        "id": "SUP-004",
+        "name": "Buffet Master Insumos",
+        "whatsapp": "+55-11-96666-4444"
+      },
+      "raw_message": "Fernanda aqui! Picanha tá R$ 98 o kg. Pra 18kg fica R$ 1.764,00. Entrego terça ou quarta. Pagamento até dia 15/04.",
+      "extracted_data": {
+        "items": [
+          {
+            "sku": "BUF-001",
+            "product": "Picanha Premium",
+            "quantity": 18,
+            "unit": "kg",
+            "unit_price": 98.00,
+            "total_price": 1764.00,
+            "currency": "BRL"
+          }
+        ],
+        "delivery": {
+          "time_hours": null,
+          "time_days": 2,
+          "same_day": false,
+          "delivery_days": ["terça", "quarta"],
+          "delivery_fee": null
+        },
+        "payment_terms": {
+          "primary": "até 15/04",
+          "alternative": null,
+          "calculated_days": 12,
+          "options": ["prazo personalizado"]
+        },
+        "validity": {
+          "days": null,
+          "note": "Não informado"
+        }
+      },
+      "confidence_score": 0.88,
+      "validation_status": "pending_review",
+      "parsed_at": "2026-03-27T21:18:00",
+      "notes": "Prazo de pagamento impreciso, validar data exata"
+    }
+  ],
+  "comparison_ready": {
+    "grouped_by_product": {
+      "GEL-001": [
+        {
+          "quote_id": "QT-2025-03-28-001",
+          "supplier": "SUP-002",
+          "unit_price": 13.50,
+          "total": 472.50,
+          "delivery_hours": 24,
+          "payment": "PIX/7d"
+        }
+      ],
+      "BEB-001": [
+        {
+          "quote_id": "QT-2025-03-28-002",
+          "supplier": "SUP-001",
+          "unit_price": 48.00,
+          "total": 3120.00,
+          "delivery_hours": 48,
+          "payment": "30d"
+        }
+      ],
+      "BEB-003": [
+        {
+          "quote_id": "QT-2025-03-28-002",
+          "supplier": "SUP-001",
+          "unit_price": 110.00,
+          "total": 880.00,
+          "delivery_hours": 48,
+          "payment": "30d"
+        }
+      ],
+      "BUF-001": [
+        {
+          "quote_id": "QT-2025-03-28-003",
+          "supplier": "SUP-004",
+          "unit_price": 98.00,
+          "total": 1764.00,
+          "delivery_hours": 48,
+          "payment": "15/04"
+        }
+      ]
+    },
+    "summary": {
+      "total_quotes": 3,
+      "total_suppliers": 3,
+      "total_value": 6236.50,
+      "average_confidence": 0.92
+    }
+  },
+  "parser_logs": [
+    {
+      "timestamp": "2026-03-27T21:18:00",
+      "action": "quote_parsed",
+      "quote_id": "QT-2025-03-28-001",
+      "confidence": 0.95
+    },
+    {
+      "timestamp": "2026-03-27T21:18:00",
+      "action": "quote_parsed",
+      "quote_id": "QT-2025-03-28-002",
+      "confidence": 0.92
+    },
+    {
+      "timestamp": "2026-03-27T21:18:00",
+      "action": "quote_parsed_review_needed",
+      "quote_id": "QT-2025-03-28-003",
+      "confidence": 0.88,
+      "alert": "payment_terms_ambiguous"
+    }
+  ]
+}

@@ -1,0 +1,248 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "engine": "procurement_comparison_v1",
+    "generated_at": "2026-03-27T21:18:30",
+    "status": "complete",
+    "total_items_compared": 4
+  },
+  "comparisons": [
+    {
+      "item_id": "GEL-001",
+      "product_name": "Gelo Cubo 5kg",
+      "category": "gelo",
+      "required_quantity": 35,
+      "unit": "saco",
+      "quotes": [
+        {
+          "quote_id": "QT-2025-03-28-001",
+          "supplier_id": "SUP-002",
+          "supplier_name": "Gelo Express São Paulo",
+          "unit_price": 13.50,
+          "total_price": 472.50,
+          "delivery_hours": 24,
+          "delivery_days": 1,
+          "payment_terms": "PIX/7 dias",
+          "score_price": 10,
+          "score_delivery": 10,
+          "score_payment": 8,
+          "overall_score": 9.3,
+          "status": "recommended",
+          "reason": "Único fornecedor, melhor prazo de entrega"
+        }
+      ],
+      "analysis": {
+        "price_range": [13.50, 13.50],
+        "average_price": 13.50,
+        "savings_vs_budget": 24.50,
+        "best_delivery": "SUP-002",
+        "best_price": "SUP-002",
+        "recommendation": "Aprovar - única opção com entrega em 24h"
+      }
+    },
+    {
+      "item_id": "BEB-001",
+      "product_name": "Cerveja Artesanal Lager",
+      "category": "cerveja",
+      "required_quantity": 65,
+      "unit": "caixa",
+      "quotes": [
+        {
+          "quote_id": "QT-2025-03-28-002",
+          "supplier_id": "SUP-001",
+          "supplier_name": "Bebidas Premium Distribuidora",
+          "unit_price": 48.00,
+          "total_price": 3120.00,
+          "delivery_hours": 48,
+          "delivery_days": 2,
+          "payment_terms": "30 dias",
+          "score_price": 9,
+          "score_delivery": 8,
+          "score_payment": 9,
+          "overall_score": 8.7,
+          "status": "recommended",
+          "reason": "Fornecedor homologado, prazo bom"
+        }
+      ],
+      "analysis": {
+        "price_range": [48.00, 48.00],
+        "average_price": 48.00,
+        "savings_vs_budget": 130.00,
+        "best_delivery": "SUP-001",
+        "best_price": "SUP-001",
+        "recommendation": "Aprovar - preço dentro da média"
+      }
+    },
+    {
+      "item_id": "BEB-003",
+      "product_name": "Vodka Premium",
+      "category": "destilados",
+      "required_quantity": 8,
+      "unit": "garrafa",
+      "quotes": [
+        {
+          "quote_id": "QT-2025-03-28-002",
+          "supplier_id": "SUP-001",
+          "supplier_name": "Bebidas Premium Distribuidora",
+          "unit_price": 110.00,
+          "total_price": 880.00,
+          "delivery_hours": 48,
+          "delivery_days": 2,
+          "payment_terms": "30 dias",
+          "score_price": 8,
+          "score_delivery": 8,
+          "score_payment": 9,
+          "overall_score": 8.3,
+          "status": "recommended",
+          "reason": "Preço adequado para categoria premium"
+        }
+      ],
+      "analysis": {
+        "price_range": [110.00, 110.00],
+        "average_price": 110.00,
+        "savings_vs_budget": 80.00,
+        "best_delivery": "SUP-001",
+        "best_price": "SUP-001",
+        "recommendation": "Aprovar - preço competitivo"
+      }
+    },
+    {
+      "item_id": "BUF-001",
+      "product_name": "Picanha Premium",
+      "category": "buffet",
+      "required_quantity": 18,
+      "unit": "kg",
+      "quotes": [
+        {
+          "quote_id": "QT-2025-03-28-003",
+          "supplier_id": "SUP-004",
+          "supplier_name": "Buffet Master Insumos",
+          "unit_price": 98.00,
+          "total_price": 1764.00,
+          "delivery_hours": 48,
+          "delivery_days": 2,
+          "payment_terms": "até 15/04",
+          "score_price": 7,
+          "score_delivery": 8,
+          "score_payment": 6,
+          "overall_score": 7.0,
+          "status": "review_needed",
+          "reason": "Prazo de pagamento ambíguo - validar data exata",
+          "alert": "PAYMENT_TERMS_AMBIGUOUS"
+        }
+      ],
+      "analysis": {
+        "price_range": [98.00, 98.00],
+        "average_price": 98.00,
+        "savings_vs_budget": -108.00,
+        "price_above_reference": true,
+        "reference_price": 95.00,
+        "variance_percent": 3.16,
+        "best_delivery": "SUP-004",
+        "best_price": "SUP-004",
+        "recommendation": "NEGociAR - preço acima do histórico, validar prazo de pagamento"
+      }
+    }
+  ],
+  "consolidated_recommendation": {
+    "summary": {
+      "total_items": 4,
+      "approved": 3,
+      "review_needed": 1,
+      "rejected": 0,
+      "total_value": 6236.50,
+      "savings_vs_budget": 126.50
+    },
+    "by_urgency": {
+      "immediate": ["GEL-001"],
+      "this_week": ["BEB-001", "BUF-001"],
+      "next_week": ["BEB-003"]
+    },
+    "purchase_orders_ready": [
+      {
+        "po_id": "PO-2025-03-27-001",
+        "supplier": "SUP-002",
+        "items": ["GEL-001"],
+        "total_value": 472.50,
+        "status": "ready_to_send",
+        "priority": "critical"
+      },
+      {
+        "po_id": "PO-2025-03-27-002",
+        "supplier": "SUP-001",
+        "items": ["BEB-001", "BEB-003"],
+        "total_value": 4000.00,
+        "status": "ready_to_send",
+        "priority": "high"
+      },
+      {
+        "po_id": "PO-2025-03-27-003",
+        "supplier": "SUP-004",
+        "items": ["BUF-001"],
+        "total_value": 1764.00,
+        "status": "pending_negotiation",
+        "priority": "high",
+        "notes": "Validar prazo de pagamento antes de aprovar"
+      }
+    ],
+    "execution_plan": [
+      {
+        "step": 1,
+        "action": "Enviar PO para SUP-002 (Gelo) - URGENTE",
+        "deadline": "2025-03-27T22:00:00",
+        "responsible": "Compras"
+      },
+      {
+        "step": 2,
+        "action": "Enviar PO para SUP-001 (Bebidas)",
+        "deadline": "2025-03-28T12:00:00",
+        "responsible": "Compras"
+      },
+      {
+        "step": 3,
+        "action": "Negociar prazo de pagamento com SUP-004",
+        "deadline": "2025-03-28T18:00:00",
+        "responsible": "Financeiro"
+      },
+      {
+        "step": 4,
+        "action": "Confirmar entregas",
+        "deadline": "2025-03-29T10:00:00",
+        "responsible": "Logística"
+      }
+    ]
+  },
+  "decision_matrix": {
+    "criteria": {
+      "price_weight": 0.40,
+      "delivery_weight": 0.30,
+      "quality_weight": 0.15,
+      "payment_weight": 0.15
+    },
+    "thresholds": {
+      "min_score": 7.0,
+      "max_price_variance": 5.0,
+      "max_delivery_days": 3
+    }
+  },
+  "alerts": [
+    {
+      "level": "medium",
+      "item": "BUF-001",
+      "message": "Preço 3.16% acima da referência",
+      "suggestion": "Negociar desconto de R$ 3/kg ou confirmar qualidade superior"
+    },
+    {
+      "level": "low",
+      "item": "ALL",
+      "message": "Apenas 1 cotação por item - não há comparação",
+      "suggestion": "Para próximas compras, cotar com múltiplos fornecedores"
+    }
+  ],
+  "next_actions": [
+    "Aprovar e enviar ordens de compra (3 itens)",
+    "Negociar prazo de pagamento com SUP-004",
+    "Confirmar datas de entrega",
+    "Agendar follow-up de entregas"
+  ]
+}

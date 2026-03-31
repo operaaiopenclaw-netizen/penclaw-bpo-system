@@ -1,0 +1,41 @@
+{
+  "description": "Retiradas e distribuições aos sócios",
+  "currency": "BRL",
+  "by_company": {
+    "STATUS Opera": {
+      "2024-08": {
+        "caixa_banco": 67530.0,
+        "mario": 17742.3,
+        "sayuri": 12074.5,
+        "total": 97346.8
+      },
+      "2024-09": {
+        "caixa_banco": 56250.0,
+        "mario": 13834.65,
+        "sayuri": 12847.61,
+        "total": 82932.26
+      },
+      "2024-10": {
+        "caixa_banco": 9089.16,
+        "mario": 9172.26,
+        "sayuri": 564.0,
+        "total": 18825.42
+      },
+      "2024-11": {
+        "caixa_banco": 19080.0,
+        "mario": 0,
+        "sayuri": 44.0,
+        "total": 19124.0
+      },
+      "2024-12": {
+        "caixa_banco": 159190.0,
+        "mario": 0,
+        "sayuri": 0,
+        "total": 159190.0
+      }
+    },
+    "LA ORANA": {
+      "note": "Pendente extração do PDF LA ORANA - verificar seção 'Retiradas'"
+    }
+  }
+}

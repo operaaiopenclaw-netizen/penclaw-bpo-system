@@ -1,0 +1,870 @@
+openapi: 3.0.3
+info:
+  title: Orkestra Finance Brain API
+  description: API para Orquestrador de Agentes Inteligentes - Sistema de Gestão Financeira para Eventos
+  version: 1.4.0
+  contact:
+    name: Orkestra Finance Team
+    email: tech@orkestra.ai
+
+servers:
+  - url: https://api.orkestra.ai/v1
+    description: Produção
+  - url: https://staging-api.orkestra.ai/v1
+    description: Staging
+  - url: http://localhost:3000/v1
+    description: Desenvolvimento local
+
+tags:
+  - name: Agent Runs
+    description: Execução e gerenciamento de agentes
+  - name: Approvals
+    description: Fluxo de aprovação manual
+  - name: Memory
+    description: Gerenciamento de memória e contexto
+  - name: Artifacts
+    description: Artefatos gerados
+  - name: Dashboards
+    description: Dashboards executivos por área
+  - name: Events
+    description: Eventos de negócio (Orkestra)
+  - name: Recipes
+    description: Fichas técicas e receitas
+
+components:
+  schemas:
+
+    # Agent Routes
+    AgentRun:
+      type: object
+      required:
+        - id
+        - companyId
+        - workflowType
+        - status
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "RUN-7F3E9A2B-1234"
+        companyId:
+          type: string
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        workflowType:
+          type: string
+          enum: [KITCHEN, FINANCIAL, PROCUREMENT, PRICING, AUDIT, CALIBRATION, REPORTING, RECONCILIATION, FULL_PIPELINE]
+          example: "FULL_PIPELINE"
+        status:
+          type: string
+          enum: [pending, running, validating, approval_required, approved, rejected, completed, failed, rolled_back]
+          example: "running"
+        riskLevel:
+          type: string
+          enum: [none, low, medium, high, critical]
+          example: "high"
+        inputSummary:
+          type: string
+          example: "Execução completa do pipeline de eventos"
+        outputSummary:
+          type: string
+          example: "Pipeline executado com alertas de margem"
+        totalCost:
+          type: number
+          format: float
+          example: 0.50
+        totalTokens:
+          type: integer
+          example: 1500
+        latencyMs:
+          type: integer
+          example: 8500
+        createdBy:
+          type: string
+          example: "sistema"
+        startedAt:
+          type: string
+          format: date-time
+        finishedAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        steps:
+          type: array
+          items:
+            $ref: '#/components/schemas/AgentStep'
+
+    AgentStep:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "STEP-A1B2C3D4"
+        stepOrder:
+          type: integer
+          example: 1
+        agentName:
+          type: string
+          example: "kitchen_control"
+        actionType:
+          type: string
+          example: "calculate_costs"
+        inputPayload:
+          type: object
+        outputPayload:
+          type: object
+        status:
+          type: string
+          enum: [pending, running, completed, failed, skipped, blocked]
+        startedAt:
+          type: string
+          format: date-time
+        finishedAt:
+          type: string
+          format: date-time
+
+    CreateAgentRunRequest:
+      type: object
+      required:
+        - companyId
+        - workflowType
+        - input
+      properties:
+        companyId:
+          type: string
+          format: uuid
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        workflowType:
+          type: string
+          example: "event_onboarding"
+        input:
+          type: object
+          properties:
+            eventId:
+              type: string
+              example: "EVT001"
+            eventData:
+              type: object
+            params:
+              type: object
+
+    # Approvals
+    ApprovalRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        agentRunId:
+          type: string
+        riskLevel:
+          type: string
+          enum: [low, medium, high, critical]
+        requestedAction:
+          type: string
+          example: "price_update"
+        justification:
+          type: string
+          example: "Margem abaixo do esperado em 15%"
+        status:
+          type: string
+          enum: [pending, approved, rejected, expired]
+        approvedBy:
+          type: string
+        approvedAt:
+          type: string
+          format: date-time
+
+    ApprovalAction:
+      type: object
+      required:
+        - approved
+      properties:
+        approved:
+          type: boolean
+        reason:
+          type: string
+          example: "Margem aceitável para volume alto"
+
+    # Memory
+    MemoryItem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        companyId:
+          type: string
+        memoryType:
+          type: string
+          enum: [event, recipe, supplier, insight, decision, error, pattern]
+        title:
+          type: string
+        content:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        confidenceScore:
+          type: number
+          minimum: 0
+          maximum: 1
+          example: 0.85
+
+    CreateMemoryRequest:
+      type: object
+      required:
+        - memoryType
+        - title
+        - content
+      properties:
+        memoryType:
+          type: string
+        title:
+          type: string
+        content:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        companyId:
+          type: string
+
+    SearchMemoryRequest:
+      type: object
+      required:
+        - query
+      properties:
+        query:
+          type: string
+          example: "margem abaixo de 20%"
+        memoryTypes:
+          type: array
+          items:
+            type: string
+        limit:
+          type: integer
+          default: 10
+          maximum: 100
+
+    # Artifacts
+    Artifact:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        agentRunId:
+          type: string
+        artifactType:
+          type: string
+          enum: [csv, json, pdf, log, report, config, pop, dashboard]
+        fileName:
+          type: string
+          example: "dre_events.csv"
+        storageUrl:
+          type: string
+        sizeBytes:
+          type: integer
+        version:
+          type: integer
+
+    RenderArtifactRequest:
+      type: object
+      required:
+        - agentRunId
+        - artifactType
+        - data
+      properties:
+        agentRunId:
+          type: string
+        artifactType:
+          type: string
+        data:
+          type: object
+        format:
+          type: string
+          enum: [csv, json, pdf]
+
+    # Dashboards
+    Dashboard:
+      type: object
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+        summary:
+          type: object
+        kpis:
+          type: array
+          items:
+            type: object
+        charts:
+          type: array
+          items:
+            type: object
+        alerts:
+          type: array
+          items:
+            type: object
+        generatedAt:
+          type: string
+          format: date-time
+
+    # Events (Orkestra)
+    Event:
+      type: object
+      properties:
+        id:
+          type: string
+        eventId:
+          type: string
+          example: "EVT001"
+        nCtt:
+          type: string
+          example: "CTT202600123"
+        companyName:
+          type: string
+        clientName:
+          type: string
+        eventType:
+          type: string
+        eventDate:
+          type: string
+          format: date
+        numGuests:
+          type: integer
+        status:
+          type: string
+        revenueTotal:
+          type: number
+        cmvTotal:
+          type: number
+        netProfit:
+          type: number
+        marginPct:
+          type: number
+
+    # Error
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        details:
+          type: string
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - BearerAuth: []
+
+paths:
+
+  # ============================================================
+  # AGENT RUNS
+  # ============================================================
+
+  /agent-runs:
+    post:
+      summary: Criar nova execução de agente
+      tags:
+        - Agent Runs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAgentRunRequest'
+            example:
+              companyId: "550e8400-e29b-41d4-a716-446655440000"
+              workflowType: "event_onboarding"
+              input:
+                eventId: "EVT001"
+                eventData:
+                  tipo: "Casamento"
+                  convidados: 120
+      responses:
+        '201':
+          description: Agent run criado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgentRun'
+        '400':
+          description: Dados inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Não autorizado
+
+  /agent-runs/{id}:
+    get:
+      summary: Obter detalhes da execução
+      tags:
+        - Agent Runs
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Detalhes do agent run
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgentRun'
+        '404':
+          description: Agent run não encontrado
+
+  /agent-runs/{id}/replay:
+    post:
+      summary: Re-executar agent run
+      description: Cria nova execução baseada em run anterior
+      tags:
+        - Agent Runs
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                overrideInput:
+                  type: object
+                  description: Sobrescrever inputs originais
+      responses:
+        '201':
+          description: Replay iniciado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgentRun'
+        '404':
+          description: Agent run original não encontrado
+
+  # ============================================================
+  # APPROVALS
+  # ============================================================
+
+  /approvals/{id}/approve:
+    post:
+      summary: Aprovar solicitação
+      tags:
+        - Approvals
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApprovalAction'
+            example:
+              approved: true
+              reason: "Margem aceitável para volume alto"
+      responses:
+        '200':
+          description: Aprovado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApprovalRequest'
+        '404':
+          description: Approval request não encontrada
+        '409':
+          description: Já processada
+
+  /approvals/{id}/reject:
+    post:
+      summary: Rejeitar solicitação
+      tags:
+        - Approvals
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApprovalAction'
+            example:
+              approved: false
+              reason: "Risco financeiro inaceitável"
+      responses:
+        '200':
+          description: Rejeitada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApprovalRequest'
+
+  # ============================================================
+  # MEMORY
+  # ============================================================
+
+  /memory:
+    post:
+      summary: Criar novo item de memória
+      tags:
+        - Memory
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMemoryRequest'
+            example:
+              memoryType: "insight"
+              title: "Margem abaixo em eventos grandes"
+              content: "Eventos >100 pessoas com margem média de 15%"
+              tags: ["margem", "eventos-grandes", "alerta"]
+      responses:
+        '201':
+          description: Memória criada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MemoryItem'
+
+  /memory/search:
+    get:
+      summary: Buscar memória
+      tags:
+        - Memory
+      parameters:
+        - name: query
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Resultados da busca
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/MemoryItem'
+                  total:
+                    type: integer
+
+  # ============================================================
+  # ARTIFACTS
+  # ============================================================
+
+  /artifacts/render:
+    post:
+      summary: Renderizar novo artefato
+      description: Gera arquivo CSV, JSON ou PDF a partir de dados
+      tags:
+        - Artifacts
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RenderArtifactRequest'
+            example:
+              agentRunId: "RUN-7F3E9A2B"
+              artifactType: "csv"
+              format: "csv"
+              data:
+                headers: ["event_id", "revenue", "cmv", "profit"]
+                rows: [["EVT001", 25000, 18000, 7000]]
+      responses:
+        '201':
+          description: Artefato criado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Artifact'
+
+  /artifacts/{id}:
+    get:
+      summary: Baixar artefato
+      tags:
+        - Artifacts
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Arquivo binário
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '303':
+          description: Redirect para storage URL
+          headers:
+            Location:
+              schema:
+                type: string
+
+  # ============================================================
+  # DASHBOARDS
+  # ============================================================
+
+  /dashboard/ceo:
+    get:
+      summary: Dashboard CEO
+      description: Visão estratégica consolidada para diretoria
+      tags:
+        - Dashboards
+      responses:
+        '200':
+          description: Dashboard CEO
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dashboard'
+              example:
+                type: "ceo"
+                title: "CEO Dashboard - Visão Estratégica"
+                summary:
+                  totalRevenue: 58000
+                  totalProfit: 12000
+                  avgMargin: 25.5
+                kpis:
+                  - name: "Receita Total"
+                    value: 58000
+                    formatted: "R$ 58.000,00"
+
+  /dashboard/commercial:
+    get:
+      summary: Dashboard Comercial
+      description: Performance de vendas e margens
+      tags:
+        - Dashboards
+      responses:
+        '200':
+          description: Dashboard Comercial
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dashboard'
+              example:
+                type: "commercial"
+                title: "Sales Dashboard - Performance Comercial"
+                summary:
+                  ticketMedio: 14500
+                  taxaConversao: 75.5
+                  eventosEmRisco: 2
+
+  /dashboard/finance:
+    get:
+      summary: Dashboard Financeiro
+      description: DRE, consistência e reconciliação
+      tags:
+        - Dashboards
+      responses:
+        '200':
+          description: Dashboard Financeiro
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dashboard'
+              example:
+                type: "finance"
+                title: "Finance Dashboard - DRE e Consistência"
+                summary:
+                  totalCMV: 41000
+                  margemMedia: 24.8
+                  inconsistencias: 1
+
+  /dashboard/operations:
+    get:
+      summary: Dashboard Operações
+      description: Produção, estoque e desperdício
+      tags:
+        - Dashboards
+      responses:
+        '200':
+          description: Dashboard Operações
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dashboard'
+              example:
+                type: "operations"
+                title: "Ops Dashboard - Produção e Estoque"
+                summary:
+                  desperdicioMedio: 8.5
+                  itensCriticos: 3
+                  eficiencia: 91.5
+
+  # ============================================================
+  # EVENTS (Orkestra)
+  # ============================================================
+
+  /events:
+    get:
+      summary: Listar eventos
+      tags:
+        - Events
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: company
+          in: query
+          schema:
+            type: string
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Lista de eventos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  events:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Event'
+                  total:
+                    type: integer
+
+  /events/{id}:
+    get:
+      summary: Obter evento específico
+      tags:
+        - Events
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Evento
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+
+  # ============================================================
+  # RECIPES
+  # ============================================================
+
+  /recipes:
+    get:
+      summary: Listar receitas
+      tags:
+        - Recipes
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: active
+          in: query
+          schema:
+            type: boolean
+            default: true
+      responses:
+        '200':
+          description: Lista de receitas
+
+  /recipes/{id}:
+    get:
+      summary: Obter receita
+      tags:
+        - Recipes
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Receita
+
+# ============================================================
+# WEBHOOKS (opcional)
+# ============================================================
+
+webhooks:
+  agentRunCompleted:
+    post:
+      summary: Webhook: Agent Run Completado
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                event:
+                  type: string
+                  example: "agent_run.completed"
+                data:
+                  $ref: '#/components/schemas/AgentRun'
+
+  approvalRequested:
+    post:
+      summary: Webhook: Aprovação Solicitada
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                event:
+                  type: string
+                  example: "approval.requested"
+                data:
+                  $ref: '#/components/schemas/ApprovalRequest'

@@ -1,0 +1,103 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "last_updated": "2026-03-31T13:30:00-03:00",
+    "description": "Custos calculados por receita baseado em precos atuais do estoque",
+    "inventario_fonte": "inventory_management.json"
+  },
+  "calculo_logica": {
+    "formula": "custo_por_porcao = SUM(quantidade_por_porcao * preco_unitario_estoque)",
+    "atualizacao": "automatica quando estoque atualiza",
+    "margem_seguranca": 0.02
+  },
+  "receitas_calculadas": {
+    "REC001": {
+      "nome": "Escondidinho de Carne Seca",
+      "custo_por_porcao": 0,
+      "custo_total_receita": 0,
+      "base_calculo": {
+        "data_custo": null,
+        "fonte_preco": "inventario_vivo",
+        "observacao": "Aguardando integracao com estoque"
+      },
+      "breakdown": {
+        "proteina_percentual": 0,
+        "carboidrato_percentual": 0,
+        "gordura_percentual": 0,
+        "insumos_percentual": 0
+      },
+      "alertas": []
+    },
+    "REC002": {
+      "nome": "Salada Caesar com Frango",
+      "custo_por_porcao": 0,
+      "custo_total_receita": 0,
+      "base_calculo": {
+        "data_custo": null,
+        "fonte_preco": "inventario_vivo",
+        "observacao": "Aguardando integracao com estoque"
+      },
+      "breakdown": {
+        "proteina_percentual": 0,
+        "vegetal_percentual": 0,
+        "insumos_percentual": 0
+      },
+      "alertas": []
+    },
+    "REC003": {
+      "nome": "Arroz com Brócolis",
+      "custo_por_porcao": 0,
+      "custo_total_receita": 0,
+      "base_calculo": {
+        "data_custo": null,
+        "fonte_preco": "inventario_vivo",
+        "observacao": "Aguardando integracao com estoque"
+      },
+      "breakdown": {
+        "grao_percentual": 0,
+        "vegetal_percentual": 0,
+        "insumos_percentual": 0
+      },
+      "alertas": []
+    },
+    "REC004": {
+      "nome": "Mini Hamburguer Premium",
+      "custo_por_porcao": 0,
+      "custo_total_receita": 0,
+      "base_calculo": {
+        "data_custo": null,
+        "fonte_preco": "inventario_vivo",
+        "observacao": "Aguardando integracao com estoque"
+      },
+      "breakdown": {
+        "proteina_percentual": 0,
+        "pao_percentual": 0,
+        "vegetal_percentual": 0
+      },
+      "alertas": []
+    },
+    "REC005": {
+      "nome": "Ceviche de Peixe Branco",
+      "custo_por_porcao": 0,
+      "custo_total_receita": 0,
+      "base_calculo": {
+        "data_custo": null,
+        "fonte_preco": "inventario_vivo",
+        "observacao": "Aguardando integracao com estoque"
+      },
+      "breakdown": {
+        "proteina_percentual": 0,
+        "acidez_percentual": 0,
+        "vegetal_percentual": 0
+      },
+      "alertas": []
+    }
+  },
+  "analise_comparativa": {
+    "receita_mais_cara": null,
+    "receita_mais_barata": null,
+    "custo_medio_porcao": 0,
+    "variacao_percentual": 0
+  },
+  "historico_variacao": []
+}

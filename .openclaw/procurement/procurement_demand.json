@@ -1,0 +1,228 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "generated_at": "2026-03-27T20:40:00",
+    "period": "2025-04-01 a 2025-04-07",
+    "events_count": 5,
+    "safety_margin": 0.20,
+    "status": "ready_for_procurement"
+  },
+  "demand_by_category": {
+    "cerveja": {
+      "products": [
+        {
+          "product": "Cerveja Artesanal Lager",
+          "sku": "BEB-001",
+          "total_quantity": 65,
+          "unit": "caixa",
+          "base_quantity": 54,
+          "safety_quantity": 11,
+          "event_ids": ["EV-2025-04-05", "EV-2025-04-12", "EV-2025-04-18"],
+          "events_count": 3,
+          "guests_covered": 260,
+          "urgency": "high",
+          "estimated_cost": 3250.00,
+          "supplier_candidates": ["SUP-001"],
+          "last_purchase_price": 50.00
+        }
+      ],
+      "category_totals": {
+        "units": 65,
+        "estimated_value": 3250.00
+      }
+    },
+    "gelo": {
+      "products": [
+        {
+          "product": "Gelo Cubo 5kg",
+          "sku": "GEL-001",
+          "total_quantity": 35,
+          "unit": "saco",
+          "base_quantity": 29,
+          "safety_quantity": 6,
+          "event_ids": ["EV-2025-04-05", "EV-2025-04-12", "EV-2025-04-18", "EV-2025-04-25", "EV-2025-04-30"],
+          "events_count": 5,
+          "guests_covered": 450,
+          "urgency": "critical",
+          "estimated_cost": 490.00,
+          "supplier_candidates": ["SUP-002"],
+          "last_purchase_price": 14.00
+        }
+      ],
+      "category_totals": {
+        "units": 35,
+        "estimated_value": 490.00
+      }
+    },
+    "refrigerante": {
+      "products": [
+        {
+          "product": "Refrigerante Cola 2L",
+          "sku": "BEV-003",
+          "total_quantity": 42,
+          "unit": "garrafa",
+          "base_quantity": 35,
+          "safety_quantity": 7,
+          "event_ids": ["EV-2025-04-12", "EV-2025-04-18", "EV-2025-04-25"],
+          "events_count": 3,
+          "guests_covered": 180,
+          "urgency": "medium",
+          "estimated_cost": 840.00,
+          "supplier_candidates": [],
+          "last_purchase_price": 20.00
+        }
+      ],
+      "category_totals": {
+        "units": 42,
+        "estimated_value": 840.00
+      }
+    },
+    "água": {
+      "products": [
+        {
+          "product": "Água Mineral 500ml",
+          "sku": "BEV-004",
+          "total_quantity": 150,
+          "unit": "garrafa",
+          "base_quantity": 125,
+          "safety_quantity": 25,
+          "event_ids": ["EV-2025-04-05", "EV-2025-04-12", "EV-2025-04-18", "EV-2025-04-25", "EV-2025-04-30"],
+          "events_count": 5,
+          "guests_covered": 450,
+          "urgency": "medium",
+          "estimated_cost": 450.00,
+          "supplier_candidates": [],
+          "last_purchase_price": 3.00
+        }
+      ],
+      "category_totals": {
+        "units": 150,
+        "estimated_value": 450.00
+      }
+    },
+    "destilados": {
+      "products": [
+        {
+          "product": "Vodka Premium",
+          "sku": "BEB-003",
+          "total_quantity": 8,
+          "unit": "garrafa",
+          "base_quantity": 7,
+          "safety_quantity": 1,
+          "event_ids": ["EV-2025-04-12", "EV-2025-04-18"],
+          "events_count": 2,
+          "guests_covered": 120,
+          "urgency": "medium",
+          "estimated_cost": 960.00,
+          "supplier_candidates": ["SUP-001"],
+          "last_purchase_price": 120.00
+        }
+      ],
+      "category_totals": {
+        "units": 8,
+        "estimated_value": 960.00
+      }
+    },
+    "buffet": {
+      "products": [
+        {
+          "product": "Picanha Premium",
+          "sku": "BUF-001",
+          "total_quantity": 18,
+          "unit": "kg",
+          "base_quantity": 15,
+          "safety_quantity": 3,
+          "event_ids": ["EV-2025-04-12", "EV-2025-04-18", "EV-2025-04-30"],
+          "events_count": 3,
+          "guests_covered": 180,
+          "urgency": "high",
+          "estimated_cost": 1710.00,
+          "supplier_candidates": ["SUP-004"],
+          "last_purchase_price": 95.00
+        }
+      ],
+      "category_totals": {
+        "units": 18,
+        "estimated_value": 1710.00
+      }
+    },
+    "descartáveis": {
+      "products": [
+        {
+          "product": "Copo Acrílico 300ml",
+          "sku": "DIS-001",
+          "total_quantity": 500,
+          "unit": "unidade",
+          "base_quantity": 420,
+          "safety_quantity": 80,
+          "event_ids": ["EV-2025-04-05", "EV-2025-04-12", "EV-2025-04-18", "EV-2025-04-25", "EV-2025-04-30"],
+          "events_count": 5,
+          "guests_covered": 450,
+          "urgency": "low",
+          "estimated_cost": 200.00,
+          "supplier_candidates": [],
+          "last_purchase_price": 0.40
+        }
+      ],
+      "category_totals": {
+        "units": 500,
+        "estimated_value": 200.00
+      }
+    }
+  },
+  "consolidated": {
+    "total_events": 5,
+    "total_guests": 450,
+    "total_categories": 7,
+    "total_line_items": 7,
+    "estimated_total_value": 7900.00,
+    "urgency_breakdown": {
+      "critical": 1,
+      "high": 2,
+      "medium": 3,
+      "low": 1
+    }
+  },
+  "procurement_schedule": {
+    "immediate": {
+      "due_date": "2025-03-28",
+      "items": ["GEL-001"],
+      "reason": "Prazo curto de entrega (4h)"
+    },
+    "this_week": {
+      "due_date": "2025-04-01",
+      "items": ["BEB-001", "BUF-001"],
+      "reason": "Eventos de 05/04 e 12/04"
+    },
+    "next_week": {
+      "due_date": "2025-04-08",
+      "items": ["BEV-003", "BEB-003", "BEV-004"],
+      "reason": "Eventos de 18/04 e 25/04"
+    }
+  },
+  "rfq_recommendations": {
+    "should_dispatch": true,
+    "priority_order": ["SUP-002", "SUP-001", "SUP-004"],
+    "estimated_response_time": 48,
+    "target_finalization": "2025-03-30"
+  },
+  "alerts": [
+    {
+      "level": "high",
+      "category": "gelo",
+      "message": "Gelo precisa de cotação URGENTE - tempo de entrega curto",
+      "action": "Dispachar RFQ imediatamente para SUP-002"
+    },
+    {
+      "level": "medium",
+      "category": "cerveja",
+      "message": "Margem de segurança de 20% aplicada",
+      "action": "Considerar aumento se histórico de consumo for maior"
+    }
+  ],
+  "next_generation": {
+    "schedule": "2025-03-28T06:00:00",
+    "trigger": "daily_at_06:00",
+    "look_ahead_days": 7
+  }
+}

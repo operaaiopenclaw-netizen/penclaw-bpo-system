@@ -1,0 +1,124 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "generated_at": "2026-03-27T20:41:00",
+    "total_messages": 3,
+    "method": "whatsapp"
+  },
+  "rfqs": [
+    {
+      "rfq_id": "RFQ-2025-03-27-001",
+      "supplier": {
+        "id": "SUP-002",
+        "name": "Gelo Express São Paulo",
+        "whatsapp": "+55-11-98888-2222",
+        "responsible": "Maria Oliveira"
+      },
+      "priority": "critical",
+      "message": "*COTAÇÃO URGENTE - EVENTOS STATUS/LA ORANA*\n\nOlá Maria, tudo bem?\n\nPreciso de cotação para o Evento do dia 05/04:\n\n📦 *ITENS:*\n• Gelo Cubo 5kg: 35 sacos\n\n⏰ *ENTREGA:*\n05/04/2025 até 14h\n\n💰 *INFORMAÇÕES NECESSÁRIAS:*\n• Valor unitário\n• Valor total\n• Formas de pagamento\n• Validade da proposta\n\n*Prazo para resposta: 24h*\n\nObrigado!\n_",
+      "items": [
+        {
+          "sku": "GEL-001",
+          "name": "Gelo Cubo 5kg",
+          "quantity": 35,
+          "unit": "saco"
+        }
+      ],
+      "delivery_date": "2025-04-05",
+      "delivery_time": "14:00",
+      "response_deadline": "2025-03-28T20:41:00",
+      "status": "ready_to_send"
+    },
+    {
+      "rfq_id": "RFQ-2025-03-27-002",
+      "supplier": {
+        "id": "SUP-001",
+        "name": "Bebidas Premium Distribuidora",
+        "whatsapp": "+55-11-99999-1111",
+        "responsible": "Carlos Silva"
+      },
+      "priority": "high",
+      "message": "*SOLICITAÇÃO DE ORÇAMENTO - STATUS/LA ORANA*\n\nOlá Carlos, espero que esteja bem!\n\nPreciso de cotação para eventos da primeira quinzena de abril:\n\n🍺 *CERVEJAS:*\n• Cerveja Artesanal Lager: 65 caixas\n\n🥃 *DESTILADOS:*\n• Vodka Premium: 8 garrafas\n\n📅 *ENTREGA:*\n04/04/2025 até 16h\n\n💵 *POR FAVOR INFORMAR:*\n• Preço unitário de cada item\n• Preço total do pedido\n• Prazo de entrega\n• Condições de pagamento\n• Validade da proposta\n\nAguardo retorno em até 48h.\n\nGrato!\n_",
+      "items": [
+        {
+          "sku": "BEB-001",
+          "name": "Cerveja Artesanal Lager",
+          "quantity": 65,
+          "unit": "caixa"
+        },
+        {
+          "sku": "BEB-003",
+          "name": "Vodka Premium",
+          "quantity": 8,
+          "unit": "garrafa"
+        }
+      ],
+      "delivery_date": "2025-04-04",
+      "delivery_time": "16:00",
+      "response_deadline": "2025-03-29T20:41:00",
+      "status": "ready_to_send"
+    },
+    {
+      "rfq_id": "RFQ-2025-03-27-003",
+      "supplier": {
+        "id": "SUP-004",
+        "name": "Buffet Master Insumos",
+        "whatsapp": "+55-11-96666-4444",
+        "responsible": "Fernanda Lima"
+      },
+      "priority": "high",
+      "message": "*ORÇAMENTO - INSUMOS PARA BUFFET*\n\nOi Fernanda!\n\nPreciso de cotação para eventos do mês:\n\n🥩 *CARNES:*\n• Picanha Premium: 18 kg\n\n📆 *DATA DE ENTREGA:*\n03/04/2025 (quinta-feira) até 10h\n\n✅ *INFORMAÇÕES NECESSÁRIAS:*\n• Valor por kg\n• Valor total\n• Prazo de entrega detalhado\n• Condição de pagamento\n• Validade da proposta\n• Certificação do produto\n\nResponder em até 48h por favor.\n\nObrigado!\n_",
+      "items": [
+        {
+          "sku": "BUF-001",
+          "name": "Picanha Premium",
+          "quantity": 18,
+          "unit": "kg"
+        }
+      ],
+      "delivery_date": "2025-04-03",
+      "delivery_time": "10:00",
+      "response_deadline": "2025-03-29T20:41:00",
+      "status": "ready_to_send"
+    }
+  ],
+  "templates": {
+    "whatsapp_standard": {
+      "header": "*{tipo} - {empresa}*",
+      "greeting": "Olá {nome}, tudo bem?",
+      "body": "Preciso de cotação para:\n\n{itens}\n\n📅 *ENTREGA:*\n{data} até {hora}",
+      "pricing": "💰 *INFORMAÇÕES NECESSÁRIAS:*\n• Valor unitário\n• Valor total\n• Prazo de entrega\n• Condição de pagamento\n• Validade da proposta",
+      "closing": "Aguardo retorno em até {prazo}h.\n\nObrigado!\n_",
+      "variables": ["tipo", "empresa", "nome", "itens", "data", "hora", "prazo"]
+    },
+    "whatsapp_urgent": {
+      "header": "*{tipo} URGENTE - {empresa}*",
+      "greeting": "Olá {nome}, espero que esteja bem!",
+      "body": "Preciso de cotação *URGENTE* para:\n\n{itens}\n\n⏰ *ENTREGA PRIORITÁRIA:*\n{data} até {hora}",
+      "pricing": "💰 *POR FAVOR INFORMAR:*\n• Preço unitário\n• Preço total\n• Prazo de entrega\n• Condições de pagamento\n• Validade da proposta",
+      "closing": "*Prazo para resposta: {prazo}h*\n\nGrato!\n_",
+      "variables": ["tipo", "empresa", "nome", "itens", "data", "hora", "prazo"]
+    },
+    "email_formal": {
+      "subject": "Solicitação de Orçamento - {empresa}",
+      "greeting": "Prezado(a) {nome},",
+      "body": "Solicitamos orçamento para os seguintes itens:\n\n{itens}\n\nData de entrega: {data}\nHorário: {hora}",
+      "pricing": "Informações necessárias:\n- Valor unitário\n- Valor total\n- Prazo de entrega\n- Condição de pagamento\n- Validade da proposta",
+      "closing": "Aguardamos retorno em até {prazo} horas.\n\nAtenciosamente,",
+      "variables": ["empresa", "nome", "itens", "data", "hora", "prazo"]
+    }
+  },
+  "dispatch_log": [],
+  "automation_config": {
+    "auto_dispatch": false,
+    "approval_required": true,
+    "preferred_method": "whatsapp",
+    "business_hours_only": true,
+    "business_hours": {
+      "start": "08:00",
+      "end": "18:00"
+    },
+    "follow_up_enabled": true,
+    "follow_up_hours": 24
+  }
+}

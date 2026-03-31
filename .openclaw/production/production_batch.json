@@ -1,0 +1,21 @@
+{
+  "batches": [
+    {
+      "batch_id": "BATCH-2025-03-27-001",
+      "event_id": "EV-2025-04-05",
+      "products": [
+        {"recipe_id": "RCP-BAR-001", "product": "Caipirinha", "planned": 50, "produced": 52, "waste": 2},
+        {"recipe_id": "RCP-KIT-001", "product": "Espeto Picanha", "planned": 80, "produced": 82, "waste": 0}
+      ],
+      "ingredients_consumed": [
+        {"item": "Cachaça", "quantity": 2600, "unit": "ml"},
+        {"item": "Limão", "quantity": 26, "unit": "un"},
+        {"item": "Picanha", "quantity": 9.84, "unit": "kg"}
+      ],
+      "efficiency": 0.96,
+      "cost_real": 245.80,
+      "cost_planned": 238.40,
+      "variance": 3.1
+    }
+  ]
+}

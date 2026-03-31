@@ -1,0 +1,196 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "engine": "production_technical_sheets",
+    "last_updated": "2026-03-27",
+    "total_recipes": 8,
+    "categories": ["bar", "kitchen"]
+  },
+  "recipes": [
+    {
+      "recipe_id": "RCP-BAR-001",
+      "product": "Caipirinha Clássica",
+      "category": "bar",
+      "type": "cocktail",
+      "output": {"quantity": 1, "unit": "porção", "volume_ml": 150},
+      "ingredients": [
+        {"item": "Cachaça 51", "quantity": 50, "unit": "ml", "cost_reference": 1.25},
+        {"item": "Limão Tahiti", "quantity": 0.5, "unit": "unidade", "cost_reference": 0.75},
+        {"item": "Açúcar Mascavo", "quantity": 10, "unit": "g", "cost_reference": 0.15},
+        {"item": "Gelo Cubo", "quantity": 100, "unit": "g", "cost_reference": 0.30}
+      ],
+      "total_cost": 2.45,
+      "selling_price": 25.00,
+      "cost_margin": 0.90,
+      "preparation_time_min": 3,
+      "difficulty": "easy",
+      "instructions": "Macere o limão com açúcar, adicione gelo e cachaça, mexa levemente"
+    },
+    {
+      "recipe_id": "RCP-BAR-002",
+      "product": "Mojito",
+      "category": "bar",
+      "type": "cocktail",
+      "output": {"quantity": 1, "unit": "porção", "volume_ml": 200},
+      "ingredients": [
+        {"item": "Rum Branco", "quantity": 60, "unit": "ml", "cost_reference": 2.40},
+        {"item": "Hortelã Fresca", "quantity": 8, "unit": "folhas", "cost_reference": 0.80},
+        {"item": "Limão Tahiti", "quantity": 0.5, "unit": "unidade", "cost_reference": 0.75},
+        {"item": "Açúcar", "quantity": 15, "unit": "g", "cost_reference": 0.20},
+        {"item": "Água com Gás", "quantity": 100, "unit": "ml", "cost_reference": 0.35},
+        {"item": "Gelo Cubo", "quantity": 120, "unit": "g", "cost_reference": 0.35}
+      ],
+      "total_cost": 4.85,
+      "selling_price": 32.00,
+      "cost_margin": 0.85,
+      "preparation_time_min": 4,
+      "difficulty": "medium",
+      "instructions": "Macere hortelã e limão, adicice rum e gelo, complete com água com gás"
+    },
+    {
+      "recipe_id": "RCP-BAR-003",
+      "product": "Gin Tônica",
+      "category": "bar",
+      "type": "cocktail",
+      "output": {"quantity": 1, "unit": "porção", "volume_ml": 250},
+      "ingredients": [
+        {"item": "Gin London Dry", "quantity": 50, "unit": "ml", "cost_reference": 4.50},
+        {"item": "Água Tônica", "quantity": 150, "unit": "ml", "cost_reference": 1.20},
+        {"item": "Limão Siciliano", "quantity": 0.25, "unit": "unidade", "cost_reference": 1.00},
+        {"item": "Gelo", "quantity": 100, "unit": "g", "cost_reference": 0.30}
+      ],
+      "total_cost": 7.00,
+      "selling_price": 35.00,
+      "cost_margin": 0.80,
+      "preparation_time_min": 2,
+      "difficulty": "easy",
+      "instructions": "Sirva o gelo, gin, tônica e finalize com twist de limão"
+    },
+    {
+      "recipe_id": "RCP-KIT-001",
+      "product": "Espeto de Picanha",
+      "category": "kitchen",
+      "type": "buffet",
+      "output": {"quantity": 1, "unit": "porção", "serves": 1},
+      "ingredients": [
+        {"item": "Picanha Premium", "quantity": 120, "unit": "g", "cost_reference": 11.40},
+        {"item": "Sal Grosso", "quantity": 2, "unit": "g", "cost_reference": 0.02},
+        {"item": "Carvão", "unit": "share", "cost_reference": 0.50}
+      ],
+      "total_cost": 11.92,
+      "selling_price": 35.00,
+      "cost_margin": 0.66,
+      "preparation_time_min": 8,
+      "cooking_time_min": 5,
+      "difficulty": "medium",
+      "instructions": "Temperar picanha com sal, grelhar no carvão até ponto escolhido"
+    },
+    {
+      "recipe_id": "RCP-KIT-002",
+      "product": "Salada Executiva",
+      "category": "kitchen",
+      "type": "buffet",
+      "output": {"quantity": 1, "unit": "porção", "serves": 1},
+      "ingredients": [
+        {"item": "Mix de Folhas", "quantity": 80, "unit": "g", "cost_reference": 2.40},
+        {"item": "Tomate Cereja", "quantity": 6, "unit": "unidades", "cost_reference": 1.20},
+        {"item": "Queijo Parmesão", "quantity": 10, "unit": "g", "cost_reference": 0.80},
+        {"item": "Cenoura", "quantity": 30, "unit": "g", "cost_reference": 0.30},
+        {"item": "Molho Caesar", "quantity": 30, "unit": "ml", "cost_reference": 0.90}
+      ],
+      "total_cost": 5.60,
+      "selling_price": 18.00,
+      "cost_margin": 0.69,
+      "preparation_time_min": 5,
+      "difficulty": "easy",
+      "instructions": "Lavar e misturar ingredientes, adicionar molho na hora do serviço"
+    },
+    {
+      "recipe_id": "RCP-KIT-003",
+      "product": "Salmão ao Molho de Ervas",
+      "category": "kitchen",
+      "type": "executive",
+      "output": {"quantity": 1, "unit": "porção", "serves": 1},
+      "ingredients": [
+        {"item": "Salmão Fresco", "quantity": 150, "unit": "g", "cost_reference": 22.50},
+        {"item": "Manteiga", "quantity": 20, "unit": "g", "cost_reference": 0.80},
+        {"item": "Alho", "quantity": 3, "unit": "g", "cost_reference": 0.05},
+        {"item": "Salsinha", "quantity": 5, "unit": "g", "cost_reference": 0.20},
+        {"item": "Limão", "quantity": 0.25, "unit": "unidade", "cost_reference": 0.40}
+      ],
+      "total_cost": 23.95,
+      "selling_price": 75.00,
+      "cost_margin": 0.68,
+      "preparation_time_min": 2,
+      "cooking_time_min": 8,
+      "difficulty": "medium",
+      "instructions": "Selar salmão em frigideira quente, finalizar com molho de manteiga e ervas"
+    },
+    {
+      "recipe_id": "RCP-KIT-004",
+      "product": "Mini Burguer",
+      "category": "kitchen",
+      "type": "finger_food",
+      "output": {"quantity": 1, "unit": "unidade", "serves": 1},
+      "ingredients": [
+        {"item": "Carne Moída Blend", "quantity": 80, "unit": "g", "cost_reference": 4.80},
+        {"item": "Pão Brioche", "quantity": 0.5, "unit": "unidade", "cost_reference": 1.50},
+        {"item": "Queijo Cheddar", "quantity": 15, "unit": "g", "cost_reference": 0.75},
+        {"item": "Alface", "quantity": 5, "unit": "g", "cost_reference": 0.10},
+        {"item": "Tomate", "quantity": 10, "unit": "g", "cost_reference": 0.15}
+      ],
+      "total_cost": 7.30,
+      "selling_price": 22.00,
+      "cost_margin": 0.67,
+      "preparation_time_min": 6,
+      "cooking_time_min": 4,
+      "difficulty": "easy",
+      "instructions": "Grelhar hambúrguer, montar com queijo derretido e ingredientes frescos"
+    },
+    {
+      "recipe_id": "RCP-KIT-005",
+      "product": "Risoto de Cogumelos",
+      "category": "kitchen",
+      "type": "executive",
+      "output": {"quantity": 1, "unit": "porção", "serves": 1},
+      "ingredients": [
+        {"item": "Arroz Arbóreo", "quantity": 80, "unit": "g", "cost_reference": 1.60},
+        {"item": "Cogumelos Shimeji", "quantity": 50, "unit": "g", "cost_reference": 3.50},
+        {"item": "Caldo de Legumes", "quantity": 200, "unit": "ml", "cost_reference": 0.80},
+        {"item": "Queijo Parmesão", "quantity": 20, "unit": "g", "cost_reference": 1.60},
+        {"item": "Manteiga", "quantity": 15, "unit": "g", "cost_reference": 0.60},
+        {"item": "Vinho Branco", "quantity": 30, "unit": "ml", "cost_reference": 1.20}
+      ],
+      "total_cost": 9.30,
+      "selling_price": 45.00,
+      "cost_margin": 0.79,
+      "preparation_time_min": 5,
+      "cooking_time_min": 22,
+      "difficulty": "hard",
+      "instructions": "Refogar arroz, adicionar vinho, caldo aos poucos, finalizar com cogumelos e queijo"
+    }
+  ],
+  "cost_analysis": {
+    "bar_average": {
+      "cost": 4.77,
+      "price": 30.67,
+      "margin": 0.85
+    },
+    "kitchen_average": {
+      "cost": 11.61,
+      "price": 39.00,
+      "margin": 0.70
+    },
+    "overall": {
+      "avg_cost": 8.19,
+      "avg_price": 34.83,
+      "avg_margin": 0.77
+    }
+  },
+  "efficiency_standards": {
+    "bar_prep_target": 3.0,
+    "kitchen_prep_target": 5.2,
+    "waste_limit": 0.05,
+    "portion_variance": 0.10
+  }
+}

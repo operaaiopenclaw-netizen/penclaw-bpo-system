@@ -1,0 +1,67 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "last_updated": "2026-03-31T13:30:00-03:00",
+    "description": "Registro de producao real executada por evento"
+  },
+  "execucoes": {},
+  "template_example": {
+    "EXEC001": {
+      "evento_id": "EVT001",
+      "nome_evento": "Casamento Silva & Costa",
+      "data_execucao": "2026-04-15",
+      "responsavel_kitchen": "Chef Ana Maria",
+      "equipe": ["Sous-chef João", "Auxiliar Pedro"],
+      "receitas_executadas": [
+        {
+          "receita_id": "REC001",
+          "nome": "Escondidinho de Carne Seca",
+          "porcoes_planejadas": 130,
+          "porcoes_produzidas": 132,
+          "porcoes_servidas": 118,
+          "porcoes_restantes": 14,
+          "custo_real": 0,
+          "tempo_preparo_real_min": 95,
+          "status": "concluido"
+        },
+        {
+          "receita_id": "REC002",
+          "nome": "Salada Caesar com Frango",
+          "porcoes_planejadas": 120,
+          "porcoes_produzidas": 120,
+          "porcoes_servidas": 115,
+          "porcoes_restantes": 5,
+          "custo_real": 0,
+          "tempo_preparo_real_min": 22,
+          "status": "concluido"
+        },
+        {
+          "receita_id": "REC004",
+          "nome": "Mini Hamburguer Premium",
+          "porcoes_planejadas": 200,
+          "porcoes_produzidas": 210,
+          "porcoes_servidas": 195,
+          "porcoes_restantes": 15,
+          "custo_real": 0,
+          "tempo_preparo_real_min": 50,
+          "status": "concluido"
+        }
+      ],
+      "totais": {
+        "custo_total_real": 0,
+        "custo_por_pessoa_real": 0,
+        "variacao_custo_planejado": 0,
+        "eficiencia_producao_percentual": 0
+      },
+      "observacoes_gerais": "Producao dentro do esperado. Resto do escondidinho aproveitado para staff.",
+      "timestamp_registro": "2026-04-15T22:30:00-03:00"
+    }
+  },
+  "metricas_acumuladas": {
+    "total_eventos_produzidos": 0,
+    "custo_medio_por_pessoa": 0,
+    "eficiencia_media": 0,
+    "melhor_eficiencia": 0,
+    "pior_eficiencia": 0
+  }
+}

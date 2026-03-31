@@ -1,0 +1,275 @@
+{
+  "metadata": {
+    "schema_version": "1.0",
+    "last_updated": "2026-03-27",
+    "total_suppliers": 15,
+    "categories": ["bebidas", "insumos_bar", "buffet", "staff", "gelo", "material"]
+  },
+  "suppliers": [
+    {
+      "supplier_id": "SUP-001",
+      "name": "Bebidas Premium Distribuidora",
+      "category": "bebidas",
+      "subcategory": ["cerveja", "vinho", "destilados"],
+      "status": "homologated",
+      "location": {
+        "city": "São Paulo",
+        "region": "Zona Norte",
+        "delivery_zone": 30
+      },
+      "contact": {
+        "phone": "+55-11-99999-1111",
+        "whatsapp": "+55-11-99999-1111",
+        "email": "comercial@bebidaspremium.com.br",
+        "responsible": "Carlos Silva"
+      },
+      "products": [
+        {"sku": "BEB-001", "name": "Cerveja Artesanal Lager", "unit": "caixa", "min_order": 10, "price_range": [45.00, 55.00]},
+        {"sku": "BEB-002", "name": "Vinho Tinto Nacional", "unit": "garrafa", "min_order": 12, "price_range": [35.00, 120.00]},
+        {"sku": "BEB-003", "name": "Vodka Premium", "unit": "unidade", "min_order": 6, "price_range": [80.00, 150.00]}
+      ],
+      "delivery": {
+        "time_hours": 48,
+        "minimum_order": 500.00,
+        "delivery_fee": 30.00,
+        "free_delivery_above": 1500.00
+      },
+      "score": {
+        "price": 8.5,
+        "quality": 9.0,
+        "reliability": 9.5,
+        "speed": 8.0,
+        "overall": 8.75
+      },
+      "performance": {
+        "orders_count": 45,
+        "on_time_rate": 0.94,
+        "defect_rate": 0.02,
+        "avg_response_minutes": 45
+      },
+      "payment_terms": "30 dias",
+      "last_quote_date": "2025-03-15"
+    },
+    {
+      "supplier_id": "SUP-002",
+      "name": "Gelo Express São Paulo",
+      "category": "gelo",
+      "subcategory": ["gelo_cubos", "gelo_escamas"],
+      "status": "homologated",
+      "location": {
+        "city": "São Paulo",
+        "region": "Centro",
+        "delivery_zone": 20
+      },
+      "contact": {
+        "phone": "+55-11-98888-2222",
+        "whatsapp": "+55-11-98888-2222",
+        "email": "pedidos@geloexpresssp.com",
+        "responsible": "Maria Oliveira"
+      },
+      "products": [
+        {"sku": "GEL-001", "name": "Gelo Cubo 5kg", "unit": "saco", "min_order": 20, "price_range": [12.00, 15.00]},
+        {"sku": "GEL-002", "name": "Gelo Escamas 10kg", "unit": "saco", "min_order": 10, "price_range": [25.00, 32.00]}
+      ],
+      "delivery": {
+        "time_hours": 4,
+        "minimum_order": 150.00,
+        "delivery_fee": 25.00,
+        "free_delivery_above": 300.00,
+        "same_day": true
+      },
+      "score": {
+        "price": 7.5,
+        "quality": 8.5,
+        "reliability": 9.0,
+        "speed": 10.0,
+        "overall": 8.75
+      },
+      "performance": {
+        "orders_count": 89,
+        "on_time_rate": 0.98,
+        "defect_rate": 0.01,
+        "avg_response_minutes": 15
+      },
+      "payment_terms": "à vista",
+      "last_quote_date": "2025-03-20"
+    },
+    {
+      "supplier_id": "SUP-003",
+      "name": "Staff Pro Eventos",
+      "category": "staff",
+      "subcategory": ["bartenders", "garçons", "segurança", "limpeza"],
+      "status": "homologated",
+      "location": {
+        "city": "São Paulo",
+        "region": "Grande SP",
+        "delivery_zone": 50
+      },
+      "contact": {
+        "phone": "+55-11-97777-3333",
+        "whatsapp": "+55-11-97777-3333",
+        "email": "contrate@staffpro.com.br",
+        "responsible": "Roberto Santos"
+      },
+      "products": [
+        {"sku": "STF-001", "name": "Bartender Senior", "unit": "hora", "min_order": 4, "price_range": [80.00, 120.00]},
+        {"sku": "STF-002", "name": "Garçom Experiente", "unit": "hora", "min_order": 4, "price_range": [45.00, 65.00]},
+        {"sku": "STF-003", "name": "Segurança Vigilante", "unit": "hora", "min_order": 4, "price_range": [55.00, 80.00]}
+      ],
+      "delivery": {
+        "time_hours": 48,
+        "minimum_order": 200.00,
+        "delivery_fee": 0,
+        "booking_advance_hours": 72
+      },
+      "score": {
+        "price": 6.5,
+        "quality": 9.0,
+        "reliability": 8.5,
+        "speed": 8.0,
+        "overall": 8.0
+      },
+      "performance": {
+        "orders_count": 32,
+        "on_time_rate": 0.88,
+        "defect_rate": 0.05,
+        "avg_response_minutes": 120
+      },
+      "payment_terms": "7 dias",
+      "last_quote_date": "2025-03-10"
+    },
+    {
+      "supplier_id": "SUP-004",
+      "name": "Buffet Master Insumos",
+      "category": "buffet",
+      "subcategory": ["carnes", "vegetais", "pães", "sobremesas"],
+      "status": "homologated",
+      "location": {
+        "city": "São Paulo",
+        "region": "Zona Leste",
+        "delivery_zone": 40
+      },
+      "contact": {
+        "phone": "+55-11-96666-4444",
+        "whatsapp": "+55-11-96666-4444",
+        "email": "vendas@buffetmaster.com.br",
+        "responsible": "Fernanda Lima"
+      },
+      "products": [
+        {"sku": "BUF-001", "name": "Picanha Premium", "unit": "kg", "min_order": 5, "price_range": [85.00, 110.00]},
+        {"sku": "BUF-002", "name": "Salmão Fresco", "unit": "kg", "min_order": 2, "price_range": [120.00, 160.00]},
+        {"sku": "BUF-003", "name": "Salada Mix Premium", "unit": "kg", "min_order": 3, "price_range": [25.00, 35.00]}
+      ],
+      "delivery": {
+        "time_hours": 24,
+        "minimum_order": 800.00,
+        "delivery_fee": 50.00,
+        "free_delivery_above": 2000.00,
+        "fresh_products": true
+      },
+      "score": {
+        "price": 7.0,
+        "quality": 9.5,
+        "reliability": 9.0,
+        "speed": 7.5,
+        "overall": 8.25
+      },
+      "performance": {
+        "orders_count": 28,
+        "on_time_rate": 0.92,
+        "defect_rate": 0.03,
+        "avg_response_minutes": 60
+      },
+      "payment_terms": "15 dias",
+      "last_quote_date": "2025-03-22"
+    },
+    {
+      "supplier_id": "SUP-005",
+      "name": "Bar Equipamentos & Consumíveis",
+      "category": "insumos_bar",
+      "subcategory": ["utensilios", "bebidas_diversas", "descartáveis"],
+      "status": "pending",
+      "location": {
+        "city": "São Paulo",
+        "region": "Zona Oeste",
+        "delivery_zone": 25
+      },
+      "contact": {
+        "phone": "+55-11-95555-5555",
+        "whatsapp": "+55-11-95555-5555",
+        "email": "contato@barequipamentos.com.br",
+        "responsible": "João Pereira"
+      },
+      "products": [
+        {"sku": "BAR-001", "name": "Copo Acrílico 350ml", "unit": "pacote", "min_order": 10, "price_range": [35.00, 45.00]},
+        {"sku": "BAR-002", "name": "Mexedor Inox", "unit": "unidade", "min_order": 12, "price_range": [8.00, 12.00]},
+        {"sku": "BAR-003", "name": "Guardanapo Luxo", "unit": "pacote", "min_order": 20, "price_range": [15.00, 22.00]}
+      ],
+      "delivery": {
+        "time_hours": 72,
+        "minimum_order": 300.00,
+        "delivery_fee": 40.00,
+        "free_delivery_above": 1000.00
+      },
+      "score": {
+        "price": 8.0,
+        "quality": 7.5,
+        "reliability": null,
+        "speed": 7.0,
+        "overall": null
+      },
+      "performance": {
+        "orders_count": 0,
+        "on_time_rate": null,
+        "defect_rate": null,
+        "avg_response_minutes": null
+      },
+      "payment_terms": "30 dias",
+      "last_quote_date": null
+    },
+    {
+      "supplier_id": "SUP-006",
+      "name": "Energia Eventos - Som & Luz",
+      "category": "material",
+      "subcategory": ["audiovisual", "iluminação", "estruturas"],
+      "status": "homologated",
+      "location": {
+        "city": "São Paulo",
+        "region": "Zona Sul",
+        "delivery_zone": 60
+      },
+      "contact": {
+        "phone": "+55-11-94444-6666",
+        "whatsapp": "+55-11-94444-6666",
+        "email": "locacao@energiaeventos.com.br",
+        "responsible": "Paulo Henrique"
+      },
+      "products": [
+        {"sku": "AV-001", "name": "DJ Profissional + Som", "unit": "evento", "min_order": 1, "price_range": [1500.00, 3000.00]},
+        {"sku": "AV-002", "name": "Iluminação Cênica", "unit": "evento", "min_order": 1, "price_range": [800.00, 2000.00]},
+        {"sku": "AV-003", "name": "Projeção 4K", "unit": "evento", "min_order": 1, "price_range": [2000.00, 5000.00]}
+      ],
+      "delivery": {
+        "time_hours": 168,
+        "minimum_order": 1500.00,
+        "delivery_fee": 0,
+        "booking_advance_hours": 336
+      },
+      "score": {
+        "price": 7.0,
+        "quality": 9.0,
+        "reliability": 8.5,
+        "speed": 6.0,
+        "overall": 7.625
+      },
+      "performance": {
+        "orders_count": 12,
+        "on_time_rate": 0.85,
+        "defect_rate": 0.08,
+        "avg_response_minutes": 180
+      },
+      "payment_terms": "50% entrada + 50% 7 dias",
+      "last_quote_date": "2025-03-05"
+    }
+  ]
+}

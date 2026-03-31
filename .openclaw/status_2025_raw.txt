@@ -1,0 +1,100 @@
+DEMONSTRATIVO STATUS
+JANEIRO FEVEREIRO MARÇO ABRIL
+1. RECEITAS OPERACIONAIS 165.126,41R$       404.083,61R$       674.288,98R$       458.528,70R$       
+1.1 RECEITAS DE EVENTOS 165.126,41R$          404.083,61 R$          674.288,98 R$          458.528,70 R$          
+RECEBIMENTOS IDENTIFICADOS 54.527,38R$            220.238,60 R$          505.256,94 R$          351.853,20 R$          
+RECEBIMENTOS NÃO IDENTIFICADOS 110.599,03R$          183.845,01 R$          182.909,64 R$          106.675,50 R$          
+DEVOLUÇÕES EVENTO - R$                        - R$                        13.877,60 -R$            
+Faturamento Fiscal
+Diferença 165.126,41-R$         404.083,61 -R$         674.288,98 -R$         458.528,70 -R$         
+2. DESPESAS 343.118,55R$       228.118,15R$       418.297,02R$       303.210,77R$       
+2.1 IMPOSTOS 47.914,45R$            10.085,35 R$            17.627,28 R$            14.818,82 R$            
+FGTS 1.033,48 R$              815,46 R$                  876,88 R$                  876,88 R$                  
+ICMS - R$                        - R$                        - R$                        - R$                        
+INSS 531,71 R$                  1.082,15 R$              917,56 R$                  1.074,39 R$              
+ISS - R$                        - R$                        - R$                        - R$                        
+PARCELAMENTOS 4.705,87 R$              4.112,52 R$              4.152,09 R$              *
+SIMPLES NACIONAL 41.643,39R$            4.075,22 R$              11.680,75 R$            12.867,55 R$            
+2.2 CMV - COMPRA DE INSUMOS 36.022,04R$            14.043,42 R$            118.758,34 R$          52.595,23 R$            
+COMPRA DE INSUMOS BAR 36.022,04R$            14.043,42 R$            118.758,34 R$          52.595,23 R$            
+COMPRA DE INSUMOS BUFFET - R$                        - R$                        - R$                        - R$                        
+2.3 OUTROS CUSTOS 52.822,62R$            38.056,77 R$            38.887,64 R$            75.720,75 R$            
+AUDIO E VIDEO 39.946,82R$            20.911,52 R$            4.975,00 R$              34.713,25 R$            
+BV DE AGENCIA 911,80 R$                  - R$                        13.279,62 R$            27.107,00 R$            
+DECORAÇÃO 1.360,00 R$              - R$                        14.425,50 R$            - R$                        
+DESPESAS DIVERSAS EVENTOS 904,00 R$                  10.329,25 R$            1.112,52 R$              12.437,50 R$            
+EMBALAGENS - R$                        - R$                        - R$                        23,00 R$                    
+LOCAÇÃO DE MATERIAL 9.700,00 R$              6.816,00 R$              5.095,00 R$              1.440,00 R$              
+VALLET - R$                        - R$                        - R$                        - R$                        
+2.4 DESPESAS COM PESSOAL 42.845,29R$            55.012,70 R$            126.981,07 R$          60.355,55 R$            
+[R] [R] SALÁRIOS 14.970,09R$            12.937,47 R$            12.723,06 R$            14.333,07 R$            
+13º SALÁRIO 311,00 R$                  - R$                        - R$                        
+ADIANTAMENTOS 300,00 R$                  500,00 R$               - R$                        1.050,00 R$              
+BONIFICAÇÕES 1.450,00 R$              - R$                        - R$                        225,30 R$                  
+COMISSÕES 3.515,04 R$              - R$                        3.336,60 R$              - R$                        
+EMPRÉSTIMO A FUNCIONÁRIOS / TERCEIROS - R$                        - R$                        - R$                        - R$                        
+FARMÁCIA - R$                        - R$                        - R$                        138,20 R$                  
+HEAD - R$                        650,00 R$                  - R$                        3.450,00 R$              
+LANCHES E REFEIÇÕES 929,13 R$                  - R$                        - R$                        - R$                        
+LIMPEZA 2.063,20 R$              3.705,91 R$              2.377,07 R$              4.542,25 R$              
+MEDICINA OCUPACIONAL 128,08 R$                  128,08 R$                  128,08 R$                  138,89 R$                  
+PRO LABORE 1.256,68 R$              1.351,02 R$              1.351,02 R$              1.351,02 R$              
+PROCESSOS TRABALHISTAS - R$                        - R$                        - R$                        - R$                        
+STAFF 10.290,00R$            29.380,00 R$            2.420,00 R$              18.430,00 R$            
+SEGURANÇA EVENTO - R$                        - R$                        - R$                        
+SEGURO DE VIDA / BENEF ODONTOLOGICO 462,23 R$                  468,22 R$                  1.097,24 R$              1.048,82 R$              
+SERVIÇOS 3º BAR - R$                        - R$                        - R$                        - R$                        
+TAXA 5.988,00 R$              942,00 R$                  102.900,00 R$          14.340,00 R$            
+UNIFORMES - R$                        3.400,00 R$              - R$                        - R$                        
+VALE TRANSPORTE 1.181,84 R$              1.550,00 R$              648,00 R$                  1.308,00 R$              
+2.5 DESPESAS ADMINISTRATIVAS 96.361,25R$            78.594,78 R$            75.611,26 R$            83.695,20 R$            
+[R] [R] ÁGUA 5.099,92 R$            2.456,25 R$             2.783,98 R$              4.051,20 R$              
+ALUGUEL 66.754,07R$            66.754,07 R$            66.754,07 R$            66.754,07 R$            
+[R] [R] DEDETIZAÇÃO 146,64 R$                  146,64 R$                  146,64 R$                  - R$                        
+[R] [R] ENERGIA ELÉTRICA 16.641,39R$            5.772,88 R$              1.275,13 R$              3.672,90 R$              
+IPTU 2.500,09 R$              - R$                        - R$                        - R$                        
+[R] [R] TELEFONIA E INTERNET 77,44 R$                    77,44 R$                    77,44 R$                    1.253,65 R$              
+SOFTWARE 1.979,70 R$              - R$                        - R$                        2.459,70 R$              
+HONORÁRIOS 3.162,00 R$              3.387,50 R$              4.574,00 R$              5.503,68 R$              
+2.6 DESPESAS VARIÁVEIS 15.158,09R$            12.630,40 R$            18.044,63 R$            5.071,42 R$              
+ALUGUEL CARRO - R$                        - R$                        - R$                        - R$                        
+COMBUSTIVEL 429,99 R$                  200,00 R$                  150,00 R$                  - R$                        
+DESPESAS LEGAIS 324,04 R$                  46,30 R$                    440,00 R$                  - R$                        
+DEVOLUÇÕES EVENTO - R$                        - R$                        13.877,60 R$            - R$                        
+[R] [R] DESPESAS COM INFORMATICA 43,50 R$                    77,81 R$                    89,79 R$                    81,74 R$                    
+ESTACIONAMENTO - R$                        - R$                        32,00 R$                    - R$                        
+MANUTENÇÃO DE EQUIP/VEICULOS 5.202,41 R$              6.869,61 R$              250,00 R$                  650,00 R$                  
+MANUTENÇÃO PREDIAL 5.965,93 R$              3.087,17 R$              1.456,15 R$              1.382,17 R$              
+MOVEIS E UTENSILIOS 3.127,60 R$              308,30 R$                  - R$                        42,30 R$                    
+PEDÁGIOS 64,62 R$                    400,86 R$                  108,74 R$                  74,85 R$                    
+[R] [R] SEGURO IMÓVEIS - R$                        1.640,35 R$              1.640,35 R$              1.640,36 R$              
+TRANSPORTE / FRETE - R$                        - R$                        - R$                        1.200,00 R$              
+TREINAMENTOS - R$                        - R$                        - R$                        - R$                        
+2.7 DESPESAS FINANCEIRAS 51.994,81R$            19.694,73 R$            22.386,80 R$            10.953,80 R$            
+CARTÃO DE CRÉDITO 15.131,20R$            4.627,61 R$              15.468,88 R$            10.851,12 R$            
+RETIRADA CAIXA BANCO 36.770,00R$            14.770,00 R$            6.810,00 R$              - R$                        
+TARIFAS BANCÁRIAS 93,61 R$                    297,12 R$                  107,92 R$                  102,68 R$                  
+3. RESULTADO OPERACIONAL BRUTO 177.992,14-R$       175.965,46R$       255.991,96R$       155.317,93R$       
+4. AJUSTES GERENCIAIS 234.837,44R$       109.394,97-R$       164.072,77-R$       13.839,27-R$         
+4.1 OUTROS VALORES A RECEBER 295.630,00R$          - R$                        144.000,00 R$          126.000,00 R$          
+EVENTOS RECEBIDOS PELO LA ORANA
+EMPRÉSTIMOS PARA LA ORANA 295.630,00R$          - R$                        144.000,00 R$          126.000,00 R$          
+4.2 (-) OUTROS VALORES A PAGAR 64.560,00R$            114.672,00 R$          347.942,96 R$          148.260,00 R$          
+EVENTOS A PAGAR LA ORANA 64.560,00R$            114.672,00 R$          347.942,96 R$          148.260,00 R$          
+EMPRÉSTIMOS DA LA ORANA - R$                        - R$                        - R$                        - R$                        
+RECEBIMENTOS DE EVENTOS CONTA ERRADA - R$                        - R$                        - R$                        70.000,00 R$            
+4.3 RATEIOS ENTRE EMPRESAS 3.767,44 R$              5.347,98 R$              46.599,83 R$            15.453,49 R$            
+(+) RATEIO A RECEBER LA ORANA 3.914,08 R$              5.494,62 R$              46.746,47 R$            15.618,13 R$            
+[R] SALÁRIOS 3.735,14 R$              3.695,01 R$              3.745,53 R$              3.735,52 R$              
+[R] 13º SALÁRIO - R$                        - R$                        - R$                       - R$                       
+[R] ÁGUA - R$                        - R$                        9.146,66 R$              - R$                       
+[R] ENERGIA ELETRICA - R$                        - R$                        32.046,70R$           10.081,12 R$           
+[R] SEGUROS - R$                        1.640,35 R$              1.640,35 R$              1.640,35 R$              
+[R] TELEFONIA E INTERNET 77,44 R$                    77,44 R$                    77,44 R$                    79,40 R$                   
+[R] DESPESAS COM INFORMATICA 101,50 R$                  81,82 R$                    89,79 R$                    81,74 R$                   
+(-) RATEIO A PAGAR LA ORANA 146,64 R$                  146,64 R$                  146,64 R$                  164,64 R$                  
+[R] DEDETIZAÇÃO 146,64 R$                  146,64 R$                  146,64 R$                  164,64 R$                 
+4.4 (-) DISTRIBUIÇÕES PARA SÓCIOS - R$                        70,95 R$                    6.729,64 R$              7.032,76 R$              
+PART. Sr MARIO - R$                        - R$                        1.840,00 R$              
+PART. SAYURI - R$                        70,95 R$                    6.729,64 R$              5.192,76 R$              
+5. RESULTADO OPERACIONAL LÍQUIDO 56.845,30R$         66.570,49R$         91.919,19R$         141.478,66R$       

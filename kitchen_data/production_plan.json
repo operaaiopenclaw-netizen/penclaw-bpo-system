@@ -1,0 +1,85 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "last_updated": "2026-03-31T13:30:00-03:00",
+    "description": "Planejamento de producao por evento com demanda prevista"
+  },
+  "eventos": {},
+  "template_example": {
+    "EVT001": {
+      "nome_evento": "Casamento Silva & Costa",
+      "data_evento": "2026-04-15",
+      "numero_convidados": 120,
+      "tipo_servico": "buffet_completo",
+      "status_planejamento": "rascunho",
+      "cardapio": {
+        "entradas": [
+          {
+            "receita_id": "REC002",
+            "nome": "Salada Caesar com Frango",
+            "porcoes_previstas": 120,
+            "custo_estimado": 0,
+            "observacao": "Porcao individual"
+          },
+          {
+            "receita_id": "REC005",
+            "nome": "Ceviche de Peixe Branco",
+            "porcoes_previstas": 60,
+            "custo_estimado": 0,
+            "observacao": "Porcao individual - alternativa"
+          }
+        ],
+        "principal": [
+          {
+            "receita_id": "REC001",
+            "nome": "Escondidinho de Carne Seca",
+            "porcoes_previstas": 130,
+            "fator_sobriga": 1.08,
+            "custo_estimado": 0
+          }
+        ],
+        "acompanhamentos": [
+          {
+            "receita_id": "REC003",
+            "nome": "Arroz com Brócolis",
+            "porcoes_previstas": 140,
+            "fator_sobriga": 1.15,
+            "custo_estimado": 0
+          }
+        ],
+        "finger_food": [
+          {
+            "receita_id": "REC004",
+            "nome": "Mini Hamburguer Premium",
+            "porcoes_previstas": 200,
+            "fator_sobriga": 1.20,
+            "custo_estimado": 0,
+            "observacao": "2 unidades per capita nos primeiros 30 min"
+          }
+        ]
+      },
+      "totais_previstos": {
+        "custo_total_comida": 0,
+        "custo_por_pessoa": 0,
+        "margem_inicial": 0
+      },
+      "validacao": {
+        "cobertura_check": false,
+        "ingredientes_disponiveis": false,
+        "equipe_suficiente": false
+      }
+    }
+  },
+  "regras_planejamento": {
+    "fator_sobriga": {
+      "buffet_completo": 1.15,
+      "coquetel": 1.25,
+      "coffee_break": 1.10,
+      "jantar_servido": 1.05
+    },
+    "alerta_custo_por_pessoa": {
+      "maximo_recomendado": 80.00,
+      "critico": 100.00
+    }
+  }
+}

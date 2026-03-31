@@ -1,0 +1,8 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "last_updated": "2026-03-31T13:30:00-03:00",
+    "description": "Dados mestres de inventário - preenchido via procurement engine"
+  },
+  "inventory": []
+}

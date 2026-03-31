@@ -1,0 +1,101 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "last_updated": "2026-03-31T13:30:00-03:00",
+    "description": "Registro de desperdicio e sobras por evento"
+  },
+  "classificacao_desperdicio": {
+    "TIPO_A": {
+      "nome": "Sobra Aproveitavel (Staff)",
+      "destino": "consumo_equipe",
+      "valorizacao": 0.30,
+      "custo_recuperado": 0
+    },
+    "TIPO_B": {
+      "nome": "Sobra Para Doacao",
+      "destino": "doacao",
+      "valorizacao": 0.10,
+      "custo_recuperado": 0
+    },
+    "TIPO_C": {
+      "nome": "Sobra Nao Aproveitavel",
+      "destino": "descarte_seguro",
+      "valorizacao": 0.00,
+      "custo_recuperado": 0
+    },
+    "TIPO_D": {
+      "nome": "Erro de Preparo",
+      "destino": "perda_total",
+      "valorizacao": 0.00,
+      "custo_recuperado": 0
+    },
+    "TIPO_E": {
+      "nome": "Material Estragado",
+      "destino": "perda_total",
+      "valorizacao": 0.00,
+      "custo_recuperado": 0
+    }
+  },
+  "registros": {},
+  "template_example": {
+    "EVT001": {
+      "evento_id": "EVT001",
+      "nome_evento": "Casamento Silva & Costa",
+      "data_evento": "2026-04-15",
+      "itens_desperdiados": [
+        {
+          "receita_id": "REC001",
+          "nome": "Escondidinho de Carne Seca",
+          "quantidade_sobra": 14,
+          "classificacao": "TIPO_A",
+          "custo_perdido": 0,
+          "custo_recuperado": 0,
+          "destino_final": "Marmita staff - 6 unidades",
+          "observacao": "Producao dentro do fator de segura"
+        },
+        {
+          "receita_id": "REC002",
+          "nome": "Salada Caesar com Frango",
+          "quantidade_sobra": 5,
+          "classificacao": "TIPO_C",
+          "custo_perdido": 0,
+          "custo_recuperado": 0,
+          "destino_final": "Descarte",
+          "observacao": "Salada estragou - esquecido na geladeira"
+        }
+      ],
+      "totais_desperdicio": {
+        "custo_total_perdido": 0,
+        "custo_total_recuperado": 0,
+        "percentual_desperdicio": 0,
+        "percentual_benchmark": 5.0,
+        "status": "dentro_benchmark"
+      },
+      "insumos_descartados": [
+        {
+          "item": "Tomate Cereja",
+          "quantidade": "0.500 kg",
+          "motivo": "Estragou na geladeira - temperatura incorreta",
+          "classificacao": "TIPO_E",
+          "custo": 0
+        }
+      ],
+      "acoes_sugeridas": [
+        "Verificar temperatura da geladeira 03",
+        "Revisar fator de segura da Salada Caesar para proximos eventos"
+      ]
+    }
+  },
+  "benchmarks": {
+    "desperdicio_aceitavel_percentual": 5.0,
+    "desperdicio_atencao_percentual": 10.0,
+    "desperdicio_critico_percentual": 15.0
+  },
+  "relatorio_acumulado": {
+    "periodo": null,
+    "total_desperdicio": 0,
+    "total_recuperado": 0,
+    "custo_real_perdido": 0,
+    "tendencia": "estavel"
+  }
+}

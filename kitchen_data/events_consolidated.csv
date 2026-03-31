@@ -1,0 +1,5 @@
+event_id,n_ctt,company,date_event,mes,revenue_total,client_name,event_type,status
+EVT001,CTT001,opera,2026-04-15,2026-04,25000.00,Silva Eventos,Casamento,confirmed
+EVT002,CTT002,la_orana,2026-04-20,2026-04,18000.00,ACME Corp,Corporativo,confirmed
+EVT003,CTT003,opera,2026-04-25,2026-04,15000.00,João Silva,Aniversário,confirmed
+EVT004,CTT004,la_orana,2026-04-28,2026-04,12000.00,Maria Santos,Festa,confirmed

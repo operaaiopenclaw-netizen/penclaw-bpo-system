@@ -1,0 +1,110 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "engine": "inventory_balance_calculator",
+    "last_update": "2026-03-27T19:10:00",
+    "calculation_method": "sum_all_movements",
+    "validation": "negative_stock_blocked"
+  },
+  "balance": [
+    {
+      "product_id": "INV-GEL-001",
+      "product_name": "Gelo Cubo 5kg",
+      "category": "gelo",
+      "unit": "saco",
+      "initial_stock": 50,
+      "current_stock": 37,
+      "min_stock": 20,
+      "max_stock": 80,
+      "status": "OK",
+      "movements_summary": {
+        "entradas": 50,
+        "saidas": -21,
+        "retornos": 3,
+        "perdas": -3,
+        "ajustes": 5
+      },
+      "last_movement": "2025-04-22",
+      "days_since_last_movement": 5,
+      "forecast_depletion_days": 8
+    },
+    {
+      "product_id": "INV-CAC-001",
+      "product_name": "Cachaça 51",
+      "category": "bebidas",
+      "unit": "garrafa",
+      "initial_stock": 8,
+      "current_stock": 10,
+      "min_stock": 3,
+      "max_stock": 15,
+      "status": "OK",
+      "movements_summary": {
+        "entradas": 5,
+        "saidas": -2,
+        "retornos": 0,
+        "perdas": -1,
+        "ajustes": 0
+      },
+      "last_movement": "2025-04-20",
+      "days_since_last_movement": 7
+    },
+    {
+      "product_id": "INV-COP-001",
+      "product_name": "Copo Acrílico 300ml",
+      "category": "descartaveis",
+      "unit": "unidade",
+      "initial_stock": 2500,
+      "current_stock": 2000,
+      "min_stock": 500,
+      "max_stock": 5000,
+      "status": "OK",
+      "movements_summary": {
+        "entradas": 0,
+        "saidas": -500,
+        "retornos": 0,
+        "perdas": 0,
+        "ajustes": 0
+      },
+      "last_movement": "2025-04-15",
+      "days_since_last_movement": 12
+    },
+    {
+      "product_id": "INV-CAR-001",
+      "product_name": "Picanha Premium",
+      "category": "proteinas",
+      "unit": "kg",
+      "initial_stock": 35,
+      "current_stock": 22.76,
+      "min_stock": 15,
+      "max_stock": 50,
+      "status": "OK",
+      "movements_summary": {
+        "entradas": 0,
+        "saidas": -12.24,
+        "retornos": 0,
+        "perdas": 0,
+        "ajustes": 0
+      },
+      "last_movement": "2025-04-22",
+      "days_since_last_movement": 5
+    }
+  ],
+  "alerts": [
+    {
+      "level": "WARNING",
+      "product_id": "INV-GEL-001",
+      "product_name": "Gelo Cubo 5kg",
+      "current_stock": 37,
+      "min_stock": 20,
+      "message": "Estoque em 18 dias úteis de consumo",
+      "action": "Programar compra para 3 dias"
+    }
+  ],
+  "consolidated": {
+    "total_products_tracked": 4,
+    "products_in_alert": 0,
+    "products_critical": 0,
+    "products_ok": 4,
+    "inventory_accuracy": 0.98
+  }
+}

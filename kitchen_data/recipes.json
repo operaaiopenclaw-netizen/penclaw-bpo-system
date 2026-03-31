@@ -1,0 +1,212 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "last_updated": "2026-03-31T13:30:00-03:00",
+    "description": "Base central de receitas com identificadores padronizados"
+  },
+  "receitas": {
+    "REC001": {
+      "nome": "Escondidinho de Carne Seca",
+      "categoria": "principal",
+      "custo_por_porcao": 0,
+      "rendimento_porca": 15,
+      "tempo_preparo_min": 90,
+      "complexidade": "media",
+      "ingredientes": [
+        {
+          "codigo_inv": "CAR-001",
+          "nome": "Carne Seca Desfiada",
+          "quantidade_por_porcao": 0.120,
+          "unidade": "kg",
+          "custo_unitario_referencia": 0
+        },
+        {
+          "codigo_inv": "LEG-001",
+          "nome": "Mandioca Cozida",
+          "quantidade_por_porcao": 0.150,
+          "unidade": "kg",
+          "custo_unitario_referencia": 0
+        },
+        {
+          "codigo_inv": "LAZ-001",
+          "nome": "Manteiga",
+          "quantidade_por_porcao": 0.010,
+          "unidade": "kg",
+          "custo_unitario_referencia": 0
+        },
+        {
+          "codigo_inv": "QUE-001",
+          "nome": "Queijo Coalho Ralado",
+          "quantidade_por_porcao": 0.030,
+          "unidade": "kg",
+          "custo_unitario_referencia": 0
+        }
+      ],
+      "instrucoes_resumidas": "Refogar carne -> Amassar mandioca -> Montar camadas -> Gratinar",
+      "status": "ativo"
+    },
+    "REC002": {
+      "nome": "Salada Caesar com Frango",
+      "categoria": "entrada",
+      "custo_por_porcao": 0,
+      "rendimento_porca": 20,
+      "tempo_preparo_min": 25,
+      "complexidade": "baixa",
+      "ingredientes": [
+        {
+          "codigo_inv": "FRG-001",
+          "nome": "Peito de Frango Grelhado",
+          "quantidade_por_porcao": 0.100,
+          "unidade": "kg",
+          "custo_unitario_referencia": 0
+        },
+        {
+          "codigo_inv": "VEG-001",
+          "nome": "Alface Americana",
+          "quantidade_por_porcao": 0.080,
+          "unidade": "kg",
+          "custo_unitario_referencia": 0
+        },
+        {
+          "codigo_inv": "MOL-001",
+          "nome": "Molho Caesar",
+          "quantidade_por_porcao": 0.030,
+          "unidade": "kg",
+          "custo_unitario_referencia": 0
+        },
+        {
+          "codigo_inv": "PAO-001",
+          "nome": "Croutons",
+          "quantidade_por_porcao": 0.020,
+          "unidade": "kg",
+          "custo_unitario_referencia": 0
+        },
+        {
+          "codigo_inv": "QUE-002",
+          "nome": "Parmesao Ralado",
+          "quantidade_por_porcao": 0.010,
+          "unidade": "kg",
+          "custo_unitario_referencia": 0
+        }
+      ],
+      "status": "ativo"
+    },
+    "REC003": {
+      "nome": "Arroz com Brócolis",
+      "categoria": "acompanhamento",
+      "custo_por_porcao": 0,
+      "rendimento_porca": 30,
+      "tempo_preparo_min": 40,
+      "complexidade": "baixa",
+      "ingredientes": [
+        {
+          "codigo_inv": "GRA-001",
+          "nome": "Arroz Agulhinha",
+          "quantidade_por_porcao": 0.080,
+          "unidade": "kg",
+          "custo_unitario_referencia": 0
+        },
+        {
+          "codigo_inv": "VEG-002",
+          "nome": "Brócolis Fresco",
+          "quantidade_por_porcao": 0.050,
+          "unidade": "kg",
+          "custo_unitario_referencia": 0
+        },
+        {
+          "codigo_inv": "LAZ-002",
+          "nome": "Azeite Extra Virgem",
+          "quantidade_por_porcao": 0.005,
+          "unidade": "kg",
+          "custo_unitario_referencia": 0
+        }
+      ],
+      "status": "ativo"
+    },
+    "REC004": {
+      "nome": "Mini Hamburguer Premium",
+      "categoria": "finger_food",
+      "custo_por_porcao": 0,
+      "rendimento_porca": 25,
+      "tempo_preparo_min": 45,
+      "complexidade": "media",
+      "ingredientes": [
+        {
+          "codigo_inv": "CAR-002",
+          "nome": "Blend Hamburguer (Patinho + Alcatra)",
+          "quantidade_por_porcao": 0.080,
+          "unidade": "kg",
+          "custo_unitario_referencia": 0
+        },
+        {
+          "codigo_inv": "PAO-002",
+          "nome": "Mini Pao Brioche",
+          "quantidade_por_porcao": 1,
+          "unidade": "un",
+          "custo_unitario_referencia": 0
+        },
+        {
+          "codigo_inv": "VEG-003",
+          "nome": "Tomate Cereja",
+          "quantidade_por_porcao": 0.010,
+          "unidade": "kg",
+          "custo_unitario_referencia": 0
+        },
+        {
+          "codigo_inv": "LAZ-003",
+          "nome": "Maionese",
+          "quantidade_por_porcao": 0.005,
+          "unidade": "kg",
+          "custo_unitario_referencia": 0
+        }
+      ],
+      "status": "ativo"
+    },
+    "REC005": {
+      "nome": "Ceviche de Peixe Branco",
+      "categoria": "entrada",
+      "custo_por_porcao": 0,
+      "rendimento_porca": 12,
+      "tempo_preparo_min": 20,
+      "complexidade": "alta",
+      "ingredientes": [
+        {
+          "codigo_inv": "PEI-001",
+          "nome": "File Peixe Branco",
+          "quantidade_por_porcao": 0.100,
+          "unidade": "kg",
+          "custo_unitario_referencia": 0
+        },
+        {
+          "codigo_inv": "FRU-001",
+          "nome": "Limao Taiti",
+          "quantidade_por_porcao": 0.060,
+          "unidade": "kg",
+          "custo_unitario_referencia": 0
+        },
+        {
+          "codigo_inv": "VEG-004",
+          "nome": "Cebola Roxa",
+          "quantidade_por_porcao": 0.020,
+          "unidade": "kg",
+          "custo_unitario_referencia": 0
+        },
+        {
+          "codigo_inv": "VEG-005",
+          "nome": "Coentro Fresco",
+          "quantidade_por_porcao": 0.005,
+          "unidade": "kg",
+          "custo_unitario_referencia": 0
+        },
+        {
+          "codigo_inv": "LAZ-004",
+          "nome": "Azeite de Dende",
+          "quantidade_por_porcao": 0.003,
+          "unidade": "kg",
+          "custo_unitario_referencia": 0
+        }
+      ],
+      "status": "ativo"
+    }
+  }
+}

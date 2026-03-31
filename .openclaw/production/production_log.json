@@ -1,0 +1,154 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "engine": "production_core_v1",
+    "total_batches": 3,
+    "total_events": 3
+  },
+  "production_batches": [
+    {
+      "batch_id": "BATCH-2025-04-05-001",
+      "event_id": "EV-2025-04-05",
+      "event_name": "Casamento Mendonça",
+      "date": "2025-04-05",
+      "guests": 120,
+      "status": "PRODUCED",
+      "products": [
+        {
+          "recipe_id": "RCP-BAR-001",
+          "product": "Caipirinha Clássica",
+          "planned_quantity": 60,
+          "produced_quantity": 62,
+          "served_quantity": 58,
+          "waste": 4,
+          "efficiency": 0.94,
+          "ingredients_consumed": [
+            {"item_id": "INV-CAC-001", "name": "Cachaça 51", "planned": 3000, "actual": 3100, "unit": "ml", "variance": 3.3},
+            {"item_id": "INV-LIM-001", "name": "Limão Tahiti", "planned": 30, "actual": 31, "unit": "un", "variance": 3.3},
+            {"item_id": "INV-GEL-001", "name": "Gelo Cubo", "planned": 6000, "actual": 6200, "unit": "g", "variance": 3.3}
+          ],
+          "cost_planned": 147.00,
+          "cost_actual": 151.90,
+          "cost_variance": 3.33,
+          "revenue": 1550.00
+        },
+        {
+          "recipe_id": "RCP-KIT-001",
+          "product": "Espeto de Picanha",
+          "planned_quantity": 100,
+          "produced_quantity": 102,
+          "served_quantity": 98,
+          "waste": 4,
+          "efficiency": 0.96,
+          "ingredients_consumed": [
+            {"item_id": "INV-CAR-001", "name": "Picanha", "planned": 12, "actual": 12.24, "unit": "kg", "variance": 2.0},
+            {"item_id": "INV-GEL-001", "name": "Gelo Escamas", "planned": 2, "actual": 2, "unit": "saco", "variance": 0}
+          ],
+          "cost_planned": 1192.00,
+          "cost_actual": 1215.84,
+          "cost_variance": 2.0,
+          "revenue": 3430.00
+        }
+      ],
+      "batch_summary": {
+        "total_cost_planned": 1339.00,
+        "total_cost_actual": 1367.74,
+        "total_variance": 2.15,
+        "total_revenue": 4980.00,
+        "gross_margin": 0.73,
+        "efficiency": 0.95,
+        "status": "SUCCESS"
+      }
+    },
+    {
+      "batch_id": "BATCH-2025-04-12-001",
+      "event_id": "EV-2025-04-12",
+      "event_name": "Corporativo Tech Summit",
+      "date": "2025-04-12",
+      "guests": 80,
+      "status": "PRODUCED",
+      "products": [
+        {
+          "recipe_id": "RCP-BAR-003",
+          "product": "Gin Tônica",
+          "planned_quantity": 40,
+          "produced_quantity": 40,
+          "served_quantity": 38,
+          "waste": 2,
+          "efficiency": 0.95,
+          "ingredients_consumed": [
+            {"item_id": "INV-GIN-001", "name": "Gin London Dry", "planned": 2000, "actual": 2000, "unit": "ml", "variance": 0},
+            {"item_id": "INV-GEL-001", "name": "Gelo", "planned": 4000, "actual": 4000, "unit": "g", "variance": 0}
+          ],
+          "cost_planned": 280.00,
+          "cost_actual": 280.00,
+          "cost_variance": 0,
+          "revenue": 1330.00
+        },
+        {
+          "recipe_id": "RCP-BAR-002",
+          "product": "Mojito",
+          "planned_quantity": 30,
+          "produced_quantity": 32,
+          "served_quantity": 30,
+          "waste": 2,
+          "efficiency": 0.94,
+          "ingredients_consumed": [
+            {"item_id": "INV-RUM-001", "name": "Rum Branco", "planned": 1800, "actual": 1920, "unit": "ml", "variance": 6.7},
+            {"item_id": "INV-HOR-001", "name": "Hortelã", "planned": 240, "actual": 256, "unit": "g", "variance": 6.7}
+          ],
+          "cost_planned": 145.50,
+          "cost_actual": 155.36,
+          "cost_variance": 6.78,
+          "revenue": 960.00
+        },
+        {
+          "recipe_id": "RCP-KIT-004",
+          "product": "Mini Burguer",
+          "planned_quantity": 70,
+          "produced_quantity": 72,
+          "served_quantity": 70,
+          "waste": 2,
+          "efficiency": 0.97,
+          "ingredients_consumed": [
+            {"item_id": "INV-CAR-001", "name": "Blend Carne", "planned": 5.6, "actual": 5.76, "unit": "kg", "variance": 2.9}
+          ],
+          "cost_planned": 511.00,
+          "cost_actual": 525.60,
+          "cost_variance": 2.86,
+          "revenue": 1540.00
+        }
+      ],
+      "batch_summary": {
+        "total_cost_planned": 936.50,
+        "total_cost_actual": 960.96,
+        "total_variance": 2.61,
+        "total_revenue": 3830.00,
+        "gross_margin": 0.75,
+        "efficiency": 0.95,
+        "status": "SUCCESS",
+        "alert": "Consumo de Rum 6,7% acima do planejado - verificar medidas"
+      }
+    }
+  ],
+  "accumulated_metrics": {
+    "total_events": 2,
+    "total_recipes_produced": 5,
+    "total_portions": 304,
+    "total_waste": 14,
+    "avg_efficiency": 0.95,
+    "total_cost": 2328.70,
+    "total_revenue": 8810.00,
+    "overall_margin": 0.74
+  },
+  "variance_analysis": {
+    "within_tolerance": ["GEL-001", "GIN-001"],
+    "above_tolerance": ["RUM-001", "CAC-001"],
+    "below_tolerance": [],
+    "recommendations": [
+      "Calibrar medição de Rum em barman",
+      "Revisar receita de Caipirinha - consum elevado",
+      "Manter controle rigoroso de hortelã (perda rápida)"
+    ]
+  }
+}

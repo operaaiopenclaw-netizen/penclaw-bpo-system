@@ -1,0 +1,319 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "engine": "procurement_decision_engine_v1",
+    "generated_at": "2026-03-27T21:19:00",
+    "decision_type": "automated",
+    "approval_required": "recommended",
+    "status": "ready_for_execution"
+  },
+  "decisions": [
+    {
+      "decision_id": "DEC-2025-03-27-001",
+      "product": {
+        "sku": "GEL-001",
+        "name": "Gelo Cubo 5kg",
+        "category": "gelo",
+        "quantity": 35,
+        "unit": "saco",
+        "urgency": "critical"
+      },
+      "analysis": {
+        "supplier_evaluated": "SUP-002",
+        "supplier_name": "Gelo Express São Paulo",
+        "supplier_status": "homologated",
+        "unit_price": 13.50,
+        "total_cost": 472.50,
+        "delivery_hours": 24,
+        "payment_terms": "PIX ou 7 dias",
+        "cash_impact": {
+          "immediate": 472.50,
+          "deferred": 0,
+          "payment_date": "2025-04-05"
+        },
+        "supplier_score": 8.75,
+        "delivery_reliability": 0.98,
+        "historical_defect_rate": 0.01
+      },
+      "scoring": {
+        "price_score": 10.0,
+        "delivery_score": 10.0,
+        "quality_score": 9.0,
+        "reliability_score": 9.5,
+        "payment_score": 8.0,
+        "cashflow_score": 9.0,
+        "overall_score": 9.25
+      },
+      "justification": "Único fornecedor cotado. Fornecedor homologado com excelente histórico (98% no prazo). Preço competitivo R$ 13,50 (abaixo da referência R$ 14,00). Entrega em 24h é crítica para eventos. Impacto no caixa: médio (menos de R$ 500).",
+      "decision": "APPROVE",
+      "risk_level": "low",
+      "savings": 17.50,
+      "savings_percent": 3.57,
+      "recommendations": [
+        "Confirmar entrega até 14h do dia 05/04",
+        "Preferir pagamento PIX para desconto",
+        "Agendar follow-up 24h antes do evento"
+      ],
+      "execution_order": 1,
+      "status": "ready_to_execute"
+    },
+    {
+      "decision_id": "DEC-2025-03-27-002",
+      "product": {
+        "sku": "BEB-001",
+        "name": "Cerveja Artesanal Lager",
+        "category": "cerveja",
+        "quantity": 65,
+        "unit": "caixa",
+        "urgency": "high"
+      },
+      "analysis": {
+        "supplier_evaluated": "SUP-001",
+        "supplier_name": "Bebidas Premium Distribuidora",
+        "supplier_status": "homologated",
+        "unit_price": 48.00,
+        "total_cost": 3120.00,
+        "delivery_hours": 48,
+        "payment_terms": "30 dias",
+        "cash_impact": {
+          "immediate": 0,
+          "deferred": 3120.00,
+          "payment_date": "2025-05-04"
+        },
+        "supplier_score": 8.75,
+        "delivery_reliability": 0.94,
+        "historical_defect_rate": 0.02
+      },
+      "scoring": {
+        "price_score": 9.0,
+        "delivery_score": 8.0,
+        "quality_score": 9.0,
+        "reliability_score": 8.5,
+        "payment_score": 9.0,
+        "cashflow_score": 8.5,
+        "overall_score": 8.67
+      },
+      "justification": "Fornecedor homologado com ótimo histórico. Preço R$ 48,00 competitivo (economia de R$ 130 vs referência). Condição de pagamento excelente: 30 dias dilui impacto no caixa. Entrega em 48h dentro do prazo necessário.",
+      "decision": "APPROVE",
+      "risk_level": "low",
+      "savings": 130.00,
+      "savings_percent": 4.0,
+      "recommendations": [
+        "Confirmar entrega até 16h do dia 04/04",
+        "Solicitar nota fiscal com antecedência",
+        "Verificar necessidade de refrigeração na entrega"
+      ],
+      "execution_order": 2,
+      "status": "ready_to_execute"
+    },
+    {
+      "decision_id": "DEC-2025-03-27-003",
+      "product": {
+        "sku": "BEB-003",
+        "name": "Vodka Premium",
+        "category": "destilados",
+        "quantity": 8,
+        "unit": "garrafa",
+        "urgency": "medium"
+      },
+      "analysis": {
+        "supplier_evaluated": "SUP-001",
+        "supplier_name": "Bebidas Premium Distribuidora",
+        "supplier_status": "homologated",
+        "unit_price": 110.00,
+        "total_cost": 880.00,
+        "delivery_hours": 48,
+        "payment_terms": "30 dias",
+        "cash_impact": {
+          "immediate": 0,
+          "deferred": 880.00,
+          "payment_date": "2025-05-04"
+        },
+        "supplier_score": 8.75,
+        "delivery_reliability": 0.94,
+        "historical_defect_rate": 0.02
+      },
+      "scoring": {
+        "price_score": 8.0,
+        "delivery_score": 8.0,
+        "quality_score": 9.0,
+        "reliability_score": 8.5,
+        "payment_score": 9.0,
+        "cashflow_score": 8.5,
+        "overall_score": 8.5
+      },
+      "justification": "Mesmo fornecedor das cervejas - permite consolidação de compra. Preço adequado para categoria premium (economia de R$ 80). Entrega junto com cervejas otimiza logística. Mesmas condições de pagamento favoráveis.",
+      "decision": "APPROVE",
+      "risk_level": "low",
+      "savings": 80.00,
+      "savings_percent": 8.33,
+      "recommendations": [
+        "Consolidar entrega com cervejas (mesmo fornecedor)",
+        "Verificar autenticidade (garantia de importadora)",
+        "Solicitar amostra se for novo lote"
+      ],
+      "execution_order": 2,
+      "status": "ready_to_execute"
+    },
+    {
+      "decision_id": "DEC-2025-03-27-004",
+      "product": {
+        "sku": "BUF-001",
+        "name": "Picanha Premium",
+        "category": "buffet",
+        "quantity": 18,
+        "unit": "kg",
+        "urgency": "high"
+      },
+      "analysis": {
+        "supplier_evaluated": "SUP-004",
+        "supplier_name": "Buffet Master Insumos",
+        "supplier_status": "homologated",
+        "unit_price": 98.00,
+        "total_cost": 1764.00,
+        "delivery_hours": 48,
+        "payment_terms": "até 15/04",
+        "cash_impact": {
+          "immediate": 0,
+          "deferred": 1764.00,
+          "payment_date": "2025-04-15"
+        },
+        "supplier_score": 8.25,
+        "delivery_reliability": 0.92,
+        "historical_defect_rate": 0.03,
+        "price_variance_vs_reference": 3.16
+      },
+      "scoring": {
+        "price_score": 7.0,
+        "delivery_score": 8.0,
+        "quality_score": 9.5,
+        "reliability_score": 8.0,
+        "payment_score": 6.0,
+        "cashflow_score": 7.5,
+        "overall_score": 7.67
+      },
+      "justification": "Fornecedor homologado. PREÇO ACIMA DO HISTÓRICO: R$ 98 vs R$ 95 (+3,16%). Prazo de pagamento ambíguo (até 15/04). Qualidade excelente, mas necessita negociação. Recomendação: aprovar com ressalvas após negociação de R$ 3 de desconto/kg.",
+      "decision": "CONDITIONAL_APPROVE",
+      "conditions": [
+        "Negociar desconto de R$ 3,00/kg (valor final: R$ 95,00)",
+        "Confirmar prazo de pagamento exato (15/04 ou 30 dias?)"
+      ],
+      "risk_level": "medium",
+      "savings": -54.00,
+      "savings_percent": -2.94,
+      "negotiation_target": {
+        "current_price": 98.00,
+        "target_price": 95.00,
+        "target_total": 1710.00,
+        "potential_savings": 54.00
+      },
+      "recommendations": [
+        "Negociar com base em volume (18kg)",
+        "Mencionar preço histórico de R$ 95,00",
+        "Compromisso de pagamento em 15/04"
+      ],
+      "fallback_plan": {
+        "if_negotiation_fails": "Negociar inclusão de entrega grátis",
+        "alternative_supplier": null
+      },
+      "execution_order": 3,
+      "status": "pending_negotiation"
+    }
+  ],
+  "consolidated_decision": {
+    "summary": {
+      "total_items": 4,
+      "approved": 3,
+      "conditional": 1,
+      "rejected": 0,
+      "total_value_if_approved": 6236.50,
+      "immediate_cash_required": 472.50,
+      "deferred_payments": 5764.00,
+      "total_savings_vs_budget": 173.50,
+      "total_savings_percent": 2.71
+    },
+    "cashflow_impact": {
+      "week_1": {
+        "outflow": 472.50,
+        "description": "Gelo (à vista ou 7 dias)"
+      },
+      "week_2": {
+        "outflow": 0.00,
+        "description": "Nenhum"
+      },
+      "week_3": {
+        "outflow": 1764.00,
+        "description": "Buffet (15/04)"
+      },
+      "week_4": {
+        "outflow": 4000.00,
+        "description": "Bebidas (30 dias)"
+      }
+    },
+    "decision_strategy": {
+      "approach": "balanced",
+      "rationale": "Priorizar equilíbrio entre custo, risco e cashflow. 3 itens aprovados direto. 1 item requer negociação. Zero rejeições.",
+      "risk_mitigation": [
+        "Gelo: menor prazo de entrega, fornecedor confiável",
+        "Bebidas: consolidação com mesmo fornecedor, prazo 30 dias",
+        "Buffet: negociar antes de aprovar, proteger margem"
+      ]
+    },
+    "approval_workflow": {
+      "auto_approve_threshold": 8.5,
+      "manual_review_threshold": 7.0,
+      "rejection_threshold": 5.0,
+      "items_auto_approved": 2,
+      "items_manual_review": 1,
+      "items_rejected": 0
+    },
+    "execution_sequence": [
+      "1. URGENTE: Confirmar gelo (SUP-002) até 22h de hoje",
+      "2. HOJE: Enviar POs consolidadas (SUP-001)",
+      "3. AMANHÃ: Negociar buffet (SUP-004)",
+      "4. SÁBADO: Follow-up de confirmações"
+    ],
+    "success_metrics": {
+      "target_delivery_rate": 0.95,
+      "target_cost_reduction": 0.02,
+      "target_supplier_diversification": 3
+    }
+  },
+  "alerts": [
+    {
+      "level": "medium",
+      "item": "BUF-001",
+      "message": "Preço 3,16% acima da referência histórica",
+      "action": "Negociar desconto antes de aprovar",
+      "owner": "Compras"
+    },
+    {
+      "level": "low",
+      "item": "GEL-001",
+      "message": "Único fornecedor para categoria",
+      "action": "Cadastrar fornecedor alternativo de gelo",
+      "owner": "Strategic Procurement"
+    },
+    {
+      "level": "info",
+      "item": "ALL",
+      "message": "Consolidação possível: SUP-001 atende 2 categorias",
+      "action": "Considerar contrato anual para desconto",
+      "owner": "Category Management"
+    }
+  ],
+  "next_steps": [
+    "Executar ordens de compra aprovadas",
+    "Negociar condição com SUP-004",
+    "Confirmar datas de entrega",
+    "Agendar follow-up de logística",
+    "Atualizar supplier scores baseado em performance"
+  ],
+  "integration_with_financial": {
+    "cash_position_checked": true,
+    "la_orana_balance": 892156.47,
+    "status_balance": 125430.88,
+    "payment_capacity": "CONFIRMED",
+    "cashflow_projection_ok": true
+  }
+}

@@ -1,0 +1,430 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "engine": "supplier_scoring_v1",
+    "generated_at": "2026-03-27T21:23:00",
+    "criteria_count": 7,
+    "suppliers_scored": 4
+  },
+  "scoring_criteria": {
+    "weights": {
+      "price": 0.25,
+      "delivery": 0.20,
+      "reliability": 0.20,
+      "response_time": 0.15,
+      "payment_terms": 0.10,
+      "accuracy": 0.05,
+      "homologation": 0.05
+    },
+    "benchmarks": {
+      "price": {
+        "excellent": 0,
+        "good": 5,
+        "average": 15,
+        "poor": 25
+      },
+      "delivery_hours": {
+        "excellent": 24,
+        "good": 48,
+        "average": 72,
+        "poor": 120
+      },
+      "reliability_rate": {
+        "excellent": 0.98,
+        "good": 0.95,
+        "average": 0.90,
+        "poor": 0.85
+      },
+      "response_minutes": {
+        "excellent": 60,
+        "good": 120,
+        "average": 240,
+        "poor": 480
+      }
+    },
+    "classification_thresholds": {
+      "preferred": 9.0,
+      "approved": 7.5,
+      "watchlist": 6.0,
+      "blocked": 0.0
+    }
+  },
+  "suppliers": [
+    {
+      "supplier_id": "SUP-001",
+      "name": "Bebidas Premium Distribuidora",
+      "categories": ["cerveja", "vinho", "destilados"],
+      "raw_metrics": {
+        "orders_count": 45,
+        "on_time_rate": 0.94,
+        "defect_rate": 0.02,
+        "avg_response_minutes": 45,
+        "price_variance_vs_market": -4.0,
+        "avg_delivery_hours": 48,
+        "payment_terms_days": 30,
+        "status": "homologated"
+      },
+      "score_breakdown": {
+        "price": {
+          "raw_score": 9.5,
+          "weighted": 2.375,
+          "justification": "Preço 4% abaixo do mercado, excelente competitividade"
+        },
+        "delivery": {
+          "raw_score": 8.0,
+          "weighted": 1.600,
+          "justification": "48h de entrega, dentro do benchmark"
+        },
+        "reliability": {
+          "raw_score": 9.0,
+          "weighted": 1.800,
+          "justification": "94% no prazo, apenas 2% de defeitos"
+        },
+        "response_time": {
+          "raw_score": 10.0,
+          "weighted": 1.500,
+          "justification": "Resposta em 45 minutos, excepcional"
+        },
+        "payment_terms": {
+          "raw_score": 9.0,
+          "weighted": 0.900,
+          "justification": "30 dias, condição favorável"
+        },
+        "accuracy": {
+          "raw_score": 8.5,
+          "weighted": 0.425,
+          "justification": "45 pedidos com baixa taxa de erro"
+        },
+        "homologation": {
+          "raw_score": 10.0,
+          "weighted": 0.500,
+          "justification": "Status homologated"
+        }
+      },
+      "total_score": 9.10,
+      "classification": "preferred",
+      "recommendation_status": "PRIORITÁRIO",
+      "strengths": [
+        "Excelente tempo de resposta (45min)",
+        "Preço competitivo (-4% vs mercado)",
+        "Alta confiabilidade (94% no prazo)",
+        "Condição de pagamento favorável"
+      ],
+      "weaknesses": [
+        "Prazo de entrega poderia ser mais curto (atual 48h)",
+        "Taxa de defeitos ainda presente (2%)"
+      ],
+      "usage_recommendation": "Utilizar em 80% das compras de bebidas. Consolidar pedidos para melhores descontos.",
+      "next_review_date": "2025-04-27"
+    },
+    {
+      "supplier_id": "SUP-002",
+      "name": "Gelo Express São Paulo",
+      "categories": ["gelo"],
+      "raw_metrics": {
+        "orders_count": 89,
+        "on_time_rate": 0.98,
+        "defect_rate": 0.01,
+        "avg_response_minutes": 15,
+        "price_variance_vs_market": 3.0,
+        "avg_delivery_hours": 4,
+        "payment_terms_days": 0,
+        "status": "homologated"
+      },
+      "score_breakdown": {
+        "price": {
+          "raw_score": 7.0,
+          "weighted": 1.750,
+          "justification": "Preço 3% acima do mercado, premium justificado"
+        },
+        "delivery": {
+          "raw_score": 10.0,
+          "weighted": 2.000,
+          "justification": "Entrega em 4h, excepcional"
+        },
+        "reliability": {
+          "raw_score": 9.8,
+          "weighted": 1.960,
+          "justification": "98% no prazo, apenas 1% defeitos"
+        },
+        "response_time": {
+          "raw_score": 10.0,
+          "weighted": 1.500,
+          "justification": "Resposta em 15 minutos, ultra-rápido"
+        },
+        "payment_terms": {
+          "raw_score": 7.0,
+          "weighted": 0.700,
+          "justification": "À vista, menos flexível"
+        },
+        "accuracy": {
+          "raw_score": 9.5,
+          "weighted": 0.475,
+          "justification": "89 pedidos, excelente histórico"
+        },
+        "homologation": {
+          "raw_score": 10.0,
+          "weighted": 0.500,
+          "justification": "Status homologated"
+        }
+      },
+      "total_score": 8.88,
+      "classification": "preferred",
+      "recommendation_status": "PRIORITÁRIO (RESTRITO CATEGORIA)",
+      "strengths": [
+        "Entrega ultra-rápida (4h)",
+        "Excelente confiabilidade (98% no prazo)",
+        "Resposta imediata (15min)",
+        "Produtos perecíveis bem gerenciados"
+      ],
+      "weaknesses": [
+        "Único fornecedor homologado (monocultura)",
+        "Preço premium (3% acima)",
+        "Pagamento à vista (menos flexibilidade)"
+      ],
+      "alerts": [
+        "CRÍTICO: Apenas 1 fornecedor de gelo. URGENTE cadastrar alternativa.",
+        "Dependência total - risco de ruptura se houver problemas."
+      ],
+      "usage_recommendation": "Usar 100% das compras de gelo (único homologado). Manter contato próximo.",
+      "mitigation_actions": [
+        "Cadastrar Gelo Premium SP (P0 - 7 dias)",
+        "Negociar contrato de exclusividade com desconto",
+        "Monitorar saúde financeira do fornecedor"
+      ],
+      "next_review_date": "2025-03-30"
+    },
+    {
+      "supplier_id": "SUP-004",
+      "name": "Buffet Master Insumos",
+      "categories": ["buffet", "carnes", "vegetais"],
+      "raw_metrics": {
+        "orders_count": 28,
+        "on_time_rate": 0.92,
+        "defect_rate": 0.03,
+        "avg_response_minutes": 60,
+        "price_variance_vs_market": 3.16,
+        "avg_delivery_hours": 48,
+        "payment_terms_days": 15,
+        "status": "homologated"
+      },
+      "score_breakdown": {
+        "price": {
+          "raw_score": 6.5,
+          "weighted": 1.625,
+          "justification": "Preço 3,16% acima do mercado, considerar negociação"
+        },
+        "delivery": {
+          "raw_score": 8.0,
+          "weighted": 1.600,
+          "justification": "48h de entrega, adequado para categoria"
+        },
+        "reliability": {
+          "raw_score": 8.5,
+          "weighted": 1.700,
+          "justification": "92% no prazo, aceitável"
+        },
+        "response_time": {
+          "raw_score": 9.0,
+          "weighted": 1.350,
+          "justification": "Resposta em 60 minutos, bom"
+        },
+        "payment_terms": {
+          "raw_score": 7.5,
+          "weighted": 0.750,
+          "justification": "15 dias, razoável"
+        },
+        "accuracy": {
+          "raw_score": 8.0,
+          "weighted": 0.400,
+          "justification": "28 pedidos, bom histórico"
+        },
+        "homologation": {
+          "raw_score": 10.0,
+          "weighted": 0.500,
+          "justification": "Status homologated"
+        }
+      },
+      "total_score": 7.92,
+      "classification": "approved",
+      "recommendation_status": "APROVADO COM RESSALVAS",
+      "strengths": [
+        "Qualidade dos produtos (categoria premium)",
+        "Bom tempo de resposta",
+        "Frescor garantido (produtos perecíveis)",
+        "Status homologado"
+      ],
+      "weaknesses": [
+        "Preço acima do mercado",
+        "Menor volume de pedidos (28 vs 45-89)",
+        "Taxa de defeitos ligeiramente maior (3%)"
+      ],
+      "improvement_targets": {
+        "price": "Reduzir 3% para igualar mercado",
+        "volume": "Aumentar pedidos para ganhar escala",
+        "reliability": "Atingir 95% no prazo"
+      },
+      "usage_recommendation": "Usar 60% das compras de buffet. Negociar preço. Comparar com alternativas.",
+      "next_review_date": "2025-04-15"
+    },
+    {
+      "supplier_id": "SUP-003",
+      "name": "Staff Pro Eventos",
+      "categories": ["staff"],
+      "raw_metrics": {
+        "orders_count": 32,
+        "on_time_rate": 0.88,
+        "defect_rate": 0.05,
+        "avg_response_minutes": 120,
+        "price_variance_vs_market": 0,
+        "avg_delivery_hours": 48,
+        "payment_terms_days": 7,
+        "status": "homologated"
+      },
+      "score_breakdown": {
+        "price": {
+          "raw_score": 7.5,
+          "weighted": 1.875,
+          "justification": "Preço compatível com mercado"
+        },
+        "delivery": {
+          "raw_score": 8.0,
+          "weighted": 1.600,
+          "justification": "48h para booking, aceitável"
+        },
+        "reliability": {
+          "raw_score": 7.5,
+          "weighted": 1.500,
+          "justification": "88% no prazo (abaixo do ideal)"
+        },
+        "response_time": {
+          "raw_score": 7.0,
+          "weighted": 1.050,
+          "justification": "2h de resposta, média"
+        },
+        "payment_terms": {
+          "raw_score": 8.0,
+          "weighted": 0.800,
+          "justification": "7 dias, satisfatório"
+        },
+        "accuracy": {
+          "raw_score": 7.5,
+          "weighted": 0.375,
+          "justification": "32 pedidos, média"
+        },
+        "homologation": {
+          "raw_score": 10.0,
+          "weighted": 0.500,
+          "justification": "Status homologated"
+        }
+      },
+      "total_score": 7.70,
+      "classification": "approved",
+      "recommendation_status": "APROVADO COM ATENÇÃO",
+      "strengths": [
+        "Preço competitivo",
+        "Cobertura de múltiplas funções",
+        "Status homologado"
+      ],
+      "weaknesses": [
+        "Taxa de no-show elevada (12%)",
+        "Tempo de resposta pode melhorar",
+        "Taxa de defeitos relativa (5%)"
+      ],
+      "alerts": [
+        "ATENÇÃO: 12% de não-chegada de staff pode comprometer eventos."
+      ],
+      "usage_recommendation": "Usar com cautela. Sempre confirmar 24h antes. Ter plano B de backup.",
+      "next_review_date": "2025-04-10"
+    }
+  ],
+  "ranking": [
+    {
+      "rank": 1,
+      "supplier_id": "SUP-001",
+      "name": "Bebidas Premium Distribuidora",
+      "score": 9.10,
+      "classification": "preferred"
+    },
+    {
+      "rank": 2,
+      "supplier_id": "SUP-002",
+      "name": "Gelo Express São Paulo",
+      "score": 8.88,
+      "classification": "preferred"
+    },
+    {
+      "rank": 3,
+      "supplier_id": "SUP-004",
+      "name": "Buffet Master Insumos",
+      "score": 7.92,
+      "classification": "approved"
+    },
+    {
+      "rank": 4,
+      "supplier_id": "SUP-003",
+      "name": "Staff Pro Eventos",
+      "score": 7.70,
+      "classification": "approved"
+    }
+  ],
+  "strategic_classifications": {
+    "preferred": {
+      "count": 2,
+      "suppliers": ["SUP-001", "SUP-002"],
+      "strategy": "Priorizar em 70-80% das compras. Consolidar volumes. Negociar contratos."
+    },
+    "approved": {
+      "count": 2,
+      "suppliers": ["SUP-004", "SUP-003"],
+      "strategy": "Usar em 20-30% das compras. Manter como alternativa. Exigir melhorias."
+    },
+    "watchlist": {
+      "count": 0,
+      "suppliers": [],
+      "strategy": "Nenhum fornecedor atual"
+    },
+    "blocked": {
+      "count": 0,
+      "suppliers": [],
+      "strategy": "Nenhum fornecedor atual"
+    }
+  },
+  "critical_action_items": [
+    {
+      "priority": "P0",
+      "action": "Cadastrar fornecedor alternativo de gelo",
+      "reason": "Dependência total em SUP-002 (risco crítico)",
+      "deadline": "2025-04-03",
+      "owner": "Compras"
+    },
+    {
+      "priority": "P1",
+      "action": "Negociar preço com SUP-004 (buffet)",
+      "reason": "Preço 3,16% acima do mercado",
+      "deadline": "2025-03-28",
+      "owner": "Compras"
+    },
+    {
+      "priority": "P2",
+      "action": "Implementar confirmação dupla com SUP-003 (staff)",
+      "reason": "12% de no-show rate",
+      "deadline": "2025-04-10",
+      "owner": "Operações"
+    },
+    {
+      "priority": "P3",
+      "action": "Criar contrato anual com SUP-001",
+      "reason": "Potencial economia escala",
+      "deadline": "2025-04-30",
+      "owner": "Gestão"
+    }
+  ],
+  "learning_insights": [
+    "Fornecedores com tempo de resposta <30min têm 95%+ de confiabilidade",
+    "Preço 3-5% acima do mercado é aceitável quando há qualidade superior",
+    "Fornecedores únicos por categoria representam risco crítico",
+    "Confiabilidade >95% é pré-requisito para classificação 'preferred'"
+  ],
+  "next_scoring": "2025-04-27"
+}

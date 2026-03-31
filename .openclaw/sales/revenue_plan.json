@@ -1,0 +1,81 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "period": "2025",
+    "currency": "BRL",
+    "generated_at": "2026-03-27T21:40:00"
+  },
+  "annual_plan": {
+    "target_revenue": 15123487.40,
+    "target_gross_margin": 0.35,
+    "target_ebitda": 0.15,
+    "events_target": 85,
+    "avg_event_value": 177923.38
+  },
+  "revenue_by_category": {
+    "casamentos": {
+      "category": "Casamentos",
+      "expected_events": 35,
+      "avg_price": 180000.00,
+      "total_revenue_target": 6300000.00,
+      "proportion": 41.6,
+      "seasonal_peak": [10, 11, 12],
+      "priority": "high",
+      "margin_estimate": 0.38
+    },
+    "corporativo": {
+      "category": "Corporativo",
+      "expected_events": 20,
+      "avg_price": 150000.00,
+      "total_revenue_target": 3000000.00,
+      "proportion": 19.8,
+      "seasonal_peak": [5, 6, 7, 8, 9],
+      "priority": "high",
+      "margin_estimate": 0.42
+    },
+    "aniversarios": {
+      "category": "Aniversários",
+      "expected_events": 18,
+      "avg_price": 120000.00,
+      "total_revenue_target": 2160000.00,
+      "proportion": 14.3,
+      "seasonal_peak": [4, 5, 6, 7, 8, 9, 10, 11],
+      "priority": "medium",
+      "margin_estimate": 0.35
+    },
+    "formaturas": {
+      "category": "Formaturas",
+      "expected_events": 8,
+      "avg_price": 220000.00,
+      "total_revenue_target": 1760000.00,
+      "proportion": 11.6,
+      "seasonal_peak": [11, 12],
+      "priority": "medium",
+      "margin_estimate": 0.32
+    },
+    "outros": {
+      "category": "Outros Eventos",
+      "expected_events": 4,
+      "avg_price": 100000.00,
+      "total_revenue_target": 1903487.40,
+      "proportion": 12.6,
+      "seasonal_peak": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+      "priority": "low",
+      "margin_estimate": 0.30
+    }
+  },
+  "company_allocation": {
+    "STATUS Opera": {
+      "revenue_share": 0.43,
+      "target_revenue": 6503069.58,
+      "margin_target": 0.45,
+      "events_target": 85
+    },
+    "LA ORANA": {
+      "revenue_share": 0.57,
+      "target_revenue": 8620417.82,
+      "margin_target": 0.28,
+      "events_target": 85
+    }
+  }
+}

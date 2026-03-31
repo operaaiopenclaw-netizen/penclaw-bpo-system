@@ -1,0 +1,65 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "year": 2025,
+    "currency": "BRL"
+  },
+  "seasonal_factors": {
+    "january": {"factor": 1.0, "reason": "Recuperação pós-festas"},
+    "february": {"factor": 0.9, "reason": "Carnaval"},
+    "march": {"factor": 1.1, "reason": "Retomada de eventos"},
+    "april": {"factor": 1.0, "reason": "Normal"},
+    "may": {"factor": 1.1, "reason": "Corporativo forte"},
+    "june": {"factor": 1.0, "reason": "Dia dos Namorados"},
+    "july": {"factor": 0.9, "reason": "Férias de julho"},
+    "august": {"factor": 1.0, "reason": "Normal"},
+    "september": {"factor": 1.1, "reason": "Primavera, corporativo"},
+    "october": {"factor": 1.2, "reason": "Início temporada de casamentos"},
+    "november": {"factor": 1.3, "reason": "Pico de casamentos e formaturas"},
+    "december": {"factor": 1.4, "reason": "Festa de fim de ano, confraternizações"}
+  },
+  "monthly_breakdown": [
+    {"month": "2025-01", "target": 1260232.28, "events": 7, "risk": "low"},
+    {"month": "2025-02", "target": 1134219.05, "events": 6, "risk": "medium"},
+    {"month": "2025-03", "target": 1386255.68, "events": 8, "risk": "low"},
+    {"month": "2025-04", "target": 1260232.28, "events": 7, "risk": "low"},
+    {"month": "2025-05", "target": 1386255.68, "events": 8, "risk": "low"},
+    {"month": "2025-06", "target": 1260232.28, "events": 7, "risk": "medium"},
+    {"month": "2025-07", "target": 1134219.05, "events": 6, "risk": "medium"},
+    {"month": "2025-08", "target": 1260232.28, "events": 7, "risk": "low"},
+    {"month": "2025-09", "target": 1386255.68, "events": 8, "risk": "low"},
+    {"month": "2025-10", "target": 1512277.34, "events": 9, "risk": "low"},
+    {"month": "2025-11", "target": 1638302.06, "events": 10, "risk": "high"},
+    {"month": "2025-12", "target": 1764326.98, "events": 10, "risk": "high"}
+  ],
+  "by_company": {
+    "STATUS Opera": [
+      {"month": "2025-01", "target": 541755.69},
+      {"month": "2025-02", "target": 487580.12},
+      {"month": "2025-03", "target": 596223.45},
+      {"month": "2025-04", "target": 541755.69},
+      {"month": "2025-05", "target": 596223.45},
+      {"month": "2025-06", "target": 541755.69},
+      {"month": "2025-07", "target": 487580.12},
+      {"month": "2025-08", "target": 541755.69},
+      {"month": "2025-09", "target": 596223.45},
+      {"month": "2025-10", "target": 649997.94},
+      {"month": "2025-11", "target": 704129.86},
+      {"month": "2025-12", "target": 758261.78}
+    ],
+    "LA ORANA": [
+      {"month": "2025-01", "target": 718476.59},
+      {"month": "2025-02", "target": 646638.93},
+      {"month": "2025-03", "target": 790032.23},
+      {"month": "2025-04", "target": 718476.59},
+      {"month": "2025-05", "target": 790032.23},
+      {"month": "2025-05_june", "target": 718476.59},
+      {"month": "2025-07", "target": 646638.93},
+      {"month": "2025-08", "target": 718476.59},
+      {"month": "2025-09", "target": 790032.23},
+      {"month": "2025-10", "target": 862279.40},
+      {"month": "2025-11", "target": 934172.20},
+      {"month": "2025-11_december", "target": 1006065.20}
+    ]
+  }
+}

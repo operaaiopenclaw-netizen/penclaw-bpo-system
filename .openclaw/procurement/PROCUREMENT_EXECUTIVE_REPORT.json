@@ -1,0 +1,397 @@
+{
+  "metadata": {
+    "generated_at": "2026-03-27T21:21:00",
+    "system": "OpenClaw BPO Procurement Intelligence",
+    "version": "1.0",
+    "status": "ready_for_execution"
+  },
+  "executive_summary": {
+    "title": "RELATÓRIO EXECUTIVO DE COMPRAS",
+    "period": "2025-04-01 a 2025-04-30",
+    "summary_metrics": {
+      "events_analyzed": 5,
+      "products_to_procure": 4,
+      "categories_covered": 4,
+      "suppliers_evaluated": 3,
+      "purchase_orders_suggested": 3,
+      "total_order_value": 6236.50,
+      "immediate_cash_required": 472.50,
+      "deferred_payments": 5764.00,
+      "estimated_savings": 173.50,
+      "savings_percent": 2.71
+    },
+    "status_overview": {
+      "procurement_readiness": "READY",
+      "cash_position": "HEALTHY",
+      "supplier_coverage": "ADEQUATE",
+      "risks_identified": 2,
+      "urgent_actions": 1
+    }
+  },
+  "section_1_demand_consolidated": {
+    "title": "1. DEMANDA CONSOLIDADA POR EVENTO",
+    "events": [
+      {
+        "event_id": "EV-2025-04-05",
+        "date": "2025-04-05",
+        "guests": 50,
+        "products": ["Gelo Cubo", "Água Mineral"],
+        "total_demand_value": 572.50
+      },
+      {
+        "event_id": "EV-2025-04-12",
+        "date": "2025-04-12",
+        "guests": 120,
+        "products": ["Cerveja", "Vodka", "Picanha", "Gelo", "Refrigerante"],
+        "total_demand_value": 3210.00
+      },
+      {
+        "event_id": "EV-2025-04-18",
+        "date": "2025-04-18",
+        "guests": 80,
+        "products": ["Cerveja", "Vodka", "Picanha"],
+        "total_demand_value": 2454.00
+      }
+    ],
+    "consolidated_demand": {
+      "gelo": {"quantity": 35, "unit": "saco", "estimated_cost": 490.00},
+      "cerveja": {"quantity": 65, "unit": "caixa", "estimated_cost": 3120.00},
+      "destilados": {"quantity": 8, "unit": "garrafa", "estimated_cost": 880.00},
+      "buffet": {"quantity": 18, "unit": "kg", "estimated_cost": 1746.50}
+    }
+  },
+  "section_2_eligible_suppliers": {
+    "title": "2. FORNECEDORES ELEGÍVEIS POR CATEGORIA",
+    "categories": [
+      {
+        "category": "gelo",
+        "suppliers": [
+          {
+            "supplier_id": "SUP-002",
+            "name": "Gelo Express São Paulo",
+            "status": "homologated",
+            "score": 8.75,
+            "reliability": 0.98,
+            "delivery_hours": 24,
+            "payment_terms": "PIX ou 7 dias",
+            "priority": "PRIMÁRIO"
+          }
+        ],
+        "risk": "MÉDIO - Apenas 1 fornecedor homologado"
+      },
+      {
+        "category": "bebidas",
+        "suppliers": [
+          {
+            "supplier_id": "SUP-001",
+            "name": "Bebidas Premium Distribuidora",
+            "status": "homologated",
+            "score": 8.75,
+            "reliability": 0.94,
+            "delivery_hours": 48,
+            "payment_terms": "30 dias",
+            "priority": "PRIMÁRIO"
+          }
+        ],
+        "risk": "BAIXO - Fornecedor consolidado"
+      },
+      {
+        "category": "buffet",
+        "suppliers": [
+          {
+            "supplier_id": "SUP-004",
+            "name": "Buffet Master Insumos",
+            "status": "homologated",
+            "score": 8.25,
+            "reliability": 0.92,
+            "delivery_hours": 48,
+            "payment_terms": "prazo negociar",
+            "priority": "PRIMÁRIO"
+          }
+        ],
+        "risk": "MÉDIO - Preço acima da referência histórica"
+      }
+    ]
+  },
+  "section_3_best_quotes": {
+    "title": "3. MELHORES COTAÇÕES POR ITEM",
+    "recommendations": [
+      {
+        "sku": "GEL-001",
+        "product": "Gelo Cubo 5kg",
+        "recommended_supplier": "Gelo Express São Paulo",
+        "unit_price": 13.50,
+        "total_price": 472.50,
+        "delivery": "24 horas",
+        "payment": "PIX ou 7 dias",
+        "savings_vs_budget": 17.50,
+        "status": "APPROVED",
+        "justification": "Único fornecedor cotado. Preço abaixo da referência. Entrega rápida essencial."
+      },
+      {
+        "sku": "BEB-001",
+        "product": "Cerveja Artesanal Lager",
+        "recommended_supplier": "Bebidas Premium Distribuidora",
+        "unit_price": 48.00,
+        "total_price": 3120.00,
+        "delivery": "48 horas",
+        "payment": "30 dias",
+        "savings_vs_budget": 130.00,
+        "status": "APPROVED",
+        "justification": "Preço competitivo. Condição de pagamento favorável (30 dias dilui impacto)."
+      },
+      {
+        "sku": "BEB-003",
+        "product": "Vodka Premium",
+        "recommended_supplier": "Bebidas Premium Distribuidora",
+        "unit_price": 110.00,
+        "total_price": 880.00,
+        "delivery": "48 horas (consolidado)",
+        "payment": "30 dias",
+        "savings_vs_budget": 80.00,
+        "status": "APPROVED",
+        "justification": "Consolidação com mesmo fornecedor otimiza logística."
+      },
+      {
+        "sku": "BUF-001",
+        "product": "Picanha Premium",
+        "recommended_supplier": "Buffet Master Insumos",
+        "unit_price": 98.00,
+        "total_price": 1764.00,
+        "delivery": "48 horas",
+        "payment": "NEGociAR - até 15/04",
+        "variance_vs_reference": "+3.16% (R$ 3 acima)",
+        "status": "CONDITIONAL",
+        "justification": "Preço acima da referência. Necessita negociação de desconto antes de aprovação."
+      }
+    ]
+  },
+  "section_4_purchase_orders": {
+    "title": "4. ORDENS DE COMPRA SUGERIDAS",
+    "orders": [
+      {
+        "po_id": "PO-2025-03-27-001",
+        "supplier": "Gelo Express São Paulo",
+        "items": [
+          {
+            "sku": "GEL-001",
+            "name": "Gelo Cubo 5kg",
+            "quantity": 35,
+            "unit": "saco",
+            "unit_price": 13.50,
+            "total": 472.50
+          }
+        ],
+        "total_order_value": 472.50,
+        "payment_terms": "PIX ou 7 dias",
+        "expected_delivery": "2025-04-05 até 14h",
+        "priority": "CRÍTICA",
+        "status": "READY_TO_SEND"
+      },
+      {
+        "po_id": "PO-2025-03-27-002",
+        "supplier": "Bebidas Premium Distribuidora",
+        "items": [
+          {
+            "sku": "BEB-001",
+            "name": "Cerveja Artesanal Lager",
+            "quantity": 65,
+            "unit": "caixa",
+            "unit_price": 48.00,
+            "total": 3120.00
+          },
+          {
+            "sku": "BEB-003",
+            "name": "Vodka Premium",
+            "quantity": 8,
+            "unit": "garrafa",
+            "unit_price": 110.00,
+            "total": 880.00
+          }
+        ],
+        "total_order_value": 4000.00,
+        "payment_terms": "30 dias (boleto)",
+        "expected_delivery": "2025-04-04 até 16h",
+        "priority": "ALTA",
+        "status": "READY_TO_SEND"
+      },
+      {
+        "po_id": "PO-2025-03-27-003",
+        "supplier": "Buffet Master Insumos",
+        "items": [
+          {
+            "sku": "BUF-001",
+            "name": "Picanha Premium",
+            "quantity": 18,
+            "unit": "kg",
+            "unit_price": 98.00,
+            "total": 1764.00
+          }
+        ],
+        "total_order_value": 1764.00,
+        "payment_terms": "NEGociAR (alvo: até 15/04 ou 30 dias)",
+        "expected_delivery": "2025-04-03 até 10h",
+        "priority": "ALTA",
+        "status": "PENDING_NEGOTIATION"
+      }
+    ],
+    "consolidated": {
+      "total_orders": 3,
+      "total_value": 6236.50,
+      "suppliers": 3,
+      "immediate_payment": 472.50,
+      "deferred_payment": 5764.00
+    }
+  },
+  "section_5_cash_impact": {
+    "title": "5. IMPACTO NO CAIXA",
+    "cash_position": {
+      "la_orana_current": 892156.47,
+      "status_current": 125430.88,
+      "group_total": 1017587.35
+    },
+    "impact_analysis": {
+      "total_spending": 6236.50,
+      "percent_of_available": 0.61,
+      "immediate_outflow": 472.50,
+      "deferred_outflow": 5764.00,
+      "remaining_after_purchase": 895919.97,
+      "status": "HEALTHY"
+    },
+    "timeline": {
+      "week_1": {
+        "date": "2025-03-27 a 2025-04-03",
+        "outflow": 472.50,
+        "description": "Gelo (PIX ou 7 dias)"
+      },
+      "week_2": {
+        "date": "2025-04-04 a 2025-04-10",
+        "outflow": 0.00,
+        "description": "Ponto de equilíbrio"
+      },
+      "week_3": {
+        "date": "2025-04-11 a 2025-04-17",
+        "outflow": 1764.00,
+        "description": "Buffet (15/04)"
+      },
+      "week_4": {
+        "date": "2025-04-18 a 2025-04-24",
+        "outflow": 4000.00,
+        "description": "Bebidas (30 dias)"
+      }
+    },
+    "recommendation": "Compras são VIÁVEIS. Impacto baixo (0.61% do caixa disponível)."
+  },
+  "section_6_risks": {
+    "title": "6. RISCOS IDENTIFICADOS",
+    "risks": [
+      {
+        "level": "MEDIUM",
+        "category": "Monocultura de Fornecedor",
+        "description": "Apenas 1 fornecedor de gelo homologado",
+        "impact": "Alto se houver indisponibilidade",
+        "mitigation": "Cadastrar fornecedor alternativo (Gelo São Paulo, Gelo Premium)",
+        "priority": "P2 - 30 dias"
+      },
+      {
+        "level": "MEDIUM",
+        "category": "Preço Acima do Mercado",
+        "description": "Picanha R$ 98/kg vs referência histórica R$ 95/kg",
+        "impact": "R$ 54 adicionais por compra",
+        "mitigation": "Negociar desconto antes de aprovar",
+        "priority": "P1 - URGENTE"
+      },
+      {
+        "level": "LOW",
+        "category": "Dependência Sazonal",
+        "description": "Concentração de eventos em Nov/Dez",
+        "impact": "Demanda de compras pode superar capacidade",
+        "mitigation": "Contratar fornecedores com antecedência",
+        "priority": "P3 - Futuro"
+      }
+    ],
+    "risk_matrix": {
+      "critical": 0,
+      "high": 0,
+      "medium": 2,
+      "low": 1
+    }
+  },
+  "section_7_next_actions": {
+    "title": "7. PRÓXIMOS PASSOS OPERACIONAIS",
+    "immediate": [
+      {
+        "action": "✅ Aprovar e enviar PO para Gelo Express (SUP-002)",
+        "deadline": "2025-03-27 22:00",
+        "responsible": "Compras",
+        "priority": "CRÍTICA"
+      },
+      {
+        "action": "✅ Aprovar e enviar PO para Bebidas Premium (SUP-001)",
+        "deadline": "2025-03-28 12:00",
+        "responsible": "Compras",
+        "priority": "ALTA"
+      },
+      {
+        "action": "🔄 Negociar desconto de R$ 3/kg com Buffet Master (SUP-004)",
+        "deadline": "2025-03-28 18:00",
+        "responsible": "Compras + Gestor",
+        "priority": "ALTA"
+      }
+    ],
+    "short_term": [
+      {
+        "action": "Confirmar datas de entrega com fornecedores",
+        "deadline": "2025-03-29",
+        "responsible": "Compras"
+      },
+      {
+        "action": "Agendar follow-up de logística (24h antes)",
+        "deadline": "2025-03-30",
+        "responsible": "Operações"
+      },
+      {
+        "action": "Cadastrar fornecedor alternativo de gelo",
+        "deadline": "2025-04-15",
+        "responsible": "Sourcing"
+      }
+    ],
+    "strategic": [
+      {
+        "action": "Avaliar contrato anual com Bebidas Premium",
+        "deadline": "2025-04-30",
+        "responsible": "Gestão"
+      },
+      {
+        "action": "Implantar sistema de estoques mínimos",
+        "deadline": "2025-05-15",
+        "responsible": "Operações"
+      }
+    ]
+  },
+  "file_index": {
+    "title": "📁 ARQUIVOS GERADOS",
+    "files": [
+      "suppliers.json - Base de fornecedores",
+      "procurement_demand.json - Demanda por evento",
+      "rfq_messages.json - Mensagens prontas",
+      "quotes.json - Cotações recebidas",
+      "decision.json - Decisões de compra",
+      "eligible_suppliers.json - Elegibilidade",
+      "rfq_dispatch_batch.json - Lotes de RFQ",
+      "quote_comparison.json - Comparação de preços",
+      "procurement_decision.json - Decisões finais",
+      "purchase_orders_suggested.json - Ordens de compra",
+      "procurement_cash_impact.json - Impacto financeiro",
+      "procurement_history.json - Histórico",
+      "orchestrator.py - Motor de orquestração",
+      "PROCUREMENT_EXECUTIVE_REPORT.json - Este relatório"
+    ]
+  },
+  "conclusion": {
+    "title": "🎯 CONCLUSÃO",
+    "summary": "O sistema de Procurement Intelligence está operacional. 4 produtos demandados, 3 fornecedores avaliados, 3 ordens de compra sugeridas. Economia estimada de R$ 173,50. Nenhuma compra acima de R$ 5.000. Riscos gerenciáveis.",
+    "readiness": "SISTEMA PRONTO PARA OPERAÇÃO",
+    "next_system_start": "2025-03-28 06:00"
+  }
+}

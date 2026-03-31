@@ -1,0 +1,255 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "engine": "real_consumption_calculator",
+    "formula": "consumo = saída - retorno",
+    "last_update": "2026-03-27T19:09:00"
+  },
+  "events_analyzed": [
+    {
+      "event_id": "EV-2025-04-05",
+      "event_name": "Casamento Mendonça",
+      "date": "2025-04-05",
+      "guests": 120,
+      "analyst": "Consumption_Engine_v1",
+      "consumption_by_product": [
+        {
+          "product_id": "INV-GEL-001",
+          "product_name": "Gelo Cubo 5kg",
+          "unit": "saco",
+          "formula": "consumo = saída - retorno",
+          "movements": {
+            "saída": 10,
+            "retorno": 2,
+            "perda": 0
+          },
+          "real_consumption": 8,
+          "forecast": 8,
+          "variance": 0,
+          "variance_percent": 0.0,
+          "status": "ON_TARGET",
+          "analysis": {
+            "excesso": false,
+            "falta": false,
+            "operational_error": false,
+            "note": "Consumo exatamente conforme previsto"
+          },
+          "cost_impact": {
+            "planned_cost": 108.00,
+            "real_cost": 108.00,
+            "variance": 0.0
+          }
+        },
+        {
+          "product_id": "INV-CAC-001",
+          "product_name": "Cachaça 51",
+          "unit": "garrafa",
+          "formula": "consumo = saída - retorno",
+          "movements": {
+            "saída": 3,
+            "retorno": 0,
+            "perda": 0
+          },
+          "real_consumption": 3,
+          "forecast": 3,
+          "variance": 0,
+          "variance_percent": 0.0,
+          "status": "ON_TARGET",
+          "analysis": {
+            "excesso": false,
+            "falta": false,
+            "operational_error": false
+          },
+          "cost_impact": {
+            "planned_cost": 135.00,
+            "real_cost": 135.00,
+            "variance": 0.0
+          }
+        },
+        {
+          "product_id": "INV-CAR-001",
+          "product_name": "Picanha Premium",
+          "unit": "kg",
+          "formula": "consumo = saída - retorno",
+          "movements": {
+            "saída": 12.24,
+            "retorno": 0,
+            "perda": 0
+          },
+          "real_consumption": 12.24,
+          "forecast": 12,
+          "variance": 0.24,
+          "variance_percent": 2.0,
+          "status": "SLIGHTLY_OVER",
+          "analysis": {
+            "excesso": true,
+            "falta": false,
+            "operational_error": false,
+            "note": "Pequeno excesso (2%) - dentro da tolerância operacional"
+          },
+          "cost_impact": {
+            "planned_cost": 1176.00,
+            "real_cost": 1199.52,
+            "variance": 23.52
+          }
+        }
+      ],
+      "event_summary": {
+        "total_products_tracked": 3,
+        "total_planned_cost": 1419.00,
+        "total_real_cost": 1442.52,
+        "total_variance": 23.52,
+        "variance_percent": 1.66,
+        "real_consumption_formula": "Σ(saída - retorno)",
+        "total_losses": 0,
+        "efficiency": 0.98,
+        "status": "EXCELLENT"
+      }
+    },
+    {
+      "event_id": "EV-2025-04-12",
+      "event_name": "Corporativo Tech Summit",
+      "date": "2025-04-12",
+      "guests": 80,
+      "analyst": "Consumption_Engine_v1",
+      "consumption_by_product": [
+        {
+          "product_id": "INV-GEL-001",
+          "product_name": "Gelo Cubo 5kg",
+          "unit": "saco",
+          "formula": "consumo = saída - retorno",
+          "movements": {
+            "saída": 8,
+            "retorno": 1,
+            "perda": 0
+          },
+          "real_consumption": 7,
+          "forecast": 8,
+          "variance": -1,
+          "variance_percent": -12.5,
+          "status": "UNDER_CONSUMPTION",
+          "analysis": {
+            "excesso": false,
+            "falta": false,
+            "operational_error": false,
+            "note": "Consumo abaixo previsto - evento mais curto que padrão"
+          },
+          "cost_impact": {
+            "planned_cost": 108.00,
+            "real_cost": 94.50,
+            "variance": -13.50
+          }
+        },
+        {
+          "product_id": "INV-CAC-001",
+          "product_name": "Cachaça 51",
+          "unit": "garrafa",
+          "formula": "consumo = saída - retorno",
+          "movements": {
+            "saída": 2,
+            "retorno": 0,
+            "perda": 0
+          },
+          "real_consumption": 2,
+          "forecast": 1.5,
+          "variance": 0.5,
+          "variance_percent": 33.3,
+          "status": "OVER_CONSUMPTION",
+          "analysis": {
+            "excesso": true,
+            "falta": false,
+            "operational_error": false,
+            "note": "EXCESSO: Caipirinhas muito populares. Público diferente do esperado"
+          },
+          "cost_impact": {
+            "planned_cost": 67.50,
+            "real_cost": 90.00,
+            "variance": 22.50
+          }
+        },
+        {
+          "product_id": "INV-COP-001",
+          "product_name": "Copo Acrílico 300ml",
+          "unit": "unidade",
+          "formula": "consumo = saída - retorno",
+          "movements": {
+            "saída": 500,
+            "retorno": 0,
+            "perda": 0
+          },
+          "real_consumption": 500,
+          "forecast": 400,
+          "variance": 100,
+          "variance_percent": 25.0,
+          "status": "OVER_CONSUMPTION",
+          "analysis": {
+            "excesso": true,
+            "falta": false,
+            "operational_error": false,
+            "note": "EXCESSO: Mais convidados que previsto (500 vs 400 previstos)"
+          },
+          "cost_impact": {
+            "planned_cost": 160.00,
+            "real_cost": 200.00,
+            "variance": 40.00
+          }
+        }
+      ],
+      "event_summary": {
+        "total_products_tracked": 3,
+        "total_planned_cost": 335.50,
+        "total_real_cost": 384.50,
+        "total_variance": 49.00,
+        "variance_percent": 14.61,
+        "real_consumption_formula": "Σ(saída - retorno)",
+        "total_losses": 0,
+        "efficiency": 0.85,
+        "status": "WARNING",
+        "alerts": [
+          "Consumo de cachaça 33% acima do previsto",
+          "Número de copos indica erro de headcount"
+        ]
+      }
+    }
+  ],
+  "analysis_by_category": {
+    "excesso_consumption": [
+      {
+        "event_id": "EV-2025-04-12",
+        "product": "Cachaça 51",
+        "excesso_percent": 33.3,
+        "cause": "Produto popular",
+        "action": "Adicionar 25% buffer forecast para esse produto"
+      },
+      {
+        "event_id": "EV-2025-04-12",
+        "product": "Copos",
+        "excesso_percent": 25.0,
+        "cause": "Erro de headcount",
+        "action": "Confirmar número de convidados 48h antes"
+      }
+    ],
+    "falta_consumption": [],
+    "erro_operacional": []
+  },
+  "perdas_identified": {
+    "total_perdas": 0,
+    "perdas_por_evento": [],
+    "perdas_por_categoria": [],
+    "causas": []
+  },
+  "consolidated_metrics": {
+    "total_events": 2,
+    "total_products_tracked": 6,
+    "avg_variance": -2.47,
+    "avg_efficiency": 0.92,
+    "best_event": "EV-2025-04-05 (1.66% var)",
+    "worst_event": "EV-2025-04-12 (14.61% var)",
+    "recommendations": [
+      "Implementar confirmação de headcount 48h antes",
+      "Revisar forecast baseado em tipo de público",
+      "Adicionar buffer de 10-15% para itens populares",
+      "Treinar equipe em medidas padrão"
+    ]
+  }
+}

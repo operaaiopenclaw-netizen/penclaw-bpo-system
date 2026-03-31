@@ -1,0 +1,113 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "created_at": "2026-03-27",
+    "last_updated": "2026-03-27",
+    "categories": ["cerveja", "refrigerante", "água", "gelo", "destilados", "sucos", "energético", "staff", "descartáveis", "insumos_bar", "buffet"],
+    "total_suppliers": 0,
+    "homologated": 0,
+    "pending": 0
+  },
+  "suppliers": [],
+  "categories_structure": {
+    "cerveja": {
+      "description": "Cervejas nacionais e importadas",
+      "unit_types": ["caixa", "pack", "barril"],
+      "shelf_life_days": 90
+    },
+    "refrigerante": {
+      "description": "Refrigerantes e bebidas não-alcoólicas",
+      "unit_types": ["caixa", "litro", "lata"],
+      "shelf_life_days": 120
+    },
+    "água": {
+      "description": "Água mineral e de mesa",
+      "unit_types": ["garrafa", "copo", "galão"],
+      "shelf_life_days": 365
+    },
+    "gelo": {
+      "description": "Gelo em cubos ou escamas",
+      "unit_types": ["saco", "kg"],
+      "shelf_life_days": 0
+    },
+    "destilados": {
+      "description": "Vodka, whisky, cachaça, gin, etc",
+      "unit_types": ["garrafa", "dose"],
+      "shelf_life_days": {
+        "fechado": 730,
+        "aberto": 180
+      }
+    },
+    "sucos": {
+      "description": "Sucos naturais e industrializados",
+      "unit_types": ["garrafa", "caixa", "litro"],
+      "shelf_life_days": 30
+    },
+    "energético": {
+      "description": "Bebidas energéticas",
+      "unit_types": ["lata", "garrafa"],
+      "shelf_life_days": 180
+    },
+    "staff": {
+      "description": "Mão de obra para eventos",
+      "roles": ["bartender", "garçom", "segurança", "limpeza", "chef", "auxiliar"],
+      "unit_types": ["hora", "diária", "evento"]
+    },
+    "descartáveis": {
+      "description": "Copos, pratos, talheres, guardanapos",
+      "unit_types": ["pacote", "cx", "unidade"],
+      "shelf_life_days": 999
+    },
+    "insumos_bar": {
+      "description": "Utensílios e consumíveis de bar",
+      "subcategories": ["frutas", "xaropes", "guarnições", "aperitivos"],
+      "shelf_life_days": 7
+    },
+    "buffet": {
+      "description": "Carnes, vegetais, pães e sobremesas",
+      "subcategories": ["carnes", "vegetais", "pães", "sobremesas", "molhos"],
+      "shelf_life_days": 2
+    }
+  },
+  "template_supplier": {
+    "supplier_id": "SUP-XXX",
+    "name": "Nome do Fornecedor",
+    "categories": ["categoria_principal"],
+    "region": {
+      "city": "São Paulo",
+      "zone": "Zona Norte",
+      "delivery_radius_km": 30
+    },
+    "contact": {
+      "responsible": "Nome do Responsável",
+      "phone": "+55-11-99999-9999",
+      "whatsapp": "+55-11-99999-9999",
+      "email": "contato@fornecedor.com"
+    },
+    "commercial": {
+      "delivery_time_days": 2,
+      "payment_terms": "30 dias",
+      "minimum_order": 500.00,
+      "delivery_fee": 30.00
+    },
+    "status": "pending",
+    "score": {
+      "price": 0,
+      "quality": 0,
+      "reliability": 0,
+      "speed": 0,
+      "overall": 0
+    },
+    "performance": {
+      "orders_count": 0,
+      "on_time_rate": 0,
+      "defect_rate": 0,
+      "avg_response_minutes": 0
+    },
+    "products": [],
+    "last_price_reference": {},
+    "notes": "",
+    "created_at": "",
+    "homologated_at": null
+  }
+}
