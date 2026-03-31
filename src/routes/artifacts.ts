@@ -1,13 +1,8 @@
 import { FastifyInstance } from "fastify";
-import { artifactController } from "../controllers/artifact-controller";
+import { ArtifactController } from "../controllers/artifact-controller";
 
-export async function artifactsRoutes(app: FastifyInstance) {
-  // POST /artifacts/render
-  app.post("/render", async (req, res) => artifactController.render(req, res));
+const controller = new ArtifactController();
 
-  // GET /artifacts/:id
-  app.get("/:id", async (req, res) => artifactController.getById(req as any, res));
-
-  // GET /artifacts?agentRunId=...
-  app.get("/", async (req, res) => artifactController.listByRun(req as any, res));
+export async function artifactRoutes(app: FastifyInstance) {
+  app.post("/artifacts/render", controller.render);
 }
