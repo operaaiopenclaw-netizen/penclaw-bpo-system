@@ -2,6 +2,7 @@ import { ToolImplementation, ToolRegistryEntry } from "../types/tools";
 import { EventAnalyzerTool } from "./event-analyzer";
 import { CalculatorTool } from "./calculator";
 import { RecipeCostTool } from "./recipe-cost";
+import { FileReadTool } from "./file-read";
 import { logger } from "../utils/logger";
 
 /**
@@ -20,6 +21,7 @@ export class ToolRegistry {
     this.register(new EventAnalyzerTool());
     this.register(new CalculatorTool());
     this.register(new RecipeCostTool());
+    this.register(new FileReadTool());
   }
 
   register(tool: ToolImplementation): void {
