@@ -34,10 +34,13 @@ export async function agentRunsRoutes(app: FastifyInstance) {
 
   // GET /agent-runs/:id
   app.get("/:id", async (req, res) => {
-    const { id } = req.params as { id: string };
+    const parsed = agentRunIdSchema.safeParse(req.params);
+    if (!parsed.success) {
+      throw new AppError("Invalid agent run ID", 422, "VALIDATION_ERROR");
+    }
     
     const run = await prisma.agentRun.findUnique({
-      where: { id },
+      where: { id: parsed.data.id },
       include: {
         steps: { orderBy: { stepOrder: "asc" } },
         approvals: true,
@@ -67,6 +70,37 @@ export async function agentRunsRoutes(app: FastifyInstance) {
     });
 
     logger.info("Agent run replayed", { originalId: id, replayId: replay.id });
+    return { success: true, data: replay };
+  });
+}
+t = {};
+    }
+
+    // Merge with overrides
+    const mergedInput = bodyParsed.data.overrideInput 
+      ? { ...originalInput, ...bodyParsed.data.overrideInput }
+      : originalInput;
+
+    const replay = await prisma.agentRun.create({
+      data: {
+        companyId: original.companyId,
+        workflowType: original.workflowType,
+        status: "pending",
+        inputSummary: JSON.stringify(mergedInput).slice(0, 200),
+      },
+    });
+
+    // Start orchestration for replay
+    orchestrator.execute({
+      agentRunId: replay.id,
+      companyId: original.companyId,
+      workflowType: original.workflowType as any,
+      input: mergedInput
+    }).catch(err => {
+      logger.error("Orchestrator replay failed", { runId: replay.id, error: err.message });
+    });
+
+    logger.info("Agent run replayed", { originalId: idParsed.data.id, replayId: replay.id });
     return { success: true, data: replay };
   });
 }
