@@ -5,6 +5,7 @@ import { RecipeCostTool } from "./recipe-cost";
 import { FileReadTool } from "./file-read";
 import { FileWriteTool } from "./file-write";
 import { SqlQueryTool } from "./sql-query";
+import { HttpRequestTool } from "./http-request";
 import { logger } from "../utils/logger";
 
 /**
