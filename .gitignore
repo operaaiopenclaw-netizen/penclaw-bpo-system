@@ -1,28 +1,56 @@
+# Dependencies
+node_modules/
+.env
+.env.local
+.env.*.local
+
+# Build
+dist/
+build/
+*.tsbuildinfo
+
+# Runtime
+storage/artifacts/
+storage/logs/
+runtime/
+*.log
+*.pid
+
+# Database
+*.db
+*.sqlite
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+coverage/
+.nyc_output/
+
 # Python
-venv/
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
 
-# Environment
-.env
-.env.*
-*.log
+# Package managers
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
 
-# OpenClaw secrets
-auth-profiles.json
-openclaw.json
-.openclaw.json
-
-# Data bruta (não versionar)
-data/real_financial/
-data/operational/
-
-# Outputs pesados
-*.tar.gz
-*.zip
-
-# Cache / temporários
-processed_ids.txt
+# Misc
 *.bak
-.DS_Store
-node_modules/
+*.tmp
+.cache/
+temp/
