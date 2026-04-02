@@ -2,18 +2,37 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import { AgentRunService } from "../services/agent-run-service";
 import { createAgentRunSchema, agentRunIdSchema } from "../schemas/agent-run";
 import { AppError } from "../utils/app-error";
+import { enqueueAgentRun } from "../queue";
+import { WorkflowType } from "../types/core";
 
 const service = new AgentRunService();
 
 export class AgentRunController {
   /**
-   * Create new agent run
+   * Create new agent run (async via queue)
    */
   async create(request: FastifyRequest, reply: FastifyReply) {
     try {
       const body = createAgentRunSchema.parse(request.body);
-      const result = await service.createAndExecute(body);
-      return reply.status(201).send(result);
+      
+      // Create run in database (pending status)
+      const run = await service.create(body);
+      
+      // Enqueue for async processing
+      await enqueueAgentRun({
+        agentRunId: run.id,
+        companyId: body.companyId,
+        workflowType: body.workflowType as WorkflowType,
+        input: body.input,
+        userId: request.user?.id,
+      });
+      
+      return reply.status(201).send({
+        success: true,
+        message: "Agent run queued for async processing",
+        runId: run.id,
+        status: "pending",
+      });
     } catch (error) {
       const message = error instanceof Error ? error.message : "Validation failed";
       throw new AppError(message, 422, "VALIDATION_ERROR");

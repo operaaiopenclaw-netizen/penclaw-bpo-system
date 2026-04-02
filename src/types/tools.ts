@@ -16,6 +16,9 @@ export type ToolExecutionOutput = {
   data: unknown;
   error?: string;
   latencyMs?: number;
+  cost?: {
+    monetaryCost: number;
+  };
 };
 
 export interface ToolImplementation {

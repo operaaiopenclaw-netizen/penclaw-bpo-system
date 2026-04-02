@@ -11,7 +11,7 @@ export function errorHandler(error: Error, _request: FastifyRequest, reply: Fast
     });
   }
 
-  logger.error("Unhandled error", { error: error.message, stack: error.stack });
+  logger.error(`Unhandled error: ${error.message}`);
 
   return reply.status(500).send({
     success: false,

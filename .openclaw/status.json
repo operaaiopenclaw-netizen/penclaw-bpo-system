@@ -1,0 +1,20 @@
+{
+  "last_startup": "2026-04-01T13:54:00-03:00",
+  "data_loaded": true,
+  "files_found": [
+    ".openclaw/financial/cashflow_projection.json",
+    ".openclaw/financial/accounts_payable.json",
+    ".openclaw/financial/accounts_receivable.json",
+    ".openclaw/financial/cash_position.json",
+    ".openclaw/financial/resumo_executivo.md",
+    ".openclaw/AGENTS.md"
+  ],
+  "status": "operational",
+  "companies_loaded": ["LA ORANA", "STATUS Opera"],
+  "records_loaded": {
+    "payables": 27,
+    "receivables": 53,
+    "alerts": 15
+  },
+  "validation": "passed"
+}

@@ -1,3 +1,4 @@
+import "dotenv/config";
 import Fastify from "fastify";
 import cors from "@fastify/cors";
 import helmet from "@fastify/helmet";
@@ -7,6 +8,8 @@ import { config } from "./config/env";
 import { prisma } from "./db";
 import { agentRunsRoutes, approvalsRoutes, memoryRoutes, artifactsRoutes, dashboardRoutes } from "./routes";
 import { errorHandler, notFoundHandler } from "./utils/error-handler";
+import { logger } from "./utils/logger";
+import agentRunWorker, { closeWorker } from "./worker";
 
 async function bootstrap() {
   const app = Fastify({
@@ -25,9 +28,10 @@ async function bootstrap() {
         description: "Orkestra Finance Brain",
         version: "1.0.0",
       },
-      servers: [{ url: "http://localhost:3333" }],
+      servers: [{ url: `http://localhost:${config.PORT}` }],
     },
   });
+
   await app.register(swaggerUi, { routePrefix: "/docs" });
 
   // Routes
@@ -44,20 +48,25 @@ async function bootstrap() {
   app.setErrorHandler(errorHandler);
   app.setNotFoundHandler(notFoundHandler);
 
+  // Worker
+  logger.info("Starting agent run worker...");
+  void agentRunWorker;
+
   // Graceful shutdown
   process.on("SIGINT", async () => {
     await app.close();
+    await closeWorker();
     await prisma.$disconnect();
     process.exit(0);
   });
 
   await app.listen({ port: config.PORT, host: "0.0.0.0" });
-  
+
   app.log.info(`🚀 Server running at http://localhost:${config.PORT}`);
   app.log.info(`📚 Swagger UI: http://localhost:${config.PORT}/docs`);
 }
 
-bootstrap().catch(err => {
+bootstrap().catch((err) => {
   console.error("Fatal error:", err);
   process.exit(1);
 });

@@ -30,10 +30,7 @@ export class ToolExecutor {
   ): Promise<ToolExecutionOutput> {
     const startedAt = Date.now();
 
-    logger.info("Tool execution starting", { 
-      agentStepId, 
-      toolName: toolInput.toolName 
-    });
+    logger.info(`Tool execution starting: ${toolInput.toolName} for step ${agentStepId}`);
 
     // Create tool call record in database
     const toolCall = await prisma.toolCall.create({
@@ -71,12 +68,7 @@ export class ToolExecutor {
         }
       });
 
-      logger.info("Tool execution completed", { 
-        toolCallId: toolCall.id,
-        toolName: toolInput.toolName,
-        latencyMs,
-        success: result.success
-      });
+      logger.info(`Tool execution completed: ${toolInput.toolName} in ${latencyMs}ms`);
 
       return {
         ...result,
@@ -97,12 +89,7 @@ export class ToolExecutor {
         }
       });
 
-      logger.error("Tool execution failed", { 
-        toolCallId: toolCall.id,
-        toolName: toolInput.toolName,
-        error: errorMessage,
-        latencyMs
-      });
+      logger.error(`Tool execution failed: ${toolInput.toolName} - ${errorMessage}`);
 
       return {
         success: false,
@@ -152,4 +139,6 @@ export function getGlobalRegistry(): ToolRegistry | undefined {
 }
 
 // Singleton executor
-export const toolExecutor = new ToolExecutor();
+export function createToolExecutor(registry?: ToolRegistry) {
+  return new ToolExecutor(registry);
+}

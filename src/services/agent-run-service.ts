@@ -5,7 +5,22 @@ import { CreateAgentRunInput } from "../schemas/agent-run";
 
 export class AgentRunService {
   /**
-   * Create and execute agent run
+   * Create run only (no execution - for async queue)
+   */
+  async create(input: CreateAgentRunInput) {
+    const run = await prisma.agentRun.create({
+      data: {
+        companyId: input.companyId,
+        workflowType: input.workflowType,
+        status: "pending",
+        inputSummary: JSON.stringify(input.input).slice(0, 200),
+      },
+    });
+    return run;
+  }
+
+  /**
+   * Create and execute agent run (legacy sync version)
    */
   async createAndExecute(input: CreateAgentRunInput) {
     logger.info("AgentRunService: creating run", { 

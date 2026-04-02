@@ -3,6 +3,6 @@ import { ArtifactController } from "../controllers/artifact-controller";
 
 const controller = new ArtifactController();
 
-export async function artifactRoutes(app: FastifyInstance) {
-  app.post("/artifacts/render", controller.render);
+export async function artifactsRoutes(app: FastifyInstance) {
+  app.post("/render", controller.render);
 }

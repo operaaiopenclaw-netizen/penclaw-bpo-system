@@ -78,6 +78,7 @@ model ToolCall {
   toolName      String
   toolInput     Json?
   toolOutput    Json?
+  context       Json?
   status        String    @default("pending")
   latencyMs     Int?
   costEstimate  Float?
