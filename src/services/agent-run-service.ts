@@ -22,6 +22,7 @@ export class AgentRunService {
 
     await agentRunQueue.add("agent-run", {
       runId: run.id,
+      agentRunId: run.id,
       companyId: input.companyId,
       workflowType: input.workflowType,
       input: input.input ?? {}

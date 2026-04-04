@@ -1,0 +1,46 @@
+{
+  "timestamp": "2026-04-04T15:38:00",
+  "tasks": [
+    {
+      "id": 1,
+      "name": "interpretacao_contrato",
+      "description": "Análise de contrato 5 páginas - extrair cláusulas, riscos, obrigações",
+      "needs_backend": false,
+      "prompt": "ROLE: Legal analyst for event company. TASK: Analyze this contract:\n\nCONTRATO DE PRESTAÇÃO DE SERVIÇOS\n\n1. Objeto: A CONTRATADA se obriga a fornecer serviços de som e iluminação para o evento do CONTRATANTE em 15/05/2026.\n\n2. Valor: R$ 45.000,00 (quarenta e cinco mil reais). Pagamento: 50% na assinatura, 50% até 7 dias antes do evento. \n\n3. Prazo: A CONTRATADA deverá estar no local às 10h do dia do evento (montagem obrigatória).\n\n4. Responsabilidades: A CONTRATADA é responsável por danos causados por equipamentos próprios. A CONTRATANTE deve fornecer energia elétrica adequada.\n\n5. Cancelamento: Multa de 30% até 30 dias antes; 100% após 7 dias antes.\n\n6. Dano emergencial: Em caso de falha técnica, a CONTRATADA terá 2 horas para resolver ou contratar substituto aprovado pelo CONTRATANTE.\n\nREQUIRED OUTPUT:\n{\n  \"clausulas_criticas\": [],\n  \"riscos_identificados\": [],\n  \"obrigacoes_contratante\": [],\n  \"obrigacoes_contratada\": [],\n  \"penalidades\": {},\n  \"pontos_atencao\": [],\n  \"recomendacao\": \"\"\n}"
+    },
+    {
+      "id": 2,
+      "name": "criacao_agent_run",
+      "description": "Criar agent run para workflow contract_onboarding",
+      "needs_backend": true,
+      "endpoint": "POST /agent-runs"
+    },
+    {
+      "id": 3,
+      "name": "checklist_operacional",
+      "description": "Gerar checklist completo para evento de formatura em 15/05/2026",
+      "needs_backend": false,
+      "prompt": "ROLE: Event operations manager for catering/events company.\n\nEVENT: Graduation party (formatura)\nDATE: May 15, 2026\nGUESTS: 300 people\nTYPE: Corporate/Social hybrid\n\nREQUIRED: Complete operational checklist with:\n1. Pre-event (30 days before)\n2. Pre-event (7 days before)\n3. Day before\n4. Event day (setup)\n5. Event day (during event)\n6. Post-event\n\nOUTPUT FORMAT: Structured JSON array with tasks, owners, deadlines, priority levels."
+    },
+    {
+      "id": 4,
+      "name": "risk_approval",
+      "description": "Avaliar risco R3 de ação financeira e determinar se precisa aprovação",
+      "needs_backend": true,
+      "test_case": "Pagamento R$ 50.000 para fornecedor (R3 - financial impact)"
+    },
+    {
+      "id": 5,
+      "name": "tooling_execution",
+      "description": "Escolher ferramenta correta para tarefa operacional",
+      "needs_backend": true,
+      "test_case": "Consultar saldo de estoque de cadeiras"
+    }
+  ],
+  "engines": [
+    { "name": "kimi_k25", "model": "together/moonshotai/Kimi-K2.5", "provider": "together" },
+    { "name": "gemma", "model": "google/gemma-2-27b-it", "provider": "together" },
+    { "qwen": "qwen", "model": "qwen/qwen2.5-72b-instruct", "provider": "together" }
+  ],
+  "runs_per_task": 3
+}

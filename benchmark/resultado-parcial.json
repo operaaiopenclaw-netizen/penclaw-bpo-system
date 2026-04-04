@@ -1,0 +1,93 @@
+{
+  "benchmark_id": "openclaw-motors-20260404",
+  "tipo": "PARCIAL (Tasks 1,3 completas)",
+  "timestamp_inicio": "2026-04-04T15:38:00",
+  "timestamp_fim": "2026-04-04T15:43:00",
+  "motores_testados": ["kimi_k25", "gemma", "qwen"],
+  "resultados": {
+    "task_1_contrato": {
+      "descricao": "Interpretação de contrato de prestação de serviços",
+      "kimi_k25": {
+        "tempo_s": 19,
+        "tokens_in": 12900,
+        "tokens_out": 1800,
+        "qualidade_obs": "Superior - detectou cláusula abusiva (multa 100% contestável)",
+        "consistencia": "Alta",
+        "nota": 9.5,
+        "destaque": "Insight jurídico avançado: 'altamente abusiva e pode ser contestada judicialmente'"
+      },
+      "gemma": {
+        "tempo_s": 7,
+        "tokens_in": 12900,
+        "tokens_out": 832,
+        "qualidade_obs": "Rápida e objetiva, estrutura adequada",
+        "consistencia": "Média-Alta",
+        "nota": 8.0,
+        "destaque": "Velocidade superior (4x mais rápida)"
+      },
+      "qwen": {
+        "tempo_s": 16,
+        "tokens_in": 12900,
+        "tokens_out": 1100,
+        "qualidade_obs": "Detalhada, boa estruturação de penalidades",
+        "consistencia": "Alta",
+        "nota": 8.5,
+        "destaque": "Estrutura JSON perfeita com valores calculados"
+      }
+    },
+    "task_3_checklist": {
+      "descricao": "Checklist operacional evento formatura 300 pessoas",
+      "kimi_k25": {
+        "tempo_s": 90,
+        "timeout": true,
+        "qualidade_obs": "Extremamente detalhado, terminologia técnica, orçamento integrado",
+        "completude": "Parcial (timeout mas conteúdo rico)",
+        "nota": 9.0,
+        "destaque": "Ratios calculados (1:10 staff, 1:150 segurança), termos técnicos ('moving heads', 'mise en place')"
+      },
+      "gemma": {
+        "tempo_s": 59,
+        "qualidade_obs": "Completo, estrutura clara, fases bem definidas",
+        "completude": "Completo",
+        "nota": 8.5,
+        "destaque": "Fases: pre_30_dias, pre_7_dias, dia_anterior, dia_evento_setup, dia_evento_durante"
+      },
+      "qwen": {
+        "tempo_s": 90,
+        "timeout": true,
+        "qualidade_obs": "Completo mesmo com timeout, cálculos operacionais (3L/pessoa)",
+        "completude": "Completo",
+        "nota": 8.0,
+        "destaque": "Cálculo de consumo: '3L bebida/pessoa para evento 6h'"
+      }
+    }
+  },
+  "med_geral": {
+    "kimi_k25": {
+      "velocidade_media_s": 54.5,
+      "qualidade_media": 9.25,
+      "consistencia": "Alta",
+      "custo_beneficio": "Alto (mais lento mas qualidade superior)"
+    },
+    "gemma": {
+      "velocidade_media_s": 33,
+      "qualidade_media": 8.25,
+      "consistencia": "Média-Alta",
+      "custo_beneficio": "Excelente (mais rápido, bom custo)"
+    },
+    "qwen": {
+      "velocidade_media_s": 53,
+      "qualidade_media": 8.25,
+      "consistencia": "Alta",
+      "custo_beneficio": "Bom"
+    }
+  },
+  "classificacao": {
+    "melhor_qualidade": "kimi_k25",
+    "melhor_velocidade": "gemma",
+    "melhor_custo_beneficio": "gemma",
+    "mais_detalhado": "kimi_k25"
+  },
+  "recomendacao": "Arquitetura HÍBRIDA: Gemma para tarefas operacionais rápidas, Kimi para análises complexas (contratos, riscos)",
+  "pendentes": ["task_2_criacao_agent_run", "task_4_risk_approval", "task_5_tooling"]
+}

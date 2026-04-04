@@ -3,6 +3,7 @@
 // ============================================================
 
 export type RiskLevel =
+  | "R0" | "R1" | "R2" | "R3" | "R4"
   | "R0_READ_ONLY"
   | "R1_SAFE_WRITE"
   | "R2_EXTERNAL_EFFECT"

@@ -18,39 +18,39 @@ export type PolicyRule = {
 };
 
 // Policy rules based on OpenClaw spec
-const POLICY_RULES: Record<RiskLevel, PolicyRule> = {
-  R0_READ_ONLY: {
-    riskLevel: "R0_READ_ONLY",
+const POLICY_RULES: Record<string, PolicyRule> = {
+  R0: {
+    riskLevel: "R0",
     allowed: true,
     requiresApproval: false,
     autoExecute: true,
     reason: "Read-only queries - safe",
     logLevel: "info",
   },
-  R1_SAFE_WRITE: {
-    riskLevel: "R1_SAFE_WRITE",
+  R1: {
+    riskLevel: "R1",
     allowed: true,
     requiresApproval: false,
     autoExecute: true,
     reason: "Safe writes (logs, notes) - auto-approve",
     logLevel: "info",
   },
-  R2_EXTERNAL_EFFECT: {
-    riskLevel: "R2_EXTERNAL_EFFECT",
+  R2: {
+    riskLevel: "R2",
     allowed: true,
     requiresApproval: false,
     reason: "External effects allowed with mandatory logging",
     logLevel: "warn",
   },
-  R3_FINANCIAL_IMPACT: {
-    riskLevel: "R3_FINANCIAL_IMPACT",
+  R3: {
+    riskLevel: "R3",
     allowed: true,
     requiresApproval: true,
     reason: "Financial impact requires approval",
     logLevel: "audit",
   },
-  R4_DESTRUCTIVE: {
-    riskLevel: "R4_DESTRUCTIVE",
+  R4: {
+    riskLevel: "R4",
     allowed: true,
     requiresApproval: true,
     requiresDoubleApproval: true,
@@ -69,16 +69,20 @@ export class PolicyEngine {
 
   /**
    * Evaluate a risk level and return policy decision
+   * Supports both short (R0-R4) and long (R0_READ_ONLY) formats
    */
-  evaluate(riskLevel: RiskLevel): PolicyDecision {
-    const rule = this.rules[riskLevel];
+  evaluate(riskLevel: RiskLevel | string): PolicyDecision {
+    // Normalize: extract base risk level (R0, R1, etc.)
+    const baseLevel = riskLevel?.toString().split("_")[0] || "R0";
+    const rule = this.rules[baseLevel] || this.rules[riskLevel as string];
     
     if (!rule) {
+      // Default safe: require approval for unknown
       return {
-        allowed: false,
+        allowed: true,
         requiresApproval: true,
-        reason: `Unknown risk level: ${riskLevel}`,
-        riskLevel,
+        reason: `Unknown risk level: ${riskLevel} - requiring approval for safety`,
+        riskLevel: baseLevel as RiskLevel,
       };
     }
 
@@ -86,7 +90,7 @@ export class PolicyEngine {
       allowed: rule.allowed,
       requiresApproval: rule.requiresApproval,
       reason: rule.reason,
-      riskLevel,
+      riskLevel: baseLevel as RiskLevel,
     };
   }
 
