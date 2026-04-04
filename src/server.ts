@@ -6,7 +6,7 @@ import swagger from "@fastify/swagger";
 import swaggerUi from "@fastify/swagger-ui";
 import { config } from "./config/env";
 import { prisma } from "./db";
-import { agentRunsRoutes, approvalsRoutes, memoryRoutes, artifactsRoutes, dashboardRoutes } from "./routes";
+import { agentRunsRoutes, approvalsRoutes, memoryRoutes, artifactsRoutes, dashboardRoutes, metricsRoutes } from "./routes";
 import { errorHandler, notFoundHandler } from "./utils/error-handler";
 import { logger } from "./utils/logger";
 import agentRunWorker, { closeWorker } from "./worker";
@@ -39,6 +39,7 @@ async function bootstrap() {
   await app.register(approvalsRoutes, { prefix: "/approvals" });
   await app.register(memoryRoutes, { prefix: "/memory" });
   await app.register(artifactsRoutes, { prefix: "/artifacts" });
+  await app.register(metricsRoutes, { prefix: "/metrics" });
   await app.register(dashboardRoutes, { prefix: "/dashboard" });
 
   // Health check

@@ -10,4 +10,7 @@ export async function agentRunsRoutes(app: FastifyInstance) {
 
   // GET /agent-runs/:id
   app.get("/:id", async (req, res) => agentRunController.getById(req as any, res));
+
+  // POST /agent-runs/:id/replay
+  app.post("/:id/replay", async (req, res) => agentRunController.replay(req as any, res));
 }

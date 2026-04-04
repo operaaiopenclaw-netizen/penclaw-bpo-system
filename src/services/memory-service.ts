@@ -1,92 +1,157 @@
+/**
+ * Memory Service - Persistência simples de aprendizado
+ * Sem IA avançada - apenas logs estruturados
+ */
+
 import { prisma } from "../db";
-import { logger } from "../utils/logger";
+
+export type MemoryType = 
+  | "decision"    // Decisões importantes
+  | "error"       // Erros encontrados
+  | "pattern"     // Padrões recorrentes
+  | "insight"     // Aprendizados pontuais
+  | "event";      // Eventos marcantes
+
+export type MemoryInput = {
+  companyId: string;
+  type: MemoryType;
+  content: string;
+  context?: Record<string, unknown>;
+  agentRunId?: string;
+};
 
 export class MemoryService {
   /**
-   * Create new memory
+   * Salva entrada na memória
    */
-  async create(data: {
-    companyId: string;
-    memoryType: string;
-    title: string;
-    content: string;
-    tags?: string[];
-  }) {
-    logger.info("MemoryService: creating memory", { title: data.title });
+  async log(memory: MemoryInput) {
+    // Truncate content to reasonable size
+    const truncated = memory.content.length > 10000 
+      ? memory.content.slice(0, 10000) + "... [truncated]"
+      : memory.content;
 
     return prisma.memoryItem.create({
       data: {
-        companyId: data.companyId,
-        memoryType: data.memoryType,
-        title: data.title,
-        content: data.content,
-        tags: data.tags || [],
-        confidenceScore: 0.95
+        companyId: memory.companyId,
+        memoryType: memory.type,
+        title: this._generateTitle(memory.type, memory.content),
+        content: truncated,
+        sourceType: memory.agentRunId ? "agent_run" : "system",
+        sourceRef: memory.agentRunId || undefined,
+        tags: [memory.type, ...this._extractTags(memory)],
+        createdAt: new Date()
       }
     });
   }
 
   /**
-   * Search memories
+   * Busca memórias por tipo
    */
-  async search(companyId: string, q: string) {
-    logger.info("MemoryService: searching", { companyId, query: q });
-
+  async getByType(companyId: string, type: MemoryType, limit = 20) {
     return prisma.memoryItem.findMany({
       where: {
         companyId,
-        OR: [
-          { title: { contains: q, mode: "insensitive" } },
-          { content: { contains: q, mode: "insensitive" } },
-          { tags: { has: q } }
-        ]
+        memoryType: type
       },
-      orderBy: { createdAt: "desc" },
-      take: 20
-    });
-  }
-
-  /**
-   * Get recent memories
-   */
-  async getRecent(companyId: string, limit = 10) {
-    return prisma.memoryItem.findMany({
-      where: { companyId },
       orderBy: { createdAt: "desc" },
       take: limit
     });
   }
 
   /**
-   * Get memory by ID
+   * Busca memórias recentes (últimas 30 dias)
    */
-  async getById(id: string) {
-    return prisma.memoryItem.findUnique({
-      where: { id }
+  async getRecent(companyId: string, days = 30, limit = 50) {
+    const since = new Date();
+    since.setDate(since.getDate() - days);
+
+    return prisma.memoryItem.findMany({
+      where: {
+        companyId,
+        createdAt: { gte: since }
+      },
+      orderBy: { createdAt: "desc" },
+      take: limit
     });
   }
 
   /**
-   * Update memory
+   * Busca por palavra-chave (busca simples em content)
    */
-  async update(id: string, data: Partial<{
-    title: string;
-    content: string;
-    tags: string[];
-  }>) {
-    return prisma.memoryItem.update({
-      where: { id },
-      data
+  async search(companyId: string, query: string, limit = 10) {
+    // Busca simples usando ILIKE
+    const normalized = query.toLowerCase().trim();
+    
+    return prisma.memoryItem.findMany({
+      where: {
+        companyId,
+        OR: [
+          { content: { contains: normalized, mode: "insensitive" } },
+          { title: { contains: normalized, mode: "insensitive" } }
+        ]
+      },
+      orderBy: { createdAt: "desc" },
+      take: limit
     });
   }
 
   /**
-   * Delete memory
+   * Gera resumo de aprendizado recente
    */
-  async delete(id: string) {
-    return prisma.memoryItem.delete({
-      where: { id }
-    });
+  async generateSummary(companyId: string, days = 7): Promise<string> {
+    const memories = await this.getRecent(companyId, days, 100);
+    
+    const byType = memories.reduce((acc, m) => {
+      acc[m.memoryType] = (acc[m.memoryType] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+
+    const summary = [
+      `## Resumo de Aprendizado (últimos ${days} dias)`,
+      ``,
+      ...Object.entries(byType).map(([type, count]) => 
+        `- ${type}: ${count} registros`
+      ),
+      ``,
+      `Total: ${memories.length} memórias`
+    ].join("\n");
+
+    return summary;
+  }
+
+  // Helpers
+  private _generateTitle(type: MemoryType, content: string): string {
+    const prefix = {
+      decision: "[Decisão]",
+      error: "[Erro]",
+      pattern: "[Padrão]",
+      insight: "[Insight]",
+      event: "[Evento]"
+    }[type];
+
+    // Pegar primeira frase ou primeiros 50 chars
+    const snippet = content.split(/[.!?]/, 1)[0].slice(0, 50);
+    return `${prefix} ${snippet}${snippet.length >= 50 ? "..." : ""}`;
+  }
+
+  private _extractTags(memory: MemoryInput): string[] {
+    const tags: string[] = [];
+    
+    if (memory.agentRunId) {
+      tags.push("agent-run");
+    }
+    
+    // Extrair palavras relevantes do contexto
+    if (memory.context) {
+      if (memory.context.workflowType) {
+        tags.push(String(memory.context.workflowType));
+      }
+      if (memory.context.agentName) {
+        tags.push(String(memory.context.agentName));
+      }
+    }
+
+    return tags;
   }
 }
 

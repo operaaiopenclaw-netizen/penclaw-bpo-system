@@ -2,6 +2,7 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import { prisma } from "../db";
 import { AppError } from "../utils/app-error";
 import { jsonLogger as logger } from "../utils/logger";
+import { orchestrator } from "../orchestrator";
 import { z } from "zod";
 
 const approvalActionSchema = z.object({
@@ -59,6 +60,19 @@ export class ApprovalController {
           status: body.approved ? "running" : "rejected"
         }
       });
+
+      // Resume execution if approved
+      if (body.approved) {
+        logger.info("Resuming run after approval", { agentRunId: approval.agentRunId });
+        
+        // Async resume - don't await, run in background
+        orchestrator.resume(approval.agentRunId).catch((error) => {
+          logger.error("Failed to resume run after approval", {
+            agentRunId: approval.agentRunId,
+            error: error instanceof Error ? error.message : String(error)
+          });
+        });
+      }
 
       return reply.status(200).send({
         success: true,

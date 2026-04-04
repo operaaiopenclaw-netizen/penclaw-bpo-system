@@ -1,51 +1,97 @@
 import { FastifyInstance } from "fastify";
-import { z } from "zod";
-import { memoryController } from "../controllers/memory-controller";
 import { memoryService } from "../services/memory-service";
-import { AppError } from "../utils/app-error";
-
-const CreateMemorySchema = z.object({
-  companyId: z.string().min(1),
-  memoryType: z.enum(["event", "recipe", "supplier", "insight", "decision", "error", "pattern", "EPISODIC", "DECLARATIVE"]),
-  title: z.string().min(1),
-  content: z.string().min(1),
-  tags: z.array(z.string()).default([]),
-});
-
-const SearchMemorySchema = z.object({
-  q: z.string().min(1),
-  companyId: z.string().min(1),
-});
 
 export async function memoryRoutes(app: FastifyInstance) {
-  // POST /memory
-  app.post("/", async (req, res) => {
-    const parsed = CreateMemorySchema.safeParse(req.body);
-    if (!parsed.success) {
-      throw new AppError(parsed.error.message, 422, "VALIDATION_ERROR");
+  // GET /memory/:companyId - Lista memórias recentes
+  app.get("/:companyId", async (req, res) => {
+    const { companyId } = req.params as { companyId: string };
+    const { type, limit, days } = req.query as { type?: string; limit?: string; days?: string };
+
+    try {
+      let result;
+      
+      if (type) {
+        result = await memoryService.getByType(
+          companyId,
+          type as any,
+          limit ? parseInt(limit) : 20
+        );
+      } else if (days) {
+        result = await memoryService.getRecent(
+          companyId,
+          parseInt(days),
+          limit ? parseInt(limit) : 50
+        );
+      } else {
+        result = await memoryService.getRecent(companyId, 30, 50);
+      }
+
+      return res.send({
+        success: true,
+        data: result,
+        count: result.length
+      });
+    } catch (error: any) {
+      return res.status(500).send({
+        error: "Failed to fetch memories",
+        message: error?.message
+      });
     }
-    return memoryController.create(req as any, res);
   });
 
-  // GET /memory/search?q=...&companyId=...
-  app.get("/search", async (req, res) => {
-    const parsed = SearchMemorySchema.safeParse(req.query);
-    if (!parsed.success) {
-      throw new AppError(parsed.error.message, 422, "VALIDATION_ERROR");
+  // GET /memory/:companyId/search?q=termo
+  app.get("/:companyId/search", async (req, res) => {
+    const { companyId } = req.params as { companyId: string };
+    const { q, limit } = req.query as { q?: string; limit?: string };
+
+    if (!q) {
+      return res.status(400).send({
+        error: "Bad Request",
+        message: "Query parameter 'q' is required"
+      });
     }
-    return memoryController.search(req as any, res);
+
+    try {
+      const result = await memoryService.search(
+        companyId,
+        q,
+        limit ? parseInt(limit) : 10
+      );
+
+      return res.send({
+        success: true,
+        data: result,
+        query: q,
+        count: result.length
+      });
+    } catch (error: any) {
+      return res.status(500).send({
+        error: "Search failed",
+        message: error?.message
+      });
+    }
   });
 
-  // GET /memory/recent?companyId=...
-  app.get("/recent", async (req, res) => {
-    const { companyId, limit } = req.query as { companyId: string; limit?: string };
-    
-    if (!companyId) {
-      throw new AppError("Company ID required", 422, "VALIDATION_ERROR");
+  // GET /memory/:companyId/summary
+  app.get("/:companyId/summary", async (req, res) => {
+    const { companyId } = req.params as { companyId: string };
+    const { days } = req.query as { days?: string };
+
+    try {
+      const summary = await memoryService.generateSummary(
+        companyId,
+        days ? parseInt(days) : 7
+      );
+
+      return res.send({
+        success: true,
+        summary
+      });
+    } catch (error: any) {
+      return res.status(500).send({
+        error: "Failed to generate summary",
+        message: error?.message
+      });
     }
-
-    const results = await memoryService.getRecent(companyId, limit ? parseInt(limit) : 10);
-
-    return { success: true, count: results.length, results };
   });
 }

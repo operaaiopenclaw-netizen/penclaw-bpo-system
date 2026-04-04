@@ -9,6 +9,7 @@ import { Planner } from "./planner";
 import { Validator } from "./validator";
 import { PolicyEngine } from "./core/policy-engine";
 import { memoryManager } from "./memory-manager";
+import { memoryService } from "./services/memory-service";
 
 // Agents
 import {
@@ -34,17 +35,79 @@ export class Orchestrator {
     reporting_agent: reportingAgent
   };
 
+  /**
+   * Resume execution from where it left off (for approved runs)
+   */
+  async resume(agentRunId: string) {
+    logger.info("Orchestrator resuming execution", { runId: agentRunId });
+
+    // Get run with all steps
+    const run = await prisma.agentRun.findUnique({
+      where: { id: agentRunId },
+      include: {
+        steps: {
+          orderBy: { stepOrder: "asc" }
+        }
+      }
+    });
+
+    if (!run) {
+      throw new AppError("Run not found", 404);
+    }
+
+    if (run.status !== "waiting_approval") {
+      throw new AppError(`Cannot resume run in status ${run.status}`, 400);
+    }
+
+    // Find input from first step
+    const firstStep = run.steps[0];
+    const input = firstStep?.inputPayload as Record<string, unknown> || {};
+    
+    // Get last output from completed steps
+    const lastOutput = run.steps
+      .filter(s => s.status === "completed")
+      .reduce((acc, step) => {
+        const output = step.outputPayload as Record<string, unknown>;
+        return { ...acc, ...output };
+      }, {} as Record<string, unknown>);
+
+    // Find the step that was waiting approval and mark it completed
+    const waitingStep = run.steps.find(s => s.status === "waiting_approval");
+    if (waitingStep) {
+      await prisma.agentStep.update({
+        where: { id: waitingStep.id },
+        data: {
+          status: "completed",
+          finishedAt: new Date()
+        }
+      });
+    }
+
+    // Continue execution from where it left off
+    return this.execute({
+      agentRunId,
+      companyId: run.companyId || "",
+      workflowType: run.workflowType as WorkflowType,
+      input,
+      resumeFrom: (waitingStep?.stepOrder || 0) + 1,
+      lastOutput
+    });
+  }
+
   async execute(params: {
     agentRunId: string;
     companyId: string;
     workflowType: WorkflowType;
     input: Record<string, unknown>;
+    resumeFrom?: number;
+    lastOutput?: Record<string, unknown>;
   }) {
-    const { agentRunId, companyId, workflowType, input } = params;
+    const { agentRunId, companyId, workflowType, input, resumeFrom = 1, lastOutput = {} } = params;
 
     logger.info("Orchestrator starting execution", { 
       runId: agentRunId,
-      workflow: workflowType 
+      workflow: workflowType,
+      resumeFrom 
     });
 
     try {
@@ -114,6 +177,18 @@ export class Orchestrator {
         }
       });
 
+      // Log error in memory
+      await memoryService.log({
+        companyId,
+        type: "error",
+        content: `Orchestration failed: ${errorMessage}`,
+        context: {
+          workflowType,
+          agentRunId
+        },
+        agentRunId
+      }).catch(() => {});
+
       throw new AppError(`Orchestration failed: ${errorMessage}`, 500);
     }
   }
@@ -166,6 +241,19 @@ export class Orchestrator {
         }
       });
 
+      // Log validation error
+      await memoryService.log({
+        companyId,
+        type: "error",
+        content: `Step validation failed for ${item.agentName}: Invalid output`,
+        context: {
+          workflowType,
+          agentRunId,
+          stepOrder: item.stepOrder
+        },
+        agentRunId
+      }).catch(() => {});
+
       return { status: "failed", error: "Invalid step output" };
     }
 
@@ -212,6 +300,51 @@ export class Orchestrator {
         finishedAt: new Date()
       }
     });
+
+    // Create artifact for step outputs (checklists, reports, etc)
+    const artifactTypes = ["checklist", "report", "json", "csv"];
+    const shouldCreateArtifact = result.output && (
+      result.output.checklist ||
+      result.output.report ||
+      result.output.json ||
+      result.output.csv ||
+      result.output.items ||
+      result.output.data
+    );
+
+    if (shouldCreateArtifact) {
+      const artifactType = result.output.checklist ? "checklist" :
+                          result.output.report ? "report" :
+                          result.output.csv ? "csv" : "json";
+      
+      await prisma.artifact.create({
+        data: {
+          agentRunId,
+          artifactType,
+          fileName: `${item.agentName}_step${item.stepOrder}_${artifactType}.json`,
+          metadata: {
+            agentName: item.agentName,
+            stepOrder: item.stepOrder,
+            workflowType,
+            contentType: artifactType
+          },
+          createdAt: new Date()
+        }
+      }).catch(() => {}); // Ignore artifact creation errors
+    }
+
+    // Store operational memory
+    await memoryService.log({
+      companyId,
+      type: "decision",
+      content: `Step ${item.stepOrder} (${item.agentName}) completed successfully`,
+      context: {
+        workflowType,
+        agentName: item.agentName,
+        stepOrder: item.stepOrder
+      },
+      agentRunId
+    }).catch(() => {}); // Ignore errors
 
     // Store memory
     await memoryManager.addEpisodicMemory({
