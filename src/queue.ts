@@ -4,16 +4,14 @@
  */
 
 import { Queue, Job } from "bullmq";
-import IORedis from "ioredis";
 import { logger } from "./utils/logger";
 import { WorkflowType } from "./types/core";
 
-// Redis connection
-const redisConnection = new IORedis.Redis({
-  host: process.env.REDIS_HOST || "localhost",
-  port: parseInt(process.env.REDIS_PORT || "6379"),
-  maxRetriesPerRequest: null,
-});
+// Redis connection - simple config
+export const redisConnection = {
+  host: "127.0.0.1",
+  port: 6379,
+};
 
 // Main queue for agent runs
 export const agentRunQueue = new Queue("agent-run", {

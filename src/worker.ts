@@ -1,123 +1,38 @@
-/**
- * Worker - Process jobs from BullMQ queue
- * Handles agent runs asynchronously
- */
-
-import { Worker, Job } from "bullmq";
-import IORedis from "ioredis";
+import { Worker } from "bullmq";
+import { redisConnection } from "./queue";
 import { logger } from "./utils/logger";
-import { prisma } from "./db";
-import { orchestrator } from "./orchestrator";
-import { AgentRunJobData } from "./queue";
-import { WorkflowType } from "./types/core";
 
-// Redis connection
-const redisConnection = new IORedis.Redis({
-  host: process.env.REDIS_HOST || "localhost",
-  port: parseInt(process.env.REDIS_PORT || "6379"),
-  maxRetriesPerRequest: null,
-});
-
-// Worker instance
-const agentRunWorker = new Worker<AgentRunJobData>(
+const worker = new Worker(
   "agent-run",
-  async (job: Job<AgentRunJobData>) => {
-    const { agentRunId, companyId, workflowType, input, userId } = job.data;
+  async (job) => {
+    const { agentRunId, workflowType } = job.data;
+    
+    logger.info(`🔥 PROCESSING JOB: ${job.id}`);
+    logger.info(`➡️ RUN ID: ${agentRunId}`);
+    logger.info(`➡️ WORKFLOW: ${workflowType}`);
 
-    logger.info(`Worker processing: ${job.id} - ${workflowType}`);
+    // TEMP: simulação de execução
+    await new Promise((r) => setTimeout(r, 1000));
 
-    try {
-      // Update run status to running
-      await prisma.agentRun.update({
-        where: { id: agentRunId },
-        data: {
-          status: "running",
-          startedAt: new Date(),
-        },
-      });
+    logger.info(`✅ JOB COMPLETED: ${agentRunId}`);
 
-      // Execute orchestrator
-      const result = await orchestrator.execute({
-        agentRunId,
-        companyId,
-        workflowType: workflowType as WorkflowType,
-        input,
-      });
-
-      // Update run with result
-      await prisma.agentRun.update({
-        where: { id: agentRunId },
-        data: {
-          status: result.success ? "completed" : "failed",
-          finishedAt: new Date(),
-          outputSummary: result.output ? JSON.stringify(result.output).slice(0, 500) : null,
-        },
-      });
-
-      logger.info(`Worker completed: ${job.id} - Success: ${result.success}`);
-      return result;
-
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Unknown error";
-
-      // Update run with failure
-      await prisma.agentRun.update({
-        where: { id: agentRunId },
-        data: {
-          status: "failed",
-          finishedAt: new Date(),
-          outputSummary: `Error: ${errorMessage}`,
-        },
-      });
-
-      logger.error(`Worker failed: ${job.id} - ${errorMessage}`);
-      throw error;
-    }
+    return { success: true, agentRunId };
   },
   {
     connection: redisConnection,
-    concurrency: parseInt(process.env.WORKER_CONCURRENCY || "5"),
-    lockDuration: 30000, // 30 seconds
-    stalledInterval: 30000,
   }
 );
 
-// Event handlers
-agentRunWorker.on("completed", (job) => {
-  logger.info(`Job completed: ${job.id}`);
+worker.on("completed", (job) => {
+  logger.info(`🎯 COMPLETED: ${job.id}`);
 });
 
-agentRunWorker.on("failed", (job, err) => {
-  logger.error(`Job failed: ${job?.id} - ${err.message}`);
+worker.on("failed", (job, err) => {
+  logger.error(`❌ FAILED: ${job?.id}`, err);
 });
 
-agentRunWorker.on("stalled", (jobId) => {
-  logger.warn(`Job stalled: ${jobId}`);
-});
-
-// Graceful shutdown
 export async function closeWorker() {
-  await agentRunWorker.close();
-  await redisConnection.quit();
-  logger.info("Worker shutdown complete");
+  await worker.close();
 }
 
-// For manual worker management
-export function getWorkerStatus() {
-  return {
-    isRunning: agentRunWorker.isRunning(),
-    isActive: !agentRunWorker.isPaused(),
-  };
-}
-
-export async function pauseWorker() {
-  await agentRunWorker.pause();
-  logger.info("Worker paused");
-}
-
-export async function resumeWorker() {
-  await agentRunWorker.resume();
-  logger.info("Worker resumed");
-}
-
-export default agentRunWorker;
+export default worker;

@@ -1,122 +1,57 @@
 import { prisma } from "../db";
-import { orchestrator } from "../orchestrator";
-import { jsonLogger as logger } from "../utils/logger";
-import { CreateAgentRunInput } from "../schemas/agent-run";
+import { agentRunQueue } from "../queue";
+
+export type CreateAgentRunInput = {
+  companyId: string;
+  workflowType: string;
+  input: Record<string, unknown>;
+};
 
 export class AgentRunService {
-  /**
-   * Create run only (no execution - for async queue)
-   */
   async create(input: CreateAgentRunInput) {
     const run = await prisma.agentRun.create({
       data: {
         companyId: input.companyId,
         workflowType: input.workflowType,
         status: "pending",
-        inputSummary: JSON.stringify(input.input).slice(0, 200),
-      },
-    });
-    return run;
-  }
-
-  /**
-   * Create and execute agent run (legacy sync version)
-   */
-  async createAndExecute(input: CreateAgentRunInput) {
-    logger.info("AgentRunService: creating run", { 
-      companyId: input.companyId,
-      workflow: input.workflowType 
+        riskLevel: "R1",
+        inputSummary: JSON.stringify(input.input ?? {}),
+        createdAt: new Date()
+      }
     });
 
-    // Create run record
-    const run = await prisma.agentRun.create({
-      data: {
-        companyId: input.companyId,
-        workflowType: input.workflowType,
-        status: "pending",
-        inputSummary: JSON.stringify(input.input).slice(0, 200),
-      },
-    });
-
-    // Execute asynchronously
-    this.executeAsync(run.id, input).catch(err => {
-      logger.error("Async execution failed", { runId: run.id, error: err.message });
-    });
-
-    return {
-      success: true,
-      data: run,
-      message: "Agent run created and queued for execution"
-    };
-  }
-
-  /**
-   * Get run by ID
-   */
-  async getById(id: string) {
-    const run = await prisma.agentRun.findUnique({
-      where: { id },
-      include: {
-        steps: { orderBy: { stepOrder: "asc" } },
-        approvals: true,
-        artifacts: true,
-      },
-    });
-
-    if (!run) {
-      throw new Error(`Agent run ${id} not found`);
-    }
-
-    return {
-      success: true,
-      data: run
-    };
-  }
-
-  /**
-   * List runs with filters
-   */
-  async list(params: {
-    companyId?: string;
-    status?: string;
-    limit?: number;
-    offset?: number;
-  }) {
-    const { companyId, status, limit = 20, offset = 0 } = params;
-
-    const runs = await prisma.agentRun.findMany({
-      where: {
-        companyId,
-        status,
-      },
-      orderBy: { createdAt: "desc" },
-      take: limit,
-      skip: offset,
-    });
-
-    const total = await prisma.agentRun.count({
-      where: { companyId, status }
-    });
-
-    return {
-      success: true,
-      data: runs,
-      meta: { total, limit, offset }
-    };
-  }
-
-  /**
-   * Execute run asynchronously
-   */
-  private async executeAsync(runId: string, input: CreateAgentRunInput) {
-    await orchestrator.execute({
-      agentRunId: runId,
+    await agentRunQueue.add("agent-run", {
+      runId: run.id,
       companyId: input.companyId,
       workflowType: input.workflowType,
-      input: input.input
+      input: input.input ?? {}
+    });
+
+    return {
+      runId: run.id,
+      status: "pending"
+    };
+  }
+
+  async getById(id: string) {
+    return prisma.agentRun.findUnique({
+      where: { id },
+      include: {
+        steps: {
+          orderBy: { stepOrder: "asc" }
+        },
+        approvals: true,
+        artifacts: true
+      }
+    });
+  }
+
+  async list() {
+    return prisma.agentRun.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 50
     });
   }
 }
 
-// Singleton
 export const agentRunService = new AgentRunService();

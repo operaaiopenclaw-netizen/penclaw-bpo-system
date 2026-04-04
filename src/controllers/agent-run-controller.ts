@@ -1,84 +1,69 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { AgentRunService } from "../services/agent-run-service";
-import { createAgentRunSchema, agentRunIdSchema } from "../schemas/agent-run";
-import { AppError } from "../utils/app-error";
-import { enqueueAgentRun } from "../queue";
-import { WorkflowType } from "../types/core";
-
-const service = new AgentRunService();
+import { agentRunService } from "../services/agent-run-service";
 
 export class AgentRunController {
-  /**
-   * Create new agent run (async via queue)
-   */
-  async create(request: FastifyRequest, reply: FastifyReply) {
+  async create(req: FastifyRequest, reply: FastifyReply) {
     try {
-      const body = createAgentRunSchema.parse(request.body);
-      
-      // Create run in database (pending status)
-      const run = await service.create(body);
-      
-      // Enqueue for async processing
-      await enqueueAgentRun({
-        agentRunId: run.id,
-        companyId: body.companyId,
-        workflowType: body.workflowType as WorkflowType,
-        input: body.input,
-        userId: request.user?.id,
-      });
-      
-      return reply.status(201).send({
+      const result = await agentRunService.create(req.body as any);
+      return reply.send({
         success: true,
         message: "Agent run queued for async processing",
-        runId: run.id,
-        status: "pending",
+        runId: result.runId,
+        status: result.status
       });
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Validation failed";
-      throw new AppError(message, 422, "VALIDATION_ERROR");
+    } catch (error: any) {
+      return reply.status(500).send({
+        statusCode: 500,
+        error: "Internal Server Error",
+        message: error?.message || "Unknown error"
+      });
     }
   }
 
-  /**
-   * Get run by ID
-   */
-  async getById(
-    request: FastifyRequest<{ Params: { id: string } }>,
-    reply: FastifyReply
-  ) {
+  async getById(req: FastifyRequest, reply: FastifyReply) {
+    const { id } = req.params as { id?: string };
+
+    if (!id) {
+      return reply.status(400).send({
+        statusCode: 400,
+        error: "Bad Request",
+        message: "Agent run id is required"
+      });
+    }
+
     try {
-      const { id } = agentRunIdSchema.parse(request.params);
-      const result = await service.getById(id.id);
-      return reply.status(200).send(result);
-    } catch (error) {
-      if (error instanceof Error && error.message.includes("not found")) {
-        throw new AppError("Agent run not found", 404, "NOT_FOUND");
+      const result = await agentRunService.getById(id);
+
+      if (!result) {
+        return reply.status(404).send({
+          statusCode: 404,
+          error: "Not Found",
+          message: "Agent run not found"
+        });
       }
-      throw error;
+
+      return reply.send(result);
+    } catch (error: any) {
+      return reply.status(500).send({
+        statusCode: 500,
+        error: "Internal Server Error",
+        message: error?.message || "Unknown error"
+      });
     }
   }
 
-  /**
-   * List runs
-   */
-  async list(request: FastifyRequest, reply: FastifyReply) {
-    const query = request.query as {
-      companyId?: string;
-      status?: string;
-      limit?: string;
-      offset?: string;
-    };
-
-    const result = await service.list({
-      companyId: query.companyId,
-      status: query.status,
-      limit: query.limit ? parseInt(query.limit, 10) : 20,
-      offset: query.offset ? parseInt(query.offset, 10) : 0
-    });
-
-    return reply.status(200).send(result);
+  async list(_req: FastifyRequest, reply: FastifyReply) {
+    try {
+      const result = await agentRunService.list();
+      return reply.send(result);
+    } catch (error: any) {
+      return reply.status(500).send({
+        statusCode: 500,
+        error: "Internal Server Error",
+        message: error?.message || "Unknown error"
+      });
+    }
   }
 }
 
-// Export singleton instance methods
 export const agentRunController = new AgentRunController();
