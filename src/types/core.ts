@@ -27,7 +27,11 @@ export type WorkflowType =
   | "weekly_procurement"
   | "post_event_closure"
   | "weekly_kickoff"
-  | "ceo_daily_briefing";
+  | "ceo_daily_briefing"
+  | "lead_qualification"
+  | "event_planning"
+  | "event_execution"
+  | "contract_to_event";
 
 // Additional types for Orkestra domain
 export type MemoryType =

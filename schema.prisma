@@ -39,9 +39,6 @@ model AgentRun {
   artifacts  Artifact[]
   costs      CostEvent[]
 
-  // Eventos (Orkestra)
-  events Event[]
-
   @@index([companyId])
   @@index([status])
   @@index([workflowType])
@@ -204,36 +201,29 @@ model CostEvent {
 // ============================================================
 
 model Event {
-  id            String    @id @default(uuid())
-  eventId       String    @unique  // EVT-XXXXX
-  nCtt          String            // Número CTT
-  companyId     String?
-  companyName   String
-  clientName    String?
-  eventType     String?
-  eventDate     DateTime?
-  numGuests     Int?
-  status        String    @default("proposal")
-  
+  id           String    @id @default(uuid())
+  eventId      String?   @unique @map("event_id")
+  tenantId     String    @map("tenant_id")
+  costCenterId String    @map("cost_center_id")
+  name         String
+  companyName  String?   @map("company_name")
+  eventType    String?   @map("event_type")
+  eventDate    DateTime? @map("event_date")
+  guests       Int?
+  status       String?   @default("planned")
+
   // Financeiro
-  revenueTotal  Float?
-  cmvTotal      Float?
-  netProfit     Float?
-  marginPct     Float?
-  
-  // Rastreabilidade
-  agentRunId    String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  revenueTotal Float?    @map("revenue_total")
+  cmvTotal     Float?    @map("cmv_total")
+  marginPct    Float?    @map("margin_pct")
+  netProfit    Float?    @map("net_profit")
 
-  // Relações
-  agentRun AgentRun? @relation(fields: [agentRunId], references: [id])
+  createdAt    DateTime? @default(now()) @map("created_at")
+  updatedAt    DateTime? @updatedAt @map("updated_at")
 
-  @@index([companyId])
+  @@index([tenantId])
   @@index([status])
   @@index([eventDate])
-  @@index([nCtt])
-  @@index([agentRunId])
   @@map("events")
 }
 
@@ -348,7 +338,1066 @@ model RiskLevel {
 // migration SQL será gerada automaticamente pelo Prisma
 
 // ============================================================
+// SPRINT 1: EVENT BACKBONE FOUNDATION
+// ============================================================
+
+model SystemEvent {
+  id                String    @id @default(uuid())
+  tenantId          String    // Multi-tenant obrigatório
+  
+  // Identificação do agregado
+  aggregateType     String    // "event", "inventory", "procurement", "finance", "commercial"
+  aggregateId       String    // ID do agregado
+  
+  // Tipo e conteúdo
+  eventType         String    // ex: "event.created", "finance.margin_calculated"
+  payload           Json      // Dados completos do evento
+  
+  // Rastreabilidade
+  source            String    @default("api") // "api", "agent", "system", "manual"
+  correlationId     String?   // ID de correlação entre eventos
+  causationId       String?   // ID do evento que causou este
+  
+  // Status e processamento
+  status            String    @default("pending") // pending, processing, processed, failed
+  errorMessage      String?   
+  processedAt       DateTime? 
+  
+  // Metadados
+  createdBy         String?   
+  ipAddress         String?   
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  domainLogs        DomainLog[] 
+
+  @@index([tenantId, aggregateType, aggregateId])
+  @@index([tenantId, eventType, createdAt])
+  @@index([tenantId, status, createdAt])
+  @@index([correlationId])
+  @@index([createdAt])
+  @@index([aggregateId, aggregateType])
+  @@map("system_events")
+}
+
+model DomainLog {
+  id                String    @id @default(uuid())
+  systemEventId     String
+  tenantId          String
+  domain            String    // "event", "inventory", "procurement", "finance", "commercial"
+  
+  action            String    
+  entityId          String    
+  entityType        String    
+  oldState          Json?     
+  newState          Json      
+  
+  processedBy       String?   
+  processingTimeMs  Int?      
+  
+  createdAt         DateTime  @default(now())
+
+  systemEvent       SystemEvent @relation(fields: [systemEventId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, domain, createdAt])
+  @@index([tenantId, entityType, entityId])
+  @@index([tenantId, action, createdAt])
+  @@index([systemEventId])
+  @@map("domain_logs")
+}
+
+model EventProcessor {
+  id                String    @id @default(uuid())
+  tenantId          String
+  processorName     String    
+  handlerType       String    @default("sync") // "sync", "async", "queue"
+  
+  eventTypes        String[]  
+  aggregateTypes    String[]  
+  
+  status            String    @default("active")
+  lastProcessedAt   DateTime?
+  lastEventId       String?
+  
+  eventsProcessed   Int       @default(0)
+  eventsFailed      Int       @default(0)
+  averageLatencyMs  Float?
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@unique([tenantId, processorName])
+  @@index([tenantId, status, lastProcessedAt])
+  @@map("event_processors")
+}
+
+model EventSnapshot {
+  id                String    @id @default(uuid())
+  
+  tenantId          String
+  aggregateType     String
+  aggregateId       String
+  
+  version           Int       
+  state             Json      
+  
+  lastEventId       String    
+  lastEventType     String
+  eventCount        Int       
+  
+  createdAt         DateTime  @default(now())
+
+  @@unique([tenantId, aggregateType, aggregateId, version])
+  @@index([tenantId, aggregateType, aggregateId])
+  @@map("event_snapshots")
+}
+
+// ============================================================
+// SPRINT 2: STATE MACHINE & CONSISTÊNCIA OPERACIONAL
+// ============================================================
+
+// Estados oficiais do pipeline
+enum EntityState {
+  // Comercial
+  LEAD
+  QUALIFIED
+  PROPOSED
+  APPROVED
+  CONTRACTED
+  
+  // Operação
+  PLANNED
+  READY_FOR_PRODUCTION
+  IN_PRODUCTION
+  READY_FOR_EXECUTION
+  EXECUTING
+  CLOSED
+  ANALYZED
+  
+  // Cancelamento
+  CANCELLED
+}
+
+// Estado atual das entidades
+model EntityStateRecord {
+  id              String    @id @default(uuid())
+  tenantId        String
+  
+  // Entidade
+  entityType      String    // "event", "proposal", "contract", "service_order", "production_order"
+  entityId        String    // ID da entidade
+  
+  // Estado
+  currentState    String    // valores do enum EntityState
+  previousState   String?
+  
+  // Metadados
+  enteredAt       DateTime  @default(now())
+  enteredBy       String?   // user_id ou agent_id
+  actorType       String    @default("system") // "user", "agent", "system", "api"
+  reason          String?   // motivo da transição
+  source          String?   // origem da ação
+  
+  // Consistência
+  version         Int       @default(1) // optimistic locking
+  validFrom       DateTime  @default(now())
+  validUntil      DateTime? // null = estado atual
+  isCurrent       Boolean   @default(true)
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([tenantId, entityType, entityId])
+  @@index([tenantId, currentState, isCurrent])
+  @@index([tenantId, entityType, currentState])
+  @@index([validFrom, validUntil])
+  @@map("entity_states")
+}
+
+// Log de transições de estado
+model StateTransition {
+  id              String    @id @default(uuid())
+  tenantId        String
+  
+  // Entidade
+  entityType      String
+  entityId        String
+  
+  // Transição
+  fromState       String
+  toState         String
+  
+  // Actor
+  actorType       String    // "user", "agent", "system", "api", "webhook"
+  actorId         String?   // ID do usuário/agente
+  
+  // Motivação
+  reason          String?
+  triggerEvent    String?   // ex: "proposal.approved", "contract.signed"
+  source          String?   // API endpoint ou source
+  ipAddress       String?
+  
+  // Validadores
+  validationResult Json?   // resultado de validações
+  warnings        String[]  @default([])
+  blockedBy       String?   // se transição foi bloqueada
+  
+  // Sistema de origem
+  systemEventId   String?   // vinculação com SystemEvent
+
+  // Timestamps
+  attemptedAt     DateTime  @default(now())
+  completedAt     DateTime?
+  durationMs      Int?      // tempo da transição
+  
+  // Status da transição
+  status          String    @default("completed") // completed, failed, blocked, rolled_back
+  errorMessage    String?
+  
+  // Referência ao estado atual (após transição)
+  resultingStateId String?   // ID do EntityStateRecord resultante
+
+  @@index([tenantId, entityType, entityId, attemptedAt])
+  @@index([tenantId, fromState, toState])
+  @@index([tenantId, actorType, actorId])
+  @@index([systemEventId])
+  @@index([attemptedAt])
+  @@map("state_transitions")
+}
+
+// Regras de transição válidas
+model StateTransitionRule {
+  id              String    @id @default(uuid())
+  tenantId        String
+  
+  // Regra
+  entityType      String    // para que tipo de entidade
+  fromState       String    // estado de origem
+  toState         String    // estado de destino
+  
+  // Validações obrigatórias
+  preConditions   Json      // { "field_a": { "required": true, "min": 0 } }
+  requiredFields  String[]  // campos que precisam estar preenchidos
+  
+  // Autorização
+  allowedActors   String[]  // ["user:admin", "agent:finance", "system"]
+  requiresApproval Boolean  @default(false)
+  approvalLevel   String?   // "manager", "director", etc
+  
+  // Ações automáticas
+  autoActions     Json?     // ações automáticas ao fazer a transição
+  sideEffects     Json?     // efeitos colaterais esperados
+  
+  // Controle
+  isActive        Boolean   @default(true)
+  priority        Int       @default(100)
+  
+  // Mensagens
+  successMessage  String    @default("Transição realizada com sucesso")
+  failureMessage  String?
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@unique([tenantId, entityType, fromState, toState])
+  @@index([tenantId, entityType, isActive])
+  @@map("state_transition_rules")
+}
+
+// Validadores de integridade entre domínios
+model DomainIntegrityCheck {
+  id              String    @id @default(uuid())
+  tenantId        String
+  
+  // Check
+  checkName       String
+  checkType       String    // "financial", "planning", "commercial", "operational"
+  
+  // Relações
+  fromDomain      String    // domínio de origem
+  toDomain        String    // domínio de destino
+  
+  // Regra
+  ruleCondition   Json      // condição SQL/JSON para validação
+  errorMessage    String    // mensagem se falhar
+  severity        String    @default("warning") // "info", "warning", "blocking"
+  
+  // Status
+  isActive        Boolean   @default(true)
+  lastCheckedAt   DateTime?
+  lastFailedAt    DateTime?
+  failureCount    Int       @default(0)
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@unique([tenantId, checkName])
+  @@index([tenantId, checkType, isActive])
+  @@map("domain_integrity_checks")
+}
+
+// Log de verificações de integridade
+model IntegrityCheckLog {
+  id              String    @id @default(uuid())
+  tenantId        String
+  
+  // Check
+  checkId         String
+  checkName       String
+  
+  // Contexto
+  entityType      String
+  entityId        String
+  
+  // Resultado
+  passed          Boolean
+  violations      Json?     // lista de violações encontradas
+  errorDetails    String?
+  
+  // Ação tomada
+  actionTaken     String?   // "blocked", "warned", "auto_fixed", "ignored"
+  actionBy        String?
+  
+  createdAt       DateTime  @default(now())
+
+  @@index([tenantId, checkId, entityType, entityId])
+  @@index([tenantId, passed, createdAt])
+  @@map("integrity_check_logs")
+}
+
+// ============================================================
+// INTELLIGENCE ENGINE v1.0
+// Forecast, Supplier, Decision, Consumption History
+// ============================================================
+
+model Supplier {
+  id                 String    @id @default(uuid())
+  tenantId           String
+  name               String
+  code               String?
+  categories         String[]  // e.g. ["beverage_alcohol", "beverage_soft"]
+  contactEmail       String?
+  contactPhone       String?
+  leadTimeDays       Int       @default(3)
+  minOrderValue      Float?
+
+  // Aggregate performance (updated on each order delivery)
+  totalOrders        Int       @default(0)
+  onTimeDeliveries   Int       @default(0)
+  lateDeliveries     Int       @default(0)
+
+  isActive           Boolean   @default(true)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  purchaseOrders     PurchaseOrder[]
+
+  @@index([tenantId])
+  @@index([tenantId, isActive])
+  @@map("suppliers")
+}
+
+model PurchaseOrder {
+  id                  String    @id @default(uuid())
+  tenantId            String
+  supplierId          String
+  supplier            Supplier  @relation(fields: [supplierId], references: [id])
+
+  // Lifecycle
+  status              String    @default("draft")  // draft|sent|confirmed|delivered|cancelled
+  sourceDecisionId    String?   // OperationalDecision that triggered this PO
+
+  // Financials
+  totalEstimatedCost  Float?
+  totalActualCost     Float?
+  currency            String    @default("BRL")
+
+  // Timing
+  requestedDelivery   DateTime?
+  confirmedDelivery   DateTime?
+  actualDelivery      DateTime?
+
+  // Context
+  relatedEventId      String?
+  notes               String?
+
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  items               PurchaseOrderItem[]
+
+  @@index([tenantId])
+  @@index([tenantId, status])
+  @@index([tenantId, supplierId])
+  @@map("purchase_orders")
+}
+
+model PurchaseOrderItem {
+  id                String    @id @default(uuid())
+  purchaseOrderId   String
+  purchaseOrder     PurchaseOrder @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+
+  inventoryItemId   String?   // may be null for items not yet in inventory
+  itemCode          String
+  itemName          String
+  category          String?
+
+  quantityOrdered   Float
+  unit              String
+  unitPrice         Float?
+  totalPrice        Float?
+
+  quantityReceived  Float?
+  status            String    @default("pending")  // pending|delivered|cancelled
+
+  createdAt         DateTime  @default(now())
+
+  @@index([purchaseOrderId])
+  @@map("purchase_order_items")
+}
+
+model EventConsumptionHistory {
+  id                String    @id @default(uuid())
+  tenantId          String
+
+  eventId           String?   // null for synthetic/seeded records
+  eventType         String    // casamento|corporativo|aniversario|etc
+  guestCount        Int
+  durationHours     Float     @default(6)
+
+  // Consumption record per item
+  itemCode          String
+  itemName          String
+  category          String
+  quantityConsumed  Float
+  unit              String
+  perGuestRate      Float     // quantityConsumed / guestCount
+
+  recordedAt        DateTime  @default(now())
+
+  @@index([tenantId, eventType])
+  @@index([tenantId, itemCode])
+  @@index([tenantId, eventType, itemCode])
+  @@map("event_consumption_history")
+}
+
+model OperationalDecision {
+  id              String    @id @default(uuid())
+  tenantId        String
+
+  // Decision classification
+  action          String    // CREATE_PURCHASE_ORDER|ALERT_RISK|SUGGEST_REORDER|etc
+  confidence      Float     // 0.0–1.0
+  riskLevel       String    // R0–R4
+
+  // Full decision payload (typed JSON)
+  payload         Json
+
+  // Execution tracking
+  status          String    @default("pending")  // pending|executed|rejected|expired
+  executedAt      DateTime?
+  executedBy      String?
+
+  // Links
+  relatedEventId  String?
+  relatedOrderId  String?
+  expiresAt       DateTime?
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([tenantId])
+  @@index([tenantId, status])
+  @@index([tenantId, action])
+  @@index([tenantId, status, expiresAt])
+  @@map("operational_decisions")
+}
+
+// ============================================================
+// DOMÍNIO: CRM / COMERCIAL
+// ============================================================
+
+model Lead {
+  id          String    @id @default(uuid())
+  tenantId    String
+  companyName String?
+  contactName String?
+  email       String?
+  phone       String?
+  source      String?
+  budget      Float?
+  authority   String?
+  need        String?
+  timeline    DateTime?
+  status      String    @default("NEW")
+  score       Int?
+  assignedTo  String?
+  contactedAt DateTime?
+  qualifiedAt DateTime?
+  convertedAt DateTime?
+  lostAt      DateTime?
+  lostReason  String?
+  metadata    Json?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  activities  LeadActivity[]
+  proposals   Proposal[]
+  contracts   Contract[]
+  clients     Client[]
+
+  @@index([tenantId])
+  @@index([status])
+  @@map("leads")
+}
+
+model LeadActivity {
+  id           String   @id @default(uuid())
+  leadId       String
+  lead         Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  activityType String
+  description  String?
+  metadata     Json?
+  createdAt    DateTime @default(now())
+
+  @@index([leadId])
+  @@map("lead_activities")
+}
+
+model Proposal {
+  id             String    @id @default(uuid())
+  tenantId       String
+  leadId         String?
+  lead           Lead?     @relation(fields: [leadId], references: [id])
+  proposalNumber String    @unique
+  version        Int       @default(1)
+  subtotal       Float
+  taxAmount      Float     @default(0)
+  totalAmount    Float
+  currency       String    @default("BRL")
+  validUntil     DateTime
+  sentAt         DateTime?
+  status         String    @default("DRAFT")
+  approvedBy     String?
+  approvedAt     DateTime?
+  rejectedReason String?
+  documentUrl    String?
+  metadata       Json?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  items    ProposalItem[]
+  contract Contract?
+
+  @@index([tenantId])
+  @@index([leadId])
+  @@index([status])
+  @@map("proposals")
+}
+
+model ProposalItem {
+  id            String   @id @default(uuid())
+  proposalId    String
+  proposal      Proposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  itemType      String
+  name          String
+  description   String?
+  quantity      Float
+  unit          String?
+  unitPrice     Float
+  totalPrice    Float
+  estimatedCost Float?
+  metadata      Json?
+  createdAt     DateTime @default(now())
+
+  @@index([proposalId])
+  @@map("proposal_items")
+}
+
+model Contract {
+  id                  String   @id @default(uuid())
+  tenantId            String
+  proposalId          String   @unique
+  proposal            Proposal @relation(fields: [proposalId], references: [id])
+  leadId              String
+  lead                Lead     @relation(fields: [leadId], references: [id])
+  contractNumber      String   @unique
+  eventId             String?
+  signedAt            DateTime
+  signedByClient      String?
+  signedByCompany     String?
+  totalValue          Float
+  paymentTerms        String?
+  cancellationPolicy  String?
+  contractDocumentUrl String?
+  status              String   @default("ACTIVE")
+  metadata            Json?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([tenantId])
+  @@index([eventId])
+  @@index([status])
+  @@map("contracts")
+}
+
+// ============================================================
+// DOMÍNIO: EVENT ENGINE (extensão)
+// ============================================================
+
+model Client {
+  id         String   @id @default(uuid())
+  tenantId   String
+  name       String
+  document   String?
+  email      String?
+  phone      String?
+  address    Json?
+  clientType String?
+  segment    String?
+  leadId     String?
+  lead       Lead?    @relation(fields: [leadId], references: [id])
+  metadata   Json?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([tenantId])
+  @@map("clients")
+}
+
+model Venue {
+  id               String   @id @default(uuid())
+  tenantId         String
+  name             String
+  description      String?
+  address          Json
+  capacityStanding Int?
+  capacitySeated   Int?
+  hasKitchen       Boolean  @default(false)
+  hasParking       Boolean  @default(false)
+  accessibility    Json?
+  contactName      String?
+  contactPhone     String?
+  isActive         Boolean  @default(true)
+  metadata         Json?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([tenantId])
+  @@map("venues")
+}
+
+model EventDate {
+  id               String   @id @default(uuid())
+  eventId          String
+  date             DateTime
+  setupStartTime   String?
+  serviceStartTime String?
+  serviceEndTime   String?
+  teardownEndTime  String?
+  isMainDate       Boolean  @default(false)
+  metadata         Json?
+  createdAt        DateTime @default(now())
+
+  @@index([eventId])
+  @@map("event_dates")
+}
+
+model EventConfiguration {
+  id                  String   @id @default(uuid())
+  eventId             String   @unique
+  venueId             String?
+  layoutType          String?
+  numberOfTables      Int?
+  chairsPerTable      Int?
+  needsStage          Boolean  @default(false)
+  needsDanceFloor     Boolean  @default(false)
+  needsLighting       Boolean  @default(false)
+  needsSound          Boolean  @default(false)
+  hasBarArea          Boolean  @default(false)
+  numberOfBarStations Int?
+  hasCateringArea     Boolean  @default(false)
+  notes               String?
+  metadata            Json?
+  createdAt           DateTime @default(now())
+
+  @@map("event_configurations")
+}
+
+// ============================================================
+// DOMÍNIO: ORDER SYSTEM (OS + OP)
+// ============================================================
+
+model ServiceOrder {
+  id               String    @id @default(uuid())
+  tenantId         String
+  eventId          String
+  proposalId       String?
+  soNumber         String    @unique
+  soType           String
+  status           String    @default("DRAFT")
+  subtotal         Float
+  total            Float
+  requiredDelivery DateTime?
+  actualDelivery   DateTime?
+  approvedBy       String?
+  approvedAt       DateTime?
+  metadata         Json?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  items          ServiceOrderItem[]
+  soToPoMappings SoToPoMapping[]
+
+  @@index([tenantId])
+  @@index([eventId])
+  @@index([status])
+  @@map("service_orders")
+}
+
+model ServiceOrderItem {
+  id             String       @id @default(uuid())
+  serviceOrderId String
+  serviceOrder   ServiceOrder @relation(fields: [serviceOrderId], references: [id], onDelete: Cascade)
+  itemCategory   String
+  name           String
+  description    String?
+  quantity       Float
+  unit           String?
+  unitPrice      Float
+  totalPrice     Float
+  producesItemId String?
+  metadata       Json?
+  createdAt      DateTime     @default(now())
+
+  @@index([serviceOrderId])
+  @@map("service_order_items")
+}
+
+model ProductionOrder {
+  id                 String    @id @default(uuid())
+  tenantId           String
+  eventId            String
+  sourceSoIds        String[]  @default([])
+  poNumber           String    @unique
+  status             String    @default("PENDING")
+  productionDate     DateTime?
+  productionLocation String?
+  responsibleChefId  String?
+  requiredReadyAt    DateTime?
+  actualReadyAt      DateTime?
+  metadata           Json?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  items             ProductionOrderItem[]
+  soToPoMappings    SoToPoMapping[]
+  productionBatches ProductionBatch[]
+
+  @@index([tenantId])
+  @@index([eventId])
+  @@index([status])
+  @@map("production_orders")
+}
+
+model ProductionOrderItem {
+  id                String          @id @default(uuid())
+  productionOrderId String
+  productionOrder   ProductionOrder @relation(fields: [productionOrderId], references: [id], onDelete: Cascade)
+  recipeId          String?
+  itemName          String
+  plannedQuantity   Float
+  producedQuantity  Float?
+  wastedQuantity    Float           @default(0)
+  estimatedCost     Float?
+  actualCost        Float?
+  sourceSoItemId    String?
+  metadata          Json?
+  createdAt         DateTime        @default(now())
+
+  @@index([productionOrderId])
+  @@map("production_order_items")
+}
+
+model SoToPoMapping {
+  id                String          @id @default(uuid())
+  serviceOrderId    String
+  serviceOrder      ServiceOrder    @relation(fields: [serviceOrderId], references: [id])
+  productionOrderId String
+  productionOrder   ProductionOrder @relation(fields: [productionOrderId], references: [id])
+  soItemId          String?
+  poItemId          String?
+  mappedBy          String?
+  mappedAt          DateTime        @default(now())
+  notes             String?
+
+  @@index([serviceOrderId])
+  @@index([productionOrderId])
+  @@map("so_to_po_mapping")
+}
+
+// ============================================================
+// DOMÍNIO: PRODUCTION (Cozinha)
+// ============================================================
+
+model ProductionBatch {
+  id                String          @id @default(uuid())
+  tenantId          String
+  productionOrderId String
+  productionOrder   ProductionOrder @relation(fields: [productionOrderId], references: [id])
+  recipeId          String?
+  batchNumber       String?
+  plannedQuantity   Float
+  producedQuantity  Float?
+  wastedQuantity    Float           @default(0)
+  qualityScore      Int?
+  qualityNotes      String?
+  preparedBy        String?
+  checkedBy         String?
+  startedAt         DateTime?
+  completedAt       DateTime?
+  status            String          @default("SCHEDULED")
+  metadata          Json?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  @@index([tenantId])
+  @@index([productionOrderId])
+  @@map("production_batches")
+}
+
+// ============================================================
+// DOMÍNIO: INVENTORY (novo, estruturado)
+// ============================================================
+
+model Product {
+  id              String   @id @default(uuid())
+  tenantId        String
+  sku             String   @unique
+  name            String
+  description     String?
+  category        String
+  unitOfMeasure   String
+  isStockable     Boolean  @default(true)
+  minStockLevel   Float?
+  idealStockLevel Float?
+  standardCost    Float?
+  metadata        Json?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([tenantId])
+  @@index([category])
+  @@map("products")
+}
+
+model Warehouse {
+  id        String   @id @default(uuid())
+  tenantId  String
+  name      String
+  type      String?
+  address   Json?
+  isActive  Boolean  @default(true)
+  metadata  Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tenantId])
+  @@map("warehouses")
+}
+
+model InventoryBatch {
+  id                  String    @id @default(uuid())
+  tenantId            String
+  productId           String
+  warehouseId         String
+  purchaseOrderItemId String?
+  batchNumber         String?
+  initialQuantity     Float
+  currentQuantity     Float
+  reservedQuantity    Float     @default(0)
+  manufacturedDate    DateTime?
+  expiryDate          DateTime
+  unitCost            Float
+  status              String    @default("AVAILABLE")
+  metadata            Json?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  @@index([tenantId])
+  @@index([productId])
+  @@index([warehouseId])
+  @@index([expiryDate])
+  @@map("inventory_batches")
+}
+
+model StockMovement {
+  id                String   @id @default(uuid())
+  tenantId          String
+  batchId           String?
+  productId         String
+  warehouseId       String
+  movementType      String
+  quantity          Float
+  sourceType        String?
+  sourceId          String?
+  eventId           String?
+  responsibleUserId String?
+  reason            String?
+  metadata          Json?
+  createdAt         DateTime @default(now())
+
+  @@index([tenantId])
+  @@index([productId])
+  @@index([eventId])
+  @@map("stock_movements")
+}
+
+model InventoryReservation {
+  id                String    @id @default(uuid())
+  tenantId          String
+  eventId           String
+  batchId           String?
+  productId         String
+  quantityReserved  Float
+  quantityCommitted Float     @default(0)
+  quantityConsumed  Float     @default(0)
+  quantityReturned  Float     @default(0)
+  status            String    @default("PENDING")
+  requiredBy        DateTime?
+  metadata          Json?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([tenantId])
+  @@index([eventId])
+  @@index([productId])
+  @@map("inventory_reservations")
+}
+
+// ============================================================
+// DOMÍNIO: LOGISTICS
+// ============================================================
+
+model Vehicle {
+  id         String   @id @default(uuid())
+  tenantId   String
+  name       String
+  plate      String?
+  type       String?
+  capacityKg Float?
+  capacityM3 Float?
+  isActive   Boolean  @default(true)
+  metadata   Json?
+  createdAt  DateTime @default(now())
+
+  @@index([tenantId])
+  @@map("vehicles")
+}
+
+model Crew {
+  id          String   @id @default(uuid())
+  tenantId    String
+  name        String
+  leaderId    String?
+  specialties String[] @default([])
+  isActive    Boolean  @default(true)
+  metadata    Json?
+  createdAt   DateTime @default(now())
+
+  @@index([tenantId])
+  @@map("crews")
+}
+
+model LogisticsOrder {
+  id          String    @id @default(uuid())
+  tenantId    String
+  eventId     String
+  type        String
+  status      String    @default("PENDING")
+  vehicleId   String?
+  crewId      String?
+  origin      Json?
+  destination Json?
+  scheduledAt DateTime?
+  startedAt   DateTime?
+  completedAt DateTime?
+  notes       String?
+  metadata    Json?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([tenantId])
+  @@index([eventId])
+  @@index([status])
+  @@map("logistics_orders")
+}
+
+// ============================================================
+// DOMÍNIO: EXECUTION (dia do evento)
+// ============================================================
+
+model ExecutionSession {
+  id            String    @id @default(uuid())
+  tenantId      String
+  eventId       String
+  status        String    @default("ACTIVE")
+  openedBy      String?
+  closedBy      String?
+  openedAt      DateTime  @default(now())
+  closedAt      DateTime?
+  overallRating Int?
+  clientSignOff Boolean   @default(false)
+  notes         String?
+  metadata      Json?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  checkpoints ExecutionCheckpoint[]
+  occurrences ExecutionOccurrence[]
+
+  @@index([tenantId])
+  @@index([eventId])
+  @@map("execution_sessions")
+}
+
+model ExecutionCheckpoint {
+  id        String           @id @default(uuid())
+  sessionId String
+  session   ExecutionSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  stage     String
+  status    String           @default("PENDING")
+  notes     String?
+  checkedBy String?
+  checkedAt DateTime?
+  metadata  Json?
+  createdAt DateTime         @default(now())
+
+  @@index([sessionId])
+  @@map("execution_checkpoints")
+}
+
+model ExecutionOccurrence {
+  id          String           @id @default(uuid())
+  sessionId   String
+  session     ExecutionSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  severity    String           @default("INFO")
+  category    String?
+  description String
+  resolution  String?
+  reportedBy  String?
+  resolvedBy  String?
+  reportedAt  DateTime         @default(now())
+  resolvedAt  DateTime?
+  metadata    Json?
+
+  @@index([sessionId])
+  @@index([severity])
+  @@map("execution_occurrences")
+}
+
+// ============================================================
 // FIM DO SCHEMA
-// Versão: 1.3
-// Compatível com schema_v1_2.sql
+// Versão: 2.0.0 - Full Business Domain
 // ============================================================

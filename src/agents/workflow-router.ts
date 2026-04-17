@@ -15,14 +15,17 @@ export class WorkflowRouter {
     this.sequences.set("contract_onboarding", {
       agents: [
         "contract_agent",
+        "sales_agent",
+        "operations_agent",
+        "supply_agent",
         "commercial_agent",
         "finance_agent",
         "inventory_agent",
         "event_ops_agent",
         "reporting_agent"
       ],
-      description: "Onboarding completo de contrato",
-      estimatedLatency: 3000,
+      description: "Onboarding completo: contrato, proposta, checklist, supply plan",
+      estimatedLatency: 6000,
       riskLevel: "R2"
     });
 
@@ -52,6 +55,34 @@ export class WorkflowRouter {
       description: "Briefing diário CEO",
       estimatedLatency: 500,
       riskLevel: "R1"
+    });
+
+    this.sequences.set("lead_qualification", {
+      agents: ["crm_agent", "finance_agent", "reporting_agent"],
+      description: "Qualificação de lead: BANT score, proposta sugerida, análise financeira",
+      estimatedLatency: 2500,
+      riskLevel: "R1"
+    });
+
+    this.sequences.set("event_planning", {
+      agents: ["os_agent", "production_agent", "supply_agent", "finance_agent", "reporting_agent"],
+      description: "Planejamento de evento: OS → OP → Supply → Financeiro",
+      estimatedLatency: 5000,
+      riskLevel: "R2"
+    });
+
+    this.sequences.set("event_execution", {
+      agents: ["event_ops_agent", "reporting_agent"],
+      description: "Execução do evento: checklist operacional e relatório",
+      estimatedLatency: 1500,
+      riskLevel: "R1"
+    });
+
+    this.sequences.set("contract_to_event", {
+      agents: ["os_agent", "production_agent", "inventory_agent", "finance_agent", "reporting_agent"],
+      description: "Contrato assinado → OS → OP → Estoque → Financeiro → Resumo",
+      estimatedLatency: 6000,
+      riskLevel: "R2"
     });
   }
 

@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orkestra — Operações</title>
+  <style>
+    :root {
+      --bg: #0f172a; --bg2: #1e293b; --card: #334155;
+      --txt: #f8fafc; --txt2: #94a3b8;
+      --blue: #3b82f6; --green: #22c55e; --yellow: #eab308;
+      --red: #ef4444; --purple: #a855f7; --orange: #f97316;
+      --border: #475569;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family: system-ui,sans-serif; background:var(--bg); color:var(--txt); min-height:100vh; }
+    nav { background:var(--bg2); border-bottom:1px solid var(--border); padding:12px 24px; display:flex; align-items:center; gap:16px; }
+    nav h1 { font-size:18px; font-weight:700; color:var(--blue); }
+    nav a { color:var(--txt2); text-decoration:none; font-size:14px; padding:6px 12px; border-radius:6px; }
+    nav a:hover, nav a.active { background:var(--card); color:var(--txt); }
+    .tabs { display:flex; gap:4px; padding:16px 24px 0; border-bottom:1px solid var(--border); background:var(--bg2); }
+    .tab { padding:10px 16px; font-size:14px; cursor:pointer; border-radius:8px 8px 0 0; color:var(--txt2); border:none; background:transparent; }
+    .tab.active { background:var(--bg); color:var(--txt); border:1px solid var(--border); border-bottom:1px solid var(--bg); margin-bottom:-1px; }
+    .panel { display:none; padding:24px; }
+    .panel.active { display:block; }
+    .kpi-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px; margin-bottom:24px; }
+    .kpi { background:var(--bg2); border:1px solid var(--border); border-radius:10px; padding:16px; }
+    .kpi .label { font-size:12px; color:var(--txt2); margin-bottom:6px; }
+    .kpi .value { font-size:26px; font-weight:700; }
+    .kpi .sub { font-size:11px; color:var(--txt2); margin-top:4px; }
+    .blue { color:var(--blue); } .green { color:var(--green); } .yellow { color:var(--yellow); } .red { color:var(--red); } .purple { color:var(--purple); } .orange { color:var(--orange); }
+    table { width:100%; border-collapse:collapse; font-size:13px; }
+    th { text-align:left; padding:10px 12px; color:var(--txt2); border-bottom:1px solid var(--border); font-weight:500; }
+    td { padding:10px 12px; border-bottom:1px solid var(--border); }
+    tr:hover td { background:rgba(255,255,255,.03); }
+    .badge { display:inline-block; padding:2px 8px; border-radius:12px; font-size:11px; font-weight:600; }
+    .badge-green { background:rgba(34,197,94,.15); color:var(--green); }
+    .badge-blue { background:rgba(59,130,246,.15); color:var(--blue); }
+    .badge-yellow { background:rgba(234,179,8,.15); color:var(--yellow); }
+    .badge-red { background:rgba(239,68,68,.15); color:var(--red); }
+    .badge-gray { background:rgba(148,163,184,.15); color:var(--txt2); }
+    .badge-orange { background:rgba(249,115,22,.15); color:var(--orange); }
+    .card { background:var(--bg2); border:1px solid var(--border); border-radius:10px; padding:20px; margin-bottom:16px; }
+    .card h3 { font-size:14px; color:var(--txt2); margin-bottom:12px; }
+    .btn { padding:8px 16px; border-radius:6px; border:none; cursor:pointer; font-size:13px; font-weight:500; }
+    .btn-primary { background:var(--blue); color:white; }
+    .btn-primary:hover { background:#2563eb; }
+    .btn-sm { padding:4px 10px; font-size:12px; }
+    .actions { display:flex; gap:8px; margin-bottom:16px; }
+    .section-title { font-size:16px; font-weight:600; margin-bottom:16px; display:flex; align-items:center; justify-content:space-between; }
+    .empty { text-align:center; color:var(--txt2); padding:40px; }
+    .pipeline { display:flex; gap:12px; overflow-x:auto; padding-bottom:8px; }
+    .pipeline-col { min-width:200px; background:var(--bg2); border:1px solid var(--border); border-radius:10px; padding:12px; }
+    .pipeline-col h4 { font-size:12px; color:var(--txt2); margin-bottom:8px; text-transform:uppercase; letter-spacing:.05em; }
+    .pipeline-card { background:var(--card); border-radius:8px; padding:10px; margin-bottom:8px; font-size:12px; }
+    .pipeline-card .name { font-weight:600; margin-bottom:4px; }
+    .pipeline-card .meta { color:var(--txt2); }
+    .progress { height:6px; background:var(--card); border-radius:3px; overflow:hidden; margin-top:8px; }
+    .progress-bar { height:100%; background:var(--blue); border-radius:3px; transition:width .3s; }
+    input, select { background:var(--card); border:1px solid var(--border); color:var(--txt); padding:8px 12px; border-radius:6px; font-size:13px; }
+    input:focus, select:focus { outline:none; border-color:var(--blue); }
+    .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    @media(max-width:768px) { .grid2 { grid-template-columns:1fr; } .kpi-row { grid-template-columns:1fr 1fr; } }
+    .loader { display:inline-block; width:16px; height:16px; border:2px solid var(--border); border-top-color:var(--blue); border-radius:50%; animation:spin .8s linear infinite; vertical-align:middle; margin-right:6px; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .alert { padding:12px 16px; border-radius:8px; font-size:13px; margin-bottom:12px; }
+    .alert-yellow { background:rgba(234,179,8,.1); border:1px solid rgba(234,179,8,.3); color:var(--yellow); }
+    .alert-red { background:rgba(239,68,68,.1); border:1px solid rgba(239,68,68,.3); color:var(--red); }
+    .alert-green { background:rgba(34,197,94,.1); border:1px solid rgba(34,197,94,.3); color:var(--green); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <h1>🎛️ Orkestra</h1>
+  <a href="index.html">Finance</a>
+  <a href="operations.html" class="active">Operações</a>
+</nav>
+
+<div class="tabs">
+  <button class="tab active" onclick="showTab('crm')">🎯 CRM</button>
+  <button class="tab" onclick="showTab('service-orders')">📋 OS</button>
+  <button class="tab" onclick="showTab('production-orders')">🍳 OP</button>
+  <button class="tab" onclick="showTab('execution')">⚡ Execução</button>
+  <button class="tab" onclick="showTab('agent-runs')">🤖 Agentes</button>
+</div>
+
+<!-- ─── CRM ─────────────────────────────────────────────── -->
+<div id="tab-crm" class="panel active">
+  <div class="kpi-row" id="crm-kpis">
+    <div class="kpi"><div class="label">Leads</div><div class="value blue" id="kpi-leads">—</div></div>
+    <div class="kpi"><div class="label">Qualificados</div><div class="value yellow" id="kpi-qualified">—</div></div>
+    <div class="kpi"><div class="label">Propostas</div><div class="value purple" id="kpi-proposals">—</div></div>
+    <div class="kpi"><div class="label">Contratos Ativos</div><div class="value green" id="kpi-contracts">—</div></div>
+    <div class="kpi"><div class="label">Valor Contratado</div><div class="value green" id="kpi-contract-value">—</div></div>
+  </div>
+
+  <div class="section-title">
+    Pipeline Comercial
+    <button class="btn btn-primary btn-sm" onclick="loadCrmPipeline()">↻ Atualizar</button>
+  </div>
+  <div class="pipeline" id="crm-pipeline">
+    <div class="pipeline-col"><h4>🔵 Novo</h4><div id="col-new"></div></div>
+    <div class="pipeline-col"><h4>📞 Contatado</h4><div id="col-contacted"></div></div>
+    <div class="pipeline-col"><h4>✅ Qualificado</h4><div id="col-qualified"></div></div>
+    <div class="pipeline-col"><h4>📄 Proposta</h4><div id="col-proposal"></div></div>
+    <div class="pipeline-col"><h4>🏆 Ganho</h4><div id="col-won"></div></div>
+    <div class="pipeline-col"><h4>❌ Perdido</h4><div id="col-lost"></div></div>
+  </div>
+
+  <div class="section-title" style="margin-top:24px">Leads Recentes</div>
+  <div class="card">
+    <table>
+      <thead><tr><th>Contato</th><th>Empresa</th><th>Fonte</th><th>Score</th><th>Status</th><th>Data</th></tr></thead>
+      <tbody id="leads-table"><tr><td colspan="6" class="empty"><span class="loader"></span> Carregando...</td></tr></tbody>
+    </table>
+  </div>
+
+  <div class="section-title">Propostas</div>
+  <div class="card">
+    <table>
+      <thead><tr><th>Nº</th><th>Lead</th><th>Valor</th><th>Status</th><th>Válida até</th></tr></thead>
+      <tbody id="proposals-table"><tr><td colspan="5" class="empty"><span class="loader"></span> Carregando...</td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ─── SERVICE ORDERS ───────────────────────────────────── -->
+<div id="tab-service-orders" class="panel">
+  <div class="kpi-row">
+    <div class="kpi"><div class="label">Total OS</div><div class="value blue" id="kpi-so-total">—</div></div>
+    <div class="kpi"><div class="label">Rascunho</div><div class="value yellow" id="kpi-so-draft">—</div></div>
+    <div class="kpi"><div class="label">Aprovadas</div><div class="value green" id="kpi-so-approved">—</div></div>
+    <div class="kpi"><div class="label">Em Produção</div><div class="value orange" id="kpi-so-prod">—</div></div>
+    <div class="kpi"><div class="label">Entregues</div><div class="value purple" id="kpi-so-delivered">—</div></div>
+  </div>
+  <div class="section-title">
+    Ordens de Serviço
+    <button class="btn btn-primary btn-sm" onclick="loadServiceOrders()">↻ Atualizar</button>
+  </div>
+  <div class="card">
+    <table>
+      <thead><tr><th>Nº OS</th><th>Evento</th><th>Tipo</th><th>Total</th><th>Entrega</th><th>Status</th></tr></thead>
+      <tbody id="so-table"><tr><td colspan="6" class="empty"><span class="loader"></span> Carregando...</td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ─── PRODUCTION ORDERS ────────────────────────────────── -->
+<div id="tab-production-orders" class="panel">
+  <div class="kpi-row">
+    <div class="kpi"><div class="label">Total OP</div><div class="value blue" id="kpi-po-total">—</div></div>
+    <div class="kpi"><div class="label">Pendentes</div><div class="value yellow" id="kpi-po-pending">—</div></div>
+    <div class="kpi"><div class="label">Agendadas</div><div class="value blue" id="kpi-po-scheduled">—</div></div>
+    <div class="kpi"><div class="label">Em Produção</div><div class="value orange" id="kpi-po-prod">—</div></div>
+    <div class="kpi"><div class="label">Prontas</div><div class="value green" id="kpi-po-ready">—</div></div>
+  </div>
+  <div class="section-title">
+    Ordens de Produção
+    <button class="btn btn-primary btn-sm" onclick="loadProductionOrders()">↻ Atualizar</button>
+  </div>
+  <div class="card">
+    <table>
+      <thead><tr><th>Nº OP</th><th>Evento</th><th>Data Prod.</th><th>Local</th><th>Itens</th><th>Status</th></tr></thead>
+      <tbody id="po-table"><tr><td colspan="6" class="empty"><span class="loader"></span> Carregando...</td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ─── EXECUTION ─────────────────────────────────────────── -->
+<div id="tab-execution" class="panel">
+  <div class="kpi-row">
+    <div class="kpi"><div class="label">Sessões Ativas</div><div class="value green" id="kpi-exec-active">—</div></div>
+    <div class="kpi"><div class="label">Concluídas Hoje</div><div class="value blue" id="kpi-exec-done">—</div></div>
+    <div class="kpi"><div class="label">Ocorrências Críticas</div><div class="value red" id="kpi-exec-critical">—</div></div>
+    <div class="kpi"><div class="label">Rating Médio</div><div class="value yellow" id="kpi-exec-rating">—</div></div>
+  </div>
+  <div class="section-title">
+    Sessões de Execução
+    <button class="btn btn-primary btn-sm" onclick="loadExecutionSessions()">↻ Atualizar</button>
+  </div>
+  <div class="card">
+    <table>
+      <thead><tr><th>Sessão</th><th>Evento</th><th>Abertura</th><th>Checkpoints</th><th>Ocorrências</th><th>Status</th><th>Rating</th></tr></thead>
+      <tbody id="exec-table"><tr><td colspan="7" class="empty"><span class="loader"></span> Carregando...</td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ─── AGENT RUNS ────────────────────────────────────────── -->
+<div id="tab-agent-runs" class="panel">
+  <div class="kpi-row">
+    <div class="kpi"><div class="label">Total Runs</div><div class="value blue" id="kpi-runs-total">—</div></div>
+    <div class="kpi"><div class="label">Concluídos</div><div class="value green" id="kpi-runs-done">—</div></div>
+    <div class="kpi"><div class="label">Em Execução</div><div class="value yellow" id="kpi-runs-running">—</div></div>
+    <div class="kpi"><div class="label">Falhos</div><div class="value red" id="kpi-runs-failed">—</div></div>
+    <div class="kpi"><div class="label">Aprovações</div><div class="value orange" id="kpi-runs-approval">—</div></div>
+  </div>
+
+  <div class="section-title">
+    Novos Workflows Disponíveis
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <h3>🎯 lead_qualification</h3>
+      <p style="color:var(--txt2);font-size:12px;margin-bottom:12px">CRM Agent → Finance Agent → Reporting<br>Qualificação BANT, proposta sugerida</p>
+      <button class="btn btn-primary btn-sm" onclick="triggerWorkflow('lead_qualification')">▶ Executar</button>
+    </div>
+    <div class="card">
+      <h3>📅 event_planning</h3>
+      <p style="color:var(--txt2);font-size:12px;margin-bottom:12px">OS Agent → Production Agent → Supply → Finance → Reporting<br>Planejamento completo do evento</p>
+      <button class="btn btn-primary btn-sm" onclick="triggerWorkflow('event_planning')">▶ Executar</button>
+    </div>
+    <div class="card">
+      <h3>📄 contract_to_event</h3>
+      <p style="color:var(--txt2);font-size:12px;margin-bottom:12px">OS Agent → Production → Inventory → Finance → Reporting<br>Contrato assinado → fluxo completo</p>
+      <button class="btn btn-primary btn-sm" onclick="triggerWorkflow('contract_to_event')">▶ Executar</button>
+    </div>
+    <div class="card">
+      <h3>⚡ event_execution</h3>
+      <p style="color:var(--txt2);font-size:12px;margin-bottom:12px">EventOps Agent → Reporting<br>Checklist e relatório do dia do evento</p>
+      <button class="btn btn-primary btn-sm" onclick="triggerWorkflow('event_execution')">▶ Executar</button>
+    </div>
+  </div>
+
+  <div class="section-title">Runs Recentes</div>
+  <div class="card">
+    <table>
+      <thead><tr><th>Workflow</th><th>Status</th><th>Risco</th><th>Latência</th><th>Criado em</th></tr></thead>
+      <tbody id="runs-table"><tr><td colspan="5" class="empty"><span class="loader"></span> Carregando...</td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+const API = 'http://localhost:3333';
+
+function showTab(name) {
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+  if (name === 'crm') { loadLeads(); loadProposals(); loadCrmPipeline(); }
+  if (name === 'service-orders') loadServiceOrders();
+  if (name === 'production-orders') loadProductionOrders();
+  if (name === 'execution') loadExecutionSessions();
+  if (name === 'agent-runs') loadAgentRuns();
+}
+
+function fmtCur(v) { return v != null ? 'R$ ' + parseFloat(v).toLocaleString('pt-BR', {minimumFractionDigits:0}) : '—'; }
+function fmtDate(d) { return d ? new Date(d).toLocaleDateString('pt-BR') : '—'; }
+function fmtDT(d) { return d ? new Date(d).toLocaleString('pt-BR', {dateStyle:'short',timeStyle:'short'}) : '—'; }
+
+function badge(status) {
+  const map = {
+    NEW:'badge-blue', CONTACTED:'badge-blue', QUALIFIED:'badge-green', PROPOSAL_SENT:'badge-yellow',
+    WON:'badge-green', LOST:'badge-gray',
+    DRAFT:'badge-gray', PENDING:'badge-yellow', PENDING_APPROVAL:'badge-yellow',
+    APPROVED:'badge-green', IN_PRODUCTION:'badge-orange', DELIVERED:'badge-purple',
+    CANCELLED:'badge-red', COMPLETED:'badge-green', ACTIVE:'badge-green',
+    SCHEDULED:'badge-blue', IN_PROG:'badge-orange', READY:'badge-green',
+    running:'badge-blue', completed:'badge-green', failed:'badge-red', pending:'badge-yellow',
+    waiting_approval:'badge-orange'
+  };
+  const cls = map[status] || 'badge-gray';
+  return `<span class="badge ${cls}">${status}</span>`;
+}
+
+async function loadCrmPipeline() {
+  try {
+    const r = await fetch(`${API}/crm/pipeline`);
+    const d = await r.json();
+    if (!d.success) return;
+    const leads = d.data.leads || {};
+    const contracts = d.data.contracts || {};
+    document.getElementById('kpi-leads').textContent = Object.values(leads).reduce((a,b) => a + b, 0) || 0;
+    document.getElementById('kpi-qualified').textContent = leads.QUALIFIED || 0;
+    const proposalData = d.data.proposals || {};
+    const propCount = Object.values(proposalData).reduce((a,v) => a + (v.count || 0), 0);
+    document.getElementById('kpi-proposals').textContent = propCount;
+    document.getElementById('kpi-contracts').textContent = contracts.active || 0;
+    document.getElementById('kpi-contract-value').textContent = fmtCur(contracts.totalValue);
+    // Fill pipeline columns
+    ['NEW','CONTACTED','QUALIFIED','PROPOSAL_SENT','WON','LOST'].forEach(s => {
+      const col = document.getElementById('col-' + s.toLowerCase().replace('_sent','').replace('_','-'));
+      if(col) col.innerHTML = `<div style="color:var(--txt2);font-size:24px;font-weight:700;text-align:center">${leads[s]||0}</div>`;
+    });
+  } catch(e) { console.warn('Pipeline load failed', e); }
+}
+
+async function loadLeads() {
+  try {
+    const r = await fetch(`${API}/crm/leads?limit=20`);
+    const d = await r.json();
+    const tbody = document.getElementById('leads-table');
+    if (!d.success || !d.data.length) { tbody.innerHTML = '<tr><td colspan="6" class="empty">Nenhum lead encontrado</td></tr>'; return; }
+    tbody.innerHTML = d.data.map(l => `<tr>
+      <td>${l.contactName||'—'}</td>
+      <td>${l.companyName||'—'}</td>
+      <td><span style="color:var(--txt2)">${l.source||'—'}</span></td>
+      <td>${l.score != null ? l.score : '—'}</td>
+      <td>${badge(l.status)}</td>
+      <td>${fmtDate(l.createdAt)}</td>
+    </tr>`).join('');
+  } catch(e) { document.getElementById('leads-table').innerHTML = '<tr><td colspan="6" class="empty">Erro ao carregar</td></tr>'; }
+}
+
+async function loadProposals() {
+  try {
+    const r = await fetch(`${API}/crm/proposals?limit=20`);
+    const d = await r.json();
+    const tbody = document.getElementById('proposals-table');
+    if (!d.success || !d.data.length) { tbody.innerHTML = '<tr><td colspan="5" class="empty">Nenhuma proposta</td></tr>'; return; }
+    tbody.innerHTML = d.data.map(p => `<tr>
+      <td><code>${p.proposalNumber}</code></td>
+      <td>${p.lead?.contactName||p.lead?.companyName||'—'}</td>
+      <td>${fmtCur(p.totalAmount)}</td>
+      <td>${badge(p.status)}</td>
+      <td>${fmtDate(p.validUntil)}</td>
+    </tr>`).join('');
+  } catch(e) {}
+}
+
+async function loadServiceOrders() {
+  try {
+    const r = await fetch(`${API}/service-orders?limit=50`);
+    const d = await r.json();
+    const tbody = document.getElementById('so-table');
+    if (!d.data) return;
+
+    const byStatus = d.data.reduce((a,s) => { a[s.status] = (a[s.status]||0)+1; return a; }, {});
+    document.getElementById('kpi-so-total').textContent = d.data.length;
+    document.getElementById('kpi-so-draft').textContent = byStatus.DRAFT||0;
+    document.getElementById('kpi-so-approved').textContent = byStatus.APPROVED||0;
+    document.getElementById('kpi-so-prod').textContent = byStatus.IN_PRODUCTION||0;
+    document.getElementById('kpi-so-delivered').textContent = byStatus.DELIVERED||0;
+
+    if (!d.data.length) { tbody.innerHTML = '<tr><td colspan="6" class="empty">Nenhuma OS</td></tr>'; return; }
+    tbody.innerHTML = d.data.map(s => `<tr>
+      <td><code>${s.soNumber}</code></td>
+      <td><span style="color:var(--txt2);font-size:11px">${s.eventId.slice(0,8)}…</span></td>
+      <td>${s.soType}</td>
+      <td>${fmtCur(s.total)}</td>
+      <td>${fmtDate(s.requiredDelivery)}</td>
+      <td>${badge(s.status)}</td>
+    </tr>`).join('');
+  } catch(e) { document.getElementById('so-table').innerHTML = '<tr><td colspan="6" class="empty">Erro</td></tr>'; }
+}
+
+async function loadProductionOrders() {
+  try {
+    const r = await fetch(`${API}/production-orders?limit=50`);
+    const d = await r.json();
+    const tbody = document.getElementById('po-table');
+    if (!d.data) return;
+
+    const byStatus = d.data.reduce((a,s) => { a[s.status] = (a[s.status]||0)+1; return a; }, {});
+    document.getElementById('kpi-po-total').textContent = d.data.length;
+    document.getElementById('kpi-po-pending').textContent = byStatus.PENDING||0;
+    document.getElementById('kpi-po-scheduled').textContent = byStatus.SCHEDULED||0;
+    document.getElementById('kpi-po-prod').textContent = byStatus.IN_PRODUCTION||0;
+    document.getElementById('kpi-po-ready').textContent = byStatus.READY||0;
+
+    if (!d.data.length) { tbody.innerHTML = '<tr><td colspan="6" class="empty">Nenhuma OP</td></tr>'; return; }
+    tbody.innerHTML = d.data.map(p => `<tr>
+      <td><code>${p.poNumber}</code></td>
+      <td><span style="color:var(--txt2);font-size:11px">${p.eventId.slice(0,8)}…</span></td>
+      <td>${fmtDate(p.productionDate)}</td>
+      <td>${p.productionLocation||'—'}</td>
+      <td>${p.items?.length||0}</td>
+      <td>${badge(p.status)}</td>
+    </tr>`).join('');
+  } catch(e) { document.getElementById('po-table').innerHTML = '<tr><td colspan="6" class="empty">Erro</td></tr>'; }
+}
+
+async function loadExecutionSessions() {
+  try {
+    const r = await fetch(`${API}/execution/sessions?limit=30`);
+    const d = await r.json();
+    const tbody = document.getElementById('exec-table');
+    if (!d.data) return;
+
+    const active = d.data.filter(s => s.status === 'ACTIVE').length;
+    const today = new Date().toDateString();
+    const doneToday = d.data.filter(s => s.status === 'COMPLETED' && new Date(s.closedAt||'').toDateString() === today).length;
+    document.getElementById('kpi-exec-active').textContent = active;
+    document.getElementById('kpi-exec-done').textContent = doneToday;
+    document.getElementById('kpi-exec-critical').textContent = '—';
+
+    const ratings = d.data.filter(s => s.overallRating).map(s => s.overallRating);
+    document.getElementById('kpi-exec-rating').textContent = ratings.length ? (ratings.reduce((a,b) => a+b,0)/ratings.length).toFixed(1) + '⭐' : '—';
+
+    if (!d.data.length) { tbody.innerHTML = '<tr><td colspan="7" class="empty">Nenhuma sessão</td></tr>'; return; }
+    tbody.innerHTML = d.data.map(s => `<tr>
+      <td><code>${s.id.slice(0,8)}</code></td>
+      <td><span style="color:var(--txt2);font-size:11px">${s.eventId.slice(0,8)}…</span></td>
+      <td>${fmtDT(s.openedAt)}</td>
+      <td>${s._count?.checkpoints||0}</td>
+      <td>${s._count?.occurrences||0}</td>
+      <td>${badge(s.status)}</td>
+      <td>${s.overallRating ? s.overallRating + '⭐' : '—'}</td>
+    </tr>`).join('');
+  } catch(e) { document.getElementById('exec-table').innerHTML = '<tr><td colspan="7" class="empty">Erro</td></tr>'; }
+}
+
+async function loadAgentRuns() {
+  try {
+    const r = await fetch(`${API}/agent-runs?limit=20`);
+    const d = await r.json();
+    if (!d.data) return;
+
+    const byStatus = d.data.reduce((a,s) => { a[s.status] = (a[s.status]||0)+1; return a; }, {});
+    document.getElementById('kpi-runs-total').textContent = d.data.length;
+    document.getElementById('kpi-runs-done').textContent = byStatus.completed||0;
+    document.getElementById('kpi-runs-running').textContent = byStatus.running||0;
+    document.getElementById('kpi-runs-failed').textContent = byStatus.failed||0;
+    document.getElementById('kpi-runs-approval').textContent = byStatus.waiting_approval||0;
+
+    const tbody = document.getElementById('runs-table');
+    if (!d.data.length) { tbody.innerHTML = '<tr><td colspan="5" class="empty">Nenhum run</td></tr>'; return; }
+    tbody.innerHTML = d.data.map(r => `<tr>
+      <td>${r.workflowType}</td>
+      <td>${badge(r.status)}</td>
+      <td><span class="badge badge-${r.riskLevel?.includes('4')?'red':r.riskLevel?.includes('3')?'orange':r.riskLevel?.includes('2')?'yellow':'green'}">${r.riskLevel||'—'}</span></td>
+      <td>${r.latencyMs ? r.latencyMs+'ms' : '—'}</td>
+      <td>${fmtDT(r.createdAt)}</td>
+    </tr>`).join('');
+  } catch(e) {}
+}
+
+async function triggerWorkflow(type) {
+  const input = { companyId: 'demo', numGuests: 150, eventType: 'corporativo', eventDate: '2026-06-15', valor: 45000 };
+  const r = await fetch(`${API}/agent-runs`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ companyId: 'demo', workflowType: type, input })
+  });
+  const d = await r.json();
+  if (d.success) {
+    alert(`✅ Workflow '${type}' iniciado!\nRun ID: ${d.data?.id?.slice(0,8)}…`);
+    loadAgentRuns();
+  } else {
+    alert('❌ Erro: ' + JSON.stringify(d.error));
+  }
+}
+
+// Initial load
+loadLeads();
+loadProposals();
+loadCrmPipeline();
+</script>
+</body>
+</html>

@@ -6,7 +6,7 @@ import swagger from "@fastify/swagger";
 import swaggerUi from "@fastify/swagger-ui";
 import { config } from "./config/env";
 import { prisma } from "./db";
-import { agentRunsRoutes, approvalsRoutes, memoryRoutes, artifactsRoutes, dashboardRoutes, metricsRoutes } from "./routes";
+import { agentRunsRoutes, approvalsRoutes, memoryRoutes, artifactsRoutes, dashboardRoutes, metricsRoutes, eventsRoutes, statesRoutes, kitchenRoutes, intelligenceRoutes, crmRoutes, serviceOrdersRoutes, productionOrdersRoutes, executionRoutes } from "./routes";
 import { errorHandler, notFoundHandler } from "./utils/error-handler";
 import { logger } from "./utils/logger";
 import agentRunWorker, { closeWorker } from "./worker";
@@ -41,6 +41,14 @@ async function bootstrap() {
   await app.register(artifactsRoutes, { prefix: "/artifacts" });
   await app.register(metricsRoutes, { prefix: "/metrics" });
   await app.register(dashboardRoutes, { prefix: "/dashboard" });
+  await app.register(eventsRoutes, { prefix: "/events" });
+  await app.register(statesRoutes, { prefix: "/states" });
+  await app.register(kitchenRoutes, { prefix: "/kitchen" });
+  await app.register(intelligenceRoutes, { prefix: "/intelligence" });
+  await app.register(crmRoutes, { prefix: "/crm" });
+  await app.register(serviceOrdersRoutes, { prefix: "/service-orders" });
+  await app.register(productionOrdersRoutes, { prefix: "/production-orders" });
+  await app.register(executionRoutes, { prefix: "/execution" });
 
   // Health check
   app.get("/health", async () => ({ status: "ok", ts: Date.now() }));
