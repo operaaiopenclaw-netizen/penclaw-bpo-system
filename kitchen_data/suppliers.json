@@ -1,0 +1,149 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "description": "Fornecedores homologados — IDs de produto mapeados ao catalog_products.json",
+    "last_updated": "2026-04-15"
+  },
+  "suppliers": [
+    {
+      "id": "SUP-001",
+      "name": "Açougue Premium",
+      "category": "proteinas",
+      "products": ["CAR-001", "CAR-002", "FRG-001", "LEG-001"],
+      "contact": "11-99100-0001",
+      "payment_terms": "30 dias",
+      "lead_time_days": 1,
+      "status": "homologado"
+    },
+    {
+      "id": "SUP-002",
+      "name": "Laticínios Nordeste",
+      "category": "laticinios",
+      "products": ["QUE-001", "QUE-002"],
+      "contact": "11-99100-0002",
+      "payment_terms": "15 dias",
+      "lead_time_days": 2,
+      "status": "homologado"
+    },
+    {
+      "id": "SUP-003",
+      "name": "Panificadora Boa",
+      "category": "pao",
+      "products": ["PAO-001", "PAO-002"],
+      "contact": "11-99100-0003",
+      "payment_terms": "7 dias",
+      "lead_time_days": 1,
+      "status": "homologado"
+    },
+    {
+      "id": "SUP-004",
+      "name": "Salgados Festa",
+      "category": "salgados",
+      "products": ["SAL-001", "VEG-003"],
+      "contact": "11-99100-0004",
+      "payment_terms": "7 dias",
+      "lead_time_days": 1,
+      "status": "homologado"
+    },
+    {
+      "id": "SUP-005",
+      "name": "Cervejaria BR",
+      "category": "bebidas",
+      "products": ["CER-001"],
+      "contact": "11-99100-0005",
+      "payment_terms": "30 dias",
+      "lead_time_days": 3,
+      "status": "homologado"
+    },
+    {
+      "id": "SUP-006",
+      "name": "Bebidas Sul",
+      "category": "bebidas",
+      "products": ["REF-001", "AGU-001"],
+      "contact": "11-99100-0006",
+      "payment_terms": "30 dias",
+      "lead_time_days": 2,
+      "status": "homologado"
+    },
+    {
+      "id": "SUP-007",
+      "name": "Gelo Fácil",
+      "category": "gelo",
+      "products": ["GEL-001"],
+      "contact": "11-99100-0007",
+      "payment_terms": "à vista",
+      "lead_time_days": 0,
+      "status": "homologado"
+    },
+    {
+      "id": "SUP-008",
+      "name": "Vinhos Import",
+      "category": "bebidas_premium",
+      "products": ["ESP-001", "WHI-001"],
+      "contact": "11-99100-0008",
+      "payment_terms": "30 dias",
+      "lead_time_days": 5,
+      "status": "homologado"
+    },
+    {
+      "id": "SUP-009",
+      "name": "Descartáveis BR",
+      "category": "descartaveis",
+      "products": ["DIS-001", "DIS-002", "DIS-003"],
+      "contact": "11-99100-0009",
+      "payment_terms": "30 dias",
+      "lead_time_days": 2,
+      "status": "homologado"
+    },
+    {
+      "id": "SUP-010",
+      "name": "RH Eventos",
+      "category": "staff",
+      "products": ["GAR-001", "BAR-001", "COP-001", "CRD-001", "SEG-001"],
+      "contact": "11-99100-0010",
+      "payment_terms": "7 dias após evento",
+      "lead_time_days": 3,
+      "status": "homologado"
+    },
+    {
+      "id": "SUP-011",
+      "name": "Transporte Rap",
+      "category": "logistica",
+      "products": ["LOG-001"],
+      "contact": "11-99100-0011",
+      "payment_terms": "imediato",
+      "lead_time_days": 0,
+      "status": "homologado"
+    },
+    {
+      "id": "SUP-012",
+      "name": "Equipamentos X",
+      "category": "equipamentos",
+      "products": ["EQU-001"],
+      "contact": "11-99100-0012",
+      "payment_terms": "50% antecipado",
+      "lead_time_days": 5,
+      "status": "homologado"
+    },
+    {
+      "id": "SUP-013",
+      "name": "Preparados Gourmet",
+      "category": "proteinas",
+      "products": ["LAZ-001", "LAZ-002", "LAZ-003", "LAZ-004"],
+      "contact": "11-99100-0013",
+      "payment_terms": "15 dias",
+      "lead_time_days": 2,
+      "status": "homologado"
+    },
+    {
+      "id": "SUP-014",
+      "name": "Hortifruti Central",
+      "category": "hortifruti",
+      "products": ["FRU-001", "VEG-001", "VEG-002", "VEG-004", "VEG-005"],
+      "contact": "11-99100-0014",
+      "payment_terms": "7 dias",
+      "lead_time_days": 1,
+      "status": "homologado"
+    }
+  ]
+}

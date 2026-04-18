@@ -19,6 +19,7 @@ export { SupplyAgent, supplyAgent } from "./supply-agent";
 export { CrmAgent, crmAgent } from "./crm-agent";
 export { OsAgent, osAgent } from "./os-agent";
 export { ProductionAgent, productionAgent } from "./production-agent";
+export { ProcurementAgent, procurementAgent } from "./procurement-agent";
 
 export {
   WorkflowRouter,

@@ -681,6 +681,8 @@ model Supplier {
   contactPhone       String?
   leadTimeDays       Int       @default(3)
   minOrderValue      Float?
+  priceTable         Json?     // { itemCode|category: unitPrice } — optional price overrides
+  reliabilityScore   Float?    // manual seed score 0-100; computed score takes precedence when orders exist
 
   // Aggregate performance (updated on each order delivery)
   totalOrders        Int       @default(0)
@@ -701,8 +703,8 @@ model Supplier {
 model PurchaseOrder {
   id                  String    @id @default(uuid())
   tenantId            String
-  supplierId          String
-  supplier            Supplier  @relation(fields: [supplierId], references: [id])
+  supplierId          String?
+  supplier            Supplier? @relation(fields: [supplierId], references: [id])
 
   // Lifecycle
   status              String    @default("draft")  // draft|sent|confirmed|delivered|cancelled
@@ -721,12 +723,14 @@ model PurchaseOrder {
   // Context
   relatedEventId      String?
   notes               String?
+  metadata            Json?     // { supplierSuggestions, alternatives, selectionReason, confidence }
 
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
 
   items               PurchaseOrderItem[]
 
+  @@unique([sourceDecisionId])
   @@index([tenantId])
   @@index([tenantId, status])
   @@index([tenantId, supplierId])
