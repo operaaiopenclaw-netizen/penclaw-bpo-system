@@ -109,6 +109,11 @@ const ITEM_NAMES: Record<string, string> = {
 
 // ============================================================
 
+export interface ForecastOptions {
+  /** Apply learned ItemAdjustment factors. Default: true. Set false during reconciliation baselines. */
+  useLearnedAdjustments?: boolean;
+}
+
 export class ForecastEngine {
   /**
    * Forecast consumption for an event.
@@ -119,17 +124,20 @@ export class ForecastEngine {
     eventType: string,
     guestCount: number,
     durationHours: number,
-    eventId?: string
+    eventId?: string,
+    options: ForecastOptions = {}
   ): Promise<EventForecastResult> {
     const normType = eventType.toLowerCase().trim();
     const baseRates = BASE_RATES[normType] ?? DEFAULT_RATES;
+    const useLearned = options.useLearnedAdjustments !== false;
 
-    // Parallel: fetch history + inventory prices
-    const [history, inventoryItems] = await Promise.all([
+    // Parallel: fetch history + inventory prices + learned adjustments
+    const [history, inventoryItems, adjustments] = await Promise.all([
       this.fetchHistory(tenantId, normType),
       prisma.inventoryItem.findMany({
         select: { code: true, name: true, unitPrice: true },
       }),
+      useLearned ? this.fetchAdjustments(tenantId, normType) : Promise.resolve(new Map<string, number>()),
     ]);
 
     // Build per-item forecasts (CPU-bound, run synchronously)
@@ -142,7 +150,8 @@ export class ForecastEngine {
           unit,
           guestCount,
           durationHours,
-          history.filter(h => h.itemCode === itemCode)
+          history.filter(h => h.itemCode === itemCode),
+          adjustments.get(itemCode) ?? 1.0
         )
     );
 
@@ -187,7 +196,8 @@ export class ForecastEngine {
     unit: string,
     guestCount: number,
     durationHours: number,
-    history: Array<{ perGuestRate: number }>
+    history: Array<{ perGuestRate: number }>,
+    learnedFactor: number = 1.0
   ): ConsumptionForecast {
     // Factor 1 — Duration
     const durationFactor =
@@ -223,7 +233,10 @@ export class ForecastEngine {
         ? modelRatePerGuest * (1 - histWeight) + histMean * histWeight
         : modelRatePerGuest;
 
-    const estimated = blendedRate * guestCount;
+    // Factor 4 — Learned adjustment from ReconciliationEngine
+    const adjustedRate = blendedRate * learnedFactor;
+
+    const estimated = adjustedRate * guestCount;
     const { min, max } = ciRange(estimated, histStddev * guestCount, modelTotal);
 
     return {
@@ -236,14 +249,33 @@ export class ForecastEngine {
       maxConsumption: round1(max),
       confidenceScore: computeConfidence(history.length),
       historicalDataPoints: history.length,
-      perGuestRate: round3(blendedRate),
+      perGuestRate: round3(adjustedRate),
       adjustmentFactors: {
-        eventType: 1.0,
+        eventType: round3(learnedFactor),
         duration: round3(durationFactor),
         guestScale: round3(guestScaleFactor),
         historical: round3(histWeight),
       },
     };
+  }
+
+  /**
+   * Load learned per-item adjustment factors for an event type.
+   * Returns a map keyed by itemCode. Missing entries → 1.0 (neutral).
+   */
+  private async fetchAdjustments(
+    tenantId: string,
+    eventType: string
+  ): Promise<Map<string, number>> {
+    try {
+      const rows = await prisma.itemAdjustment.findMany({
+        where: { tenantId, eventType },
+        select: { itemCode: true, factor: true },
+      });
+      return new Map(rows.map(r => [r.itemCode, r.factor]));
+    } catch {
+      return new Map();
+    }
   }
 
   private async fetchHistory(

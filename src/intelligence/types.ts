@@ -331,3 +331,85 @@ export interface DispatchResult {
   alertsLogged: number;
   errors: string[];
 }
+
+// ---- Reconciliation Loop (Sprint 4) ----
+
+export interface ReconciliationItem {
+  itemCode: string;
+  itemName: string;
+  category: string;
+  unit: string;
+  forecast: number;
+  purchased: number;
+  consumed: number;
+  wasted: number;
+  returned: number;
+  /** consumed - forecast (can be negative when under-forecast) */
+  variance: number;
+  /** variance relative to forecast, signed */
+  variancePct: number;
+  /** 0-100 — 100 = perfect match */
+  accuracyScore: number;
+  /** (consumed + wasted) * unitPrice — what the event actually cost in items */
+  realItemCost: number;
+  /** forecast * unitPrice — what we projected */
+  projectedItemCost: number;
+  /** wasted * unitPrice */
+  wasteItemCost: number;
+  unitPrice: number;
+}
+
+export interface ReconciliationFinancials {
+  projectedCost: number;
+  realCost: number;
+  wasteCost: number;
+  revenue: number | null;
+  projectedMargin: number | null;
+  realMargin: number | null;
+  marginDelta: number | null;
+}
+
+export interface ReconciliationAccuracy {
+  overall: number;
+  byCategory: Record<string, number>;
+  byEventType: Record<string, number>;
+  itemCount: number;
+}
+
+export interface SupplierFeedbackUpdate {
+  supplierId: string;
+  supplierName: string;
+  previousReliability: number | null;
+  newReliability: number;
+  deliveryAccuracyPct: number;
+  quantityVariancePct: number;
+  itemsEvaluated: number;
+}
+
+export interface MemoryPatternEntry {
+  memoryType: "deviation" | "pattern" | "inefficiency";
+  title: string;
+  content: string;
+  tags: string[];
+  confidenceScore: number;
+}
+
+export interface ReconciliationReportResult {
+  eventId: string;
+  tenantId: string;
+  eventType: string;
+  guestCount: number;
+  generatedAt: Date;
+  items: ReconciliationItem[];
+  accuracy: ReconciliationAccuracy;
+  financials: ReconciliationFinancials;
+  adjustmentsApplied: Array<{
+    itemCode: string;
+    eventType: string;
+    previousFactor: number;
+    newFactor: number;
+    sampleSize: number;
+  }>;
+  supplierFeedback: SupplierFeedbackUpdate[];
+  memoryEntries: MemoryPatternEntry[];
+}

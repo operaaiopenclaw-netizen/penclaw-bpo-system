@@ -786,6 +786,111 @@ model EventConsumptionHistory {
   @@map("event_consumption_history")
 }
 
+// ============================================================
+// RECONCILIATION LOOP — Learning state (Sprint 4)
+// ============================================================
+
+model EventConsumption {
+  id                  String    @id @default(uuid())
+  tenantId            String
+  eventId             String
+
+  itemCode            String
+  itemName            String
+  category            String
+  unit                String
+
+  quantityConsumed    Float     @default(0)
+  quantityWasted      Float     @default(0)
+  quantityReturned    Float     @default(0)
+
+  // Optional link back to the PO line that delivered this item
+  purchaseOrderItemId String?
+
+  recordedAt          DateTime  @default(now())
+
+  @@index([tenantId, eventId])
+  @@index([tenantId, itemCode])
+  @@index([tenantId, eventId, itemCode])
+  @@map("event_consumptions")
+}
+
+model ForecastAccuracy {
+  id              String   @id @default(uuid())
+  tenantId        String
+
+  // Scope of the accuracy sample
+  scope           String   // 'item' | 'category' | 'eventType'
+  scopeKey        String   // e.g., 'cerveja' | 'beverage_alcohol' | 'casamento'
+
+  eventId         String?
+  eventType       String?
+
+  forecasted      Float
+  actual          Float
+  variancePct     Float    // (actual - forecasted) / forecasted  (can be negative)
+  accuracyScore   Float    // 0-100 — 100 = perfect
+
+  recordedAt      DateTime @default(now())
+
+  @@index([tenantId, scope, scopeKey])
+  @@index([tenantId, eventType])
+  @@index([tenantId, recordedAt])
+  @@map("forecast_accuracy")
+}
+
+// Learned per-item correction factors. Applied by ForecastEngine on every forecast.
+model ItemAdjustment {
+  id              String   @id @default(uuid())
+  tenantId        String
+
+  itemCode        String
+  eventType       String   // 'global' used as sentinel for cross-type adjustment
+
+  // Multiplicative correction — 1.0 = neutral, >1 = scale up, <1 = scale down
+  factor          Float    @default(1.0)
+
+  // Running stats that produced the factor
+  sampleSize      Int      @default(0)
+  meanVariancePct Float?   // EWMA of variancePct
+  lastVariancePct Float?   // most recent sample (debug)
+  lastUpdated     DateTime @updatedAt
+  createdAt       DateTime @default(now())
+
+  @@unique([tenantId, itemCode, eventType])
+  @@index([tenantId, itemCode])
+  @@map("item_adjustments")
+}
+
+model ReconciliationReport {
+  id              String   @id @default(uuid())
+  tenantId        String
+  eventId         String
+  eventType       String
+  guestCount      Int
+
+  // Aggregate metrics
+  itemsReconciled Int
+  meanAccuracy    Float    // 0-100
+
+  // Financial reality
+  projectedCost   Float
+  realCost        Float
+  wasteCost       Float
+  projectedMargin Float?   // percentage, from Event.marginPct
+  realMargin      Float?   // percentage, computed
+
+  // Full per-item payload for audit
+  payload         Json
+
+  createdAt       DateTime @default(now())
+
+  @@unique([eventId])
+  @@index([tenantId, eventType])
+  @@index([tenantId, createdAt])
+  @@map("reconciliation_reports")
+}
+
 model OperationalDecision {
   id              String    @id @default(uuid())
   tenantId        String
