@@ -1203,6 +1203,7 @@ model ProductionOrder {
   items             ProductionOrderItem[]
   soToPoMappings    SoToPoMapping[]
   productionBatches ProductionBatch[]
+  schedules         ProductionSchedule[]
 
   @@index([tenantId])
   @@index([eventId])
@@ -1274,6 +1275,53 @@ model ProductionBatch {
   @@index([tenantId])
   @@index([productionOrderId])
   @@map("production_batches")
+}
+
+// ============================================================
+// PRODUCTION ENGINE — Sprint 5
+// Stations + Schedules for real capacity control
+// ============================================================
+
+model ProductionStation {
+  id              String   @id @default(uuid())
+  tenantId        String
+  name            String   // 'kitchen' | 'bar' | 'pastry' | 'prep'
+  stationType     String   // kitchen|bar|pastry|prep
+  maxHoursPerDay  Float    @default(12)
+  maxParallel     Int      @default(3)   // simultaneous production orders
+  staffCount      Int      @default(4)
+  isActive        Boolean  @default(true)
+  metadata        Json?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  schedules       ProductionSchedule[]
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+  @@map("production_stations")
+}
+
+model ProductionSchedule {
+  id                  String   @id @default(uuid())
+  tenantId            String
+  stationId           String
+  station             ProductionStation @relation(fields: [stationId], references: [id])
+  productionOrderId   String
+  productionOrder     ProductionOrder @relation(fields: [productionOrderId], references: [id], onDelete: Cascade)
+  scheduledStart      DateTime
+  scheduledEnd        DateTime
+  estimatedHours      Float
+  actualStart         DateTime?
+  actualEnd           DateTime?
+  status              String   @default("SCHEDULED") // SCHEDULED|IN_PROGRESS|COMPLETED|DELAYED|FAILED
+  delayReason         String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([tenantId, stationId, scheduledStart])
+  @@index([productionOrderId])
+  @@map("production_schedules")
 }
 
 // ============================================================

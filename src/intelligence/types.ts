@@ -413,3 +413,73 @@ export interface ReconciliationReportResult {
   supplierFeedback: SupplierFeedbackUpdate[];
   memoryEntries: MemoryPatternEntry[];
 }
+
+// ---- Production Engine (Sprint 5) ----
+
+export type StationType = "kitchen" | "bar" | "pastry" | "prep";
+
+export interface ProductionItemPlan {
+  itemCode: string;         // canonical forecast code ('cerveja', 'soft', etc.)
+  itemName: string;         // display name
+  category: string;
+  stationType: StationType;
+  quantityRequired: number;
+  unit: string;
+  estimatedHours: number;
+  estimatedCost: number;
+  /** Inventory available before reservation */
+  inventoryAvailable: number;
+  /** true when inventoryAvailable < quantityRequired */
+  stockInsufficient: boolean;
+}
+
+export interface StationLoadCheck {
+  stationId: string;
+  stationName: string;
+  stationType: StationType;
+  date: string;             // YYYY-MM-DD
+  maxHoursPerDay: number;
+  existingLoadHours: number;
+  requestedHours: number;
+  totalAfterSchedule: number;
+  withinCapacity: boolean;
+}
+
+export interface ProductionPlan {
+  eventId: string;
+  tenantId: string;
+  eventDate: string | null;
+  guestCount: number;
+  itemCount: number;
+  productionOrderId: string;
+  productionOrderNumber: string;
+  items: ProductionItemPlan[];
+  schedules: Array<{
+    scheduleId: string;
+    stationName: string;
+    stationType: StationType;
+    scheduledStart: Date;
+    scheduledEnd: Date;
+    estimatedHours: number;
+  }>;
+  stationLoadChecks: StationLoadCheck[];
+  reservations: Array<{
+    reservationId: string;
+    itemCode: string;
+    quantityReserved: number;
+  }>;
+  alerts: string[];
+  createdAt: Date;
+}
+
+export interface ProductionExecutionResult {
+  productionOrderId: string;
+  eventId: string;
+  itemsExecuted: number;
+  consumptionRecordsCreated: number;
+  totalProduced: number;
+  totalWasted: number;
+  totalActualCost: number;
+  delays: Array<{ scheduleId: string; stationName: string; delayMinutes: number }>;
+  completedAt: Date;
+}
