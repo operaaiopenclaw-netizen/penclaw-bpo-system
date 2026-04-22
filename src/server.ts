@@ -11,6 +11,7 @@ import { registerAuditHook } from "./middleware/audit";
 import { errorHandler, notFoundHandler } from "./utils/error-handler";
 import { logger } from "./utils/logger";
 import agentRunWorker, { closeWorker } from "./worker";
+import { bootstrapSeedIfEmpty } from "./services/bootstrap-seed";
 
 async function bootstrap() {
   const app = Fastify({
@@ -94,6 +95,9 @@ async function bootstrap() {
   // Error handlers
   app.setErrorHandler(errorHandler);
   app.setNotFoundHandler(notFoundHandler);
+
+  // First-boot seed (no-op when users already exist)
+  await bootstrapSeedIfEmpty();
 
   // Worker
   logger.info("Starting agent run worker...");
