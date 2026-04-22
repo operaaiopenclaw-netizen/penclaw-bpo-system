@@ -108,6 +108,7 @@ export class ArtifactService {
     if (!artifact) return false;
 
     try {
+      if (!artifact.storageUrl) return false;
       const content = await this.getContent(artifact.storageUrl);
       const currentChecksum = createHash("sha256").update(content).digest("hex");
       return currentChecksum === artifact.checksum;

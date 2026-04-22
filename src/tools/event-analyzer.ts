@@ -51,8 +51,8 @@ export class EventAnalyzerTool implements ToolImplementation {
           event: {
             id: event.id,
             eventId: event.eventId,
-            name: event.nCtt,
-            client: event.clientName,
+            name: event.name,
+            client: event.companyName,
             date: event.eventDate,
             status: event.status
           },

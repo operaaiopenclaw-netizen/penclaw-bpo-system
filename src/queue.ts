@@ -85,7 +85,8 @@ export async function cleanQueue(olderThan: number = 24 * 60 * 60 * 1000) {
 // Close connections
 export async function closeQueue() {
   await agentRunQueue.close();
-  await redisConnection.quit();
+  // redisConnection is a plain config object — BullMQ manages its own
+  // connection lifecycle; no separate quit() call needed.
   logger.info("Queue connections closed");
 }
 

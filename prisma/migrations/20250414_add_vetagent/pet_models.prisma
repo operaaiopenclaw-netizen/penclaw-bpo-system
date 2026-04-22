@@ -1,0 +1,137 @@
+// ============================================================
+// VETAGENT: Pet Ecosystem Models
+// Migration: 20250414_add_vetagent
+// ============================================================
+
+model Pet {
+  id            String    @id @default(uuid())
+  petId         String    @unique  // PET-XXXXX
+  name          String
+  species       String    // dog, cat, bird, etc.
+  breed         String?
+  dateOfBirth   DateTime?
+  ageYears      Float?    // Calculated or provided
+  weightKg      Float?
+  ownerId       String    // Reference to user/owner
+  ownerName     String?
+  microchipId   String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  healthRecords PetHealthRecord[]
+  vaccines      Vaccine[]
+  symptoms      Symptom[]
+  vetAgentLogs  VetAgentLog[]
+
+  @@index([ownerId])
+  @@index([species])
+  @@map("pets")
+}
+
+model PetHealthRecord {
+  id            String    @id @default(uuid())
+  petId         String
+  recordType    String    // visit, surgery, chronic_condition, medication
+  description   String
+  diagnosis     String?
+  treatment     String?
+  veterinarian  String?
+  clinicName    String?
+  visitDate     DateTime  @default(now())
+  followUpDate  DateTime?
+  attachments   Json?     // Array of file URLs
+  notes         String?
+  createdAt     DateTime  @default(now())
+
+  // Relations
+  pet Pet @relation(fields: [petId], references: [id], onDelete: Cascade)
+
+  @@index([petId])
+  @@index([recordType])
+  @@index([visitDate])
+  @@map("pet_health_records")
+}
+
+model Vaccine {
+  id            String    @id @default(uuid())
+  petId         String
+  vaccineName   String    // rabies, distemper, parvovirus, etc.
+  vaccineType   String    // core, non-core, required
+  administeredAt DateTime @default(now())
+  nextDueDate   DateTime?
+  veterinarian  String?
+  clinicName    String?
+  batchNumber   String?
+  isValid       Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+
+  // Relations
+  pet Pet @relation(fields: [petId], references: [id], onDelete: Cascade)
+
+  @@index([petId])
+  @@index([nextDueDate])
+  @@map("vaccines")
+}
+
+model Symptom {
+  id            String    @id @default(uuid())
+  petId         String
+  symptomName   String    // vomiting, lethargy, limping, etc.
+  severity      String    @default("mild") // mild, moderate, severe
+  frequency     String?   // occasional, frequent, constant
+  startedAt     DateTime  // When symptom first appeared
+  resolvedAt    DateTime?
+  notes         String?
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+
+  // Relations
+  pet Pet @relation(fields: [petId], references: [id], onDelete: Cascade)
+
+  @@index([petId])
+  @@index([isActive])
+  @@map("symptoms")
+}
+
+model VetAgentLog {
+  id            String    @id @default(uuid())
+  petId         String
+  question      String    // User's question
+  response      Json      // Structured response
+  rawAnalysis   String?   // Full AI response text
+  severity      String?   // low, medium, high
+  needsVet      Boolean   @default(false)
+  triggeredSafetyRule String? // which safety rule triggered
+  tokensUsed    Int?
+  latencyMs     Int?
+  createdAt     DateTime  @default(now())
+
+  // Relations
+  pet Pet @relation(fields: [petId], references: [id], onDelete: Cascade)
+
+  @@index([petId])
+  @@index([createdAt])
+  @@map("vet_agent_logs")
+}
+
+// ============================================================
+// ENUMS (as lookup tables)
+// ============================================================
+
+// Species supported
+model Species {
+  id          String @id
+  name        String
+  breedList   Json?  // Common breeds for this species
+  isActive    Boolean @default(true)
+}
+
+// Vaccine types lookup
+model VaccineType {
+  id          String @id
+  name        String
+  species     String[] // Which species this applies to
+  frequencyYears Float?
+  isRequired  Boolean @default(false)
+}

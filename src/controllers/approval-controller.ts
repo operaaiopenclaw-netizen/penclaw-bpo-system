@@ -26,13 +26,13 @@ export class ApprovalController {
       const { id } = approvalIdSchema.parse(request.params);
       const body = approvalActionSchema.parse(request.body);
 
-      logger.info("ApprovalController: approving request", { 
-        approvalId: id.id,
-        approved: body.approved 
+      logger.info("ApprovalController: approving request", {
+        approvalId: id,
+        approved: body.approved
       });
 
       const approval = await prisma.approvalRequest.findUnique({
-        where: { id: id.id }
+        where: { id }
       });
 
       if (!approval) {
@@ -44,7 +44,7 @@ export class ApprovalController {
       }
 
       const updated = await prisma.approvalRequest.update({
-        where: { id: id.id },
+        where: { id },
         data: {
           status: body.approved ? "APPROVED" : "REJECTED",
           approvedBy: request.user?.id || "system", // Assuming auth middleware sets user
@@ -53,24 +53,20 @@ export class ApprovalController {
         }
       });
 
-      // Update agent run status
-      await prisma.agentRun.update({
-        where: { id: approval.agentRunId },
-        data: {
-          status: body.approved ? "running" : "rejected"
-        }
-      });
-
-      // Resume execution if approved
+      // Resume or reject the run
       if (body.approved) {
         logger.info("Resuming run after approval", { agentRunId: approval.agentRunId });
-        
-        // Async resume - don't await, run in background
+        // Async resume — orchestrator.resume() handles all status transitions
         orchestrator.resume(approval.agentRunId).catch((error) => {
           logger.error("Failed to resume run after approval", {
             agentRunId: approval.agentRunId,
             error: error instanceof Error ? error.message : String(error)
           });
+        });
+      } else {
+        await prisma.agentRun.update({
+          where: { id: approval.agentRunId },
+          data: { status: "rejected" }
         });
       }
 
@@ -110,7 +106,7 @@ export class ApprovalController {
     const { id } = approvalIdSchema.parse(request.params);
 
     const approval = await prisma.approvalRequest.findUnique({
-      where: { id: id.id },
+      where: { id },
       include: {
         agentRun: true
       }
@@ -134,7 +130,7 @@ export class ApprovalController {
 
     const approvals = await prisma.approvalRequest.findMany({
       where: { status: "pending" },
-      orderBy: { createdAt: "asc" },
+      orderBy: { requestedAt: "asc" },
       take: query.limit ? parseInt(query.limit, 10) : 20,
       skip: query.offset ? parseInt(query.offset, 10) : 0,
       include: {

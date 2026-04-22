@@ -1,6 +1,7 @@
 import { BaseAgent, AgentExecutionContext, AgentExecutionResult } from "./base-agent";
 import { prisma } from "../db";
 import { logger } from "../utils/logger";
+import { analyzeWithClaude, isClaudeAvailable } from "../services/claude-client";
 
 export class FinanceAgent extends BaseAgent {
   readonly name = "finance_agent";
@@ -30,6 +31,9 @@ export class FinanceAgent extends BaseAgent {
       // Verificar provisões
       const provisionStatus = await this.checkProvisions(context, financialProjection);
 
+      const baseRecs = this.generateRecommendations(marginValidation, financialProjection);
+      const aiInsight = await this.getAiInsight(financialProjection, marginValidation, context.input);
+
       const result = {
         revenueForecast: financialProjection.revenue,
         estimatedMargin: financialProjection.margin,
@@ -39,7 +43,8 @@ export class FinanceAgent extends BaseAgent {
         financialProvisionStatus: provisionStatus.status,
         actionRequired: provisionStatus.actionRequired,
         alerts: marginValidation.alerts,
-        recommendations: this.generateRecommendations(marginValidation, financialProjection),
+        recommendations: baseRecs,
+        aiInsight,
         riskAssessment: {
           level: marginValidation.riskLevel,
           requiresApproval: marginValidation.requiresApproval
@@ -100,9 +105,9 @@ export class FinanceAgent extends BaseAgent {
 
     try {
       const event = await prisma.event.findFirst({
-        where: { 
+        where: {
           eventId,
-          companyId: context.companyId 
+          tenantId: context.companyId
         }
       });
 
@@ -226,22 +231,7 @@ export class FinanceAgent extends BaseAgent {
       actions.push("Reservar 10% da margem para contingências");
     }
 
-    // Usar SQL query tool para verificar status
-    try {
-      const toolResult = await this.executeTool(
-        context.agentRunId,
-        "sql.query",
-        {
-          query: `SELECT status FROM "accounts_payable" WHERE "companyId" = '${context.companyId}' AND amount > ${projection.costs.total * 0.5} LIMIT 1`
-        }
-      );
-
-      if (!toolResult.success) {
-        actions.push("Verificar status de contas a pagar pendentes");
-      }
-    } catch (error) {
-      // Silenciar erro de tool
-    }
+    // Note: accounts_payable integration is pending — skipped for now
 
     return {
       status: actions.length > 0 ? "created" : "not_required",
@@ -271,6 +261,28 @@ export class FinanceAgent extends BaseAgent {
     }
 
     return recommendations;
+  }
+
+  private async getAiInsight(
+    projection: { revenue: number; margin: number; marginPercentage: number; breakEven: number },
+    validation: { riskLevel: string; alerts: string[] },
+    input: Record<string, unknown>
+  ): Promise<string | null> {
+    if (!isClaudeAvailable()) return null;
+    try {
+      const result = await analyzeWithClaude({
+        systemPrompt: `Você é um CFO especializado em empresas de eventos de alto padrão no Brasil.
+Analise dados financeiros e forneça insights estratégicos concisos (máximo 2 parágrafos).
+Foco em: viabilidade do evento, alavancas de melhoria de margem, riscos financeiros.
+Responda em português, tom executivo e direto.`,
+        userContent: JSON.stringify({ projection, riskLevel: validation.riskLevel, alerts: validation.alerts, eventType: input.eventType }),
+        maxTokens: 400
+      });
+      return result.text;
+    } catch (err) {
+      logger.warn("FinanceAgent: Claude insight failed", { error: err });
+      return null;
+    }
   }
 
   // Validar match de valor do contrato

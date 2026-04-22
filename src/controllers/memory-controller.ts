@@ -21,7 +21,11 @@ export class MemoryController {
     reply: FastifyReply
   ) {
     try {
-      const result = await service.create(request.body);
+      const result = await service.log({
+        companyId: request.body.companyId,
+        type: (request.body.memoryType as "decision" | "error" | "pattern" | "insight" | "event"),
+        content: request.body.content,
+      });
       return reply.status(201).send({
         success: true,
         data: result

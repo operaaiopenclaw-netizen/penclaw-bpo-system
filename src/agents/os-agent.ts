@@ -1,6 +1,7 @@
 import { BaseAgent, AgentExecutionContext, AgentExecutionResult } from "./base-agent";
 import { prisma } from "../db";
 import { logger } from "../utils/logger";
+import { analyzeWithClaude, isClaudeAvailable } from "../services/claude-client";
 
 export class OsAgent extends BaseAgent {
   readonly name = "os_agent";
@@ -20,13 +21,17 @@ export class OsAgent extends BaseAgent {
       const existingOs = await this.checkExistingOs(eventId, context.companyId);
       const createdOs = contractId ? await this.autoCreateOs(contractId, context.companyId) : [];
 
+      const baseRecs = this.buildRecommendations(osBreakdown, existingOs);
+      const aiPlan = await this.getAiProductionPlan(context.input, osBreakdown);
+
       const result = {
         eventId,
         contractId,
         osBreakdown,
         existingOs: existingOs.map(os => ({ id: os.id, soNumber: os.soNumber, type: os.soType, status: os.status, total: os.total })),
         autoCreated: createdOs,
-        recommendations: this.buildRecommendations(osBreakdown, existingOs),
+        recommendations: baseRecs,
+        aiProductionPlan: aiPlan,
         checklist: this.buildProductionChecklist(context.input),
         alerts: this.buildAlerts(osBreakdown, existingOs)
       };
@@ -159,6 +164,24 @@ export class OsAgent extends BaseAgent {
       "Agendar ensaio de montagem",
       "Definir equipe de serviço"
     ];
+  }
+
+  private async getAiProductionPlan(input: Record<string, unknown>, breakdown: ReturnType<typeof this.generateOsBreakdown>): Promise<string | null> {
+    if (!isClaudeAvailable()) return null;
+    try {
+      const result = await analyzeWithClaude({
+        systemPrompt: `Você é um gerente de operações especializado em eventos gastronômicos de alto padrão no Brasil.
+Analise os dados do evento e forneça um plano de produção estratégico (máximo 2 parágrafos).
+Foco em: sequenciamento de OS, pontos críticos de produção, riscos operacionais.
+Responda em português, tom operacional e direto.`,
+        userContent: JSON.stringify({ eventType: input.eventType, guests: input.numGuests, eventDate: input.eventDate, breakdown }),
+        maxTokens: 400
+      });
+      return result.text;
+    } catch (err) {
+      logger.warn("OsAgent: Claude plan failed", { error: err });
+      return null;
+    }
   }
 
   private buildAlerts(breakdown: ReturnType<typeof this.generateOsBreakdown>, existingOs: Awaited<ReturnType<typeof this.checkExistingOs>>) {

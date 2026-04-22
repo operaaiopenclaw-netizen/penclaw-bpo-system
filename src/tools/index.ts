@@ -1,9 +1,8 @@
 // Tool exports
 export { ToolRegistry, toolRegistry } from "./registry";
-export { 
-  EventAnalyzerTool, CalculatorTool, RecipeCostTool, 
-  FileReadTool, FileWriteTool, SqlQueryTool, HttpRequestTool, StorageUploadTool,
-  toolRegistry
+export {
+  EventAnalyzerTool, CalculatorTool, RecipeCostTool,
+  FileReadTool, FileWriteTool, SqlQueryTool, HttpRequestTool, StorageUploadTool
 } from "./registry";
 export { fileReadTool } from "./file-read";
 export { fileWriteTool } from "./file-write";

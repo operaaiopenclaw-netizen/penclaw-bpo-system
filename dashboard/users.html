@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Orkestra · Usuários</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: -apple-system, system-ui, sans-serif;
+    background: #0a0f1c; color: #e6e9f2;
+  }
+  header {
+    padding: 14px 24px; border-bottom: 1px solid #1e2540;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  header h1 { margin: 0; font-size: 18px; }
+  header .me { font-size: 13px; color: #8b93b4; }
+  header button {
+    margin-left: 12px; padding: 6px 12px; border-radius: 6px;
+    background: #1e2540; border: 1px solid #2a3360; color: #e6e9f2; cursor: pointer;
+  }
+  main { padding: 24px; max-width: 1100px; margin: 0 auto; }
+  .panel {
+    background: #11172a; border: 1px solid #1e2540;
+    border-radius: 10px; padding: 18px; margin-bottom: 18px;
+  }
+  h2 { margin: 0 0 14px; font-size: 15px; letter-spacing: 0.5px; color: #a7b0d0; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { padding: 8px 10px; text-align: left; border-bottom: 1px solid #1e2540; }
+  th { color: #8b93b4; font-weight: 500; font-size: 11px; text-transform: uppercase; letter-spacing: 0.6px; }
+  .role { padding: 2px 8px; border-radius: 999px; font-size: 11px; text-transform: uppercase; }
+  .role.admin    { background: #3a1f5c; color: #c9a6ff; }
+  .role.manager  { background: #1f3a5c; color: #a6d1ff; }
+  .role.finance  { background: #1f5c3a; color: #a6ffc9; }
+  .role.operator { background: #5c4a1f; color: #ffdf9c; }
+  .role.kitchen  { background: #5c1f3a; color: #ff9cc9; }
+  .inactive { opacity: 0.45; }
+  form { display: grid; grid-template-columns: repeat(5, 1fr) auto; gap: 10px; }
+  input, select, button.submit {
+    padding: 8px 10px; border-radius: 6px; border: 1px solid #2a3360;
+    background: #0f1428; color: #e6e9f2; font-size: 13px;
+  }
+  button.submit { background: linear-gradient(90deg, #5b73ff, #8a5bff); border: none; cursor: pointer; font-weight: 600; }
+  .danger { color: #ff7676; background: none; border: none; cursor: pointer; font-size: 12px; }
+  .err { color: #ff7676; font-size: 12px; margin-top: 10px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>🎛️ Orkestra · Usuários</h1>
+  <div>
+    <span class="me" id="me"></span>
+    <button id="logout">Sair</button>
+  </div>
+</header>
+
+<main>
+  <div class="panel">
+    <h2>Criar usuário</h2>
+    <form id="createForm">
+      <input name="email" type="email" placeholder="email" required>
+      <input name="name" type="text" placeholder="nome" required>
+      <input name="password" type="password" placeholder="senha (≥8)" minlength="8" required>
+      <select name="role" required>
+        <option value="operator">operator</option>
+        <option value="manager">manager</option>
+        <option value="finance">finance</option>
+        <option value="kitchen">kitchen</option>
+        <option value="admin">admin</option>
+      </select>
+      <input name="tenantId" type="text" placeholder="tenantId (opcional)">
+      <button class="submit" type="submit">Criar</button>
+    </form>
+    <div class="err" id="createErr"></div>
+  </div>
+
+  <div class="panel">
+    <h2>Usuários do tenant</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Email</th><th>Nome</th><th>Role</th><th>Status</th>
+          <th>Último login</th><th></th>
+        </tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </div>
+</main>
+
+<script>
+const API = window.location.origin.replace(/:\d+$/, '') + ':3010';
+const token = localStorage.getItem('orkestra.token');
+const me = JSON.parse(localStorage.getItem('orkestra.user') || 'null');
+
+if (!token || !me || me.role !== 'admin') {
+  window.location.href = 'login.html';
+}
+
+document.getElementById('me').textContent = `${me.name} · ${me.role} · ${me.email}`;
+document.getElementById('logout').onclick = () => {
+  localStorage.removeItem('orkestra.token');
+  localStorage.removeItem('orkestra.user');
+  window.location.href = 'login.html';
+};
+
+async function api(path, opts = {}) {
+  const res = await fetch(`${API}${path}`, {
+    ...opts,
+    headers: {
+      'content-type': 'application/json',
+      authorization: `Bearer ${token}`,
+      ...(opts.headers || {}),
+    },
+  });
+  if (res.status === 401) {
+    localStorage.clear();
+    window.location.href = 'login.html';
+    throw new Error('expired');
+  }
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.error?.message || body.error || `HTTP ${res.status}`);
+  }
+  if (res.status === 204) return null;
+  return res.json();
+}
+
+function fmtDate(d) {
+  if (!d) return '—';
+  return new Date(d).toLocaleString('pt-BR');
+}
+
+async function refresh() {
+  const tbody = document.getElementById('rows');
+  tbody.innerHTML = '<tr><td colspan="6" style="color:#8b93b4">carregando…</td></tr>';
+  try {
+    const { users } = await api('/users/');
+    tbody.innerHTML = '';
+    for (const u of users) {
+      const tr = document.createElement('tr');
+      if (!u.isActive) tr.className = 'inactive';
+      tr.innerHTML = `
+        <td>${u.email}</td>
+        <td>${u.name}</td>
+        <td><span class="role ${u.role}">${u.role}</span></td>
+        <td>${u.isActive ? 'ativo' : 'inativo'}</td>
+        <td>${fmtDate(u.lastLoginAt)}</td>
+        <td>
+          <button class="danger" data-id="${u.id}" data-action="toggle">${u.isActive ? 'desativar' : 'ativar'}</button>
+          ${u.id !== me.id ? `<button class="danger" data-id="${u.id}" data-action="delete">excluir</button>` : ''}
+        </td>
+      `;
+      tbody.appendChild(tr);
+    }
+    tbody.querySelectorAll('button').forEach((btn) => {
+      btn.onclick = () => handleAction(btn.dataset.id, btn.dataset.action);
+    });
+  } catch (err) {
+    tbody.innerHTML = `<tr><td colspan="6" style="color:#ff7676">${err.message}</td></tr>`;
+  }
+}
+
+async function handleAction(id, action) {
+  if (action === 'delete') {
+    if (!confirm('Excluir definitivamente?')) return;
+    await api(`/users/${id}`, { method: 'DELETE' });
+  } else if (action === 'toggle') {
+    const row = [...document.querySelectorAll('#rows tr')].find((tr) =>
+      tr.innerHTML.includes(id),
+    );
+    const currentlyActive = row && !row.className.includes('inactive');
+    await api(`/users/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ isActive: !currentlyActive }),
+    });
+  }
+  refresh();
+}
+
+document.getElementById('createForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const payload = {
+    email: fd.get('email'),
+    name: fd.get('name'),
+    password: fd.get('password'),
+    role: fd.get('role'),
+  };
+  const tenantId = fd.get('tenantId');
+  if (tenantId) payload.tenantId = tenantId;
+  const errEl = document.getElementById('createErr');
+  errEl.textContent = '';
+  try {
+    await api('/users/', { method: 'POST', body: JSON.stringify(payload) });
+    e.target.reset();
+    refresh();
+  } catch (err) {
+    errEl.textContent = err.message;
+  }
+});
+
+refresh();
+</script>
+</body>
+</html>

@@ -17,8 +17,8 @@ export class ToolExecutor {
 
   constructor(registry?: ToolRegistry) {
     // Use provided registry or global
-    this.registry = registry || globalThis.__toolRegistry;
-    
+    this.registry = registry ?? globalThis.__toolRegistry!;
+
     if (!this.registry) {
       throw new Error("Tool registry not initialized. Call initializeGlobalRegistry() first.");
     }

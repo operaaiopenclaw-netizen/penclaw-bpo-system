@@ -12,10 +12,14 @@ import {
 import { config } from "../config/env";
 import { logger } from "../utils/logger";
 import { prisma } from "../db";
+import { devAuth, requirePermission } from "../middleware/auth";
 
 const DEFAULT_TENANT = config.DEFAULT_TENANT_ID;
 
 export async function intelligenceRoutes(fastify: FastifyInstance): Promise<void> {
+  // Gate all /intelligence/* routes — manager/finance/admin.
+  fastify.addHook("preHandler", devAuth);
+  fastify.addHook("preHandler", requirePermission("intelligence.read"));
 
   // POST /intelligence/cycle
   // Trigger a full decision cycle: stock eval + event forecast + supplier audit

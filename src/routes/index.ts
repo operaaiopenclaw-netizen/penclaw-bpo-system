@@ -12,3 +12,6 @@ export { crmRoutes } from "./crm";
 export { serviceOrdersRoutes } from "./service-orders";
 export { productionOrdersRoutes } from "./production-orders";
 export { executionRoutes } from "./execution";
+export { operationsRoutes } from "./operations";
+export { authRoutes } from "./auth";
+export { usersRoutes } from "./users";

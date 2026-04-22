@@ -115,7 +115,6 @@ export class StorageUploadTool implements ToolImplementation {
         data: {
           fileName,
           storageUrl: `file://${fullPath}`,
-          relativePath: stats.relativePath,
           ...stats
         },
         latencyMs: Date.now() - startTime

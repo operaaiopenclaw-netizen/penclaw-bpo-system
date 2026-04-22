@@ -101,7 +101,7 @@ export class AgentRunController {
 
       // Create new run with same params
       const result = await agentRunService.create({
-        companyId: original.companyId || undefined,
+        companyId: original.companyId || "default",
         workflowType: original.workflowType,
         input: originalInput
       });

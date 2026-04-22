@@ -1,45 +1,54 @@
-# ===============================================
-# Orkestra Finance Brain - Node.js API
-# ===============================================
+# =============================================================
+# Orkestra API — production image (Node 20, Alpine)
+# Build: docker build -t orkestra/api:latest .
+# Run:   docker run -p 3010:3010 --env-file .env orkestra/api:latest
+# =============================================================
 
-FROM node:20-alpine AS base
-
-# Install dependencies
-FROM base AS deps
-RUN apk add --no-cache libc6-compat
+# ---- deps (all deps, used by build stage) ----
+FROM node:20-alpine AS deps
+RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci
+COPY schema.prisma ./schema.prisma
+RUN npm ci --include=dev
 
-# Build stage
-FROM base AS builder
+# ---- build (compile TS + generate Prisma client) ----
+FROM node:20-alpine AS builder
+RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN npx prisma generate
+RUN npx prisma generate --schema=./schema.prisma
 RUN npm run build
 
-# Production stage
-FROM base AS runner
+# ---- runner (production) ----
+FROM node:20-alpine AS runner
+RUN apk add --no-cache libc6-compat openssl curl
 WORKDIR /app
 
 ENV NODE_ENV=production
+ENV PORT=3010
 
-# Create non-root user
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 apiuser
+# Non-root runtime user
+RUN addgroup --system --gid 1001 nodejs \
+  && adduser --system --uid 1001 apiuser
 
-# Copy built application
+# Production-only node_modules (smaller image)
+COPY package*.json ./
+RUN npm ci --omit=dev && npm cache clean --force
+
+# Copy build artifacts + Prisma assets the runtime needs
 COPY --from=builder --chown=apiuser:nodejs /app/dist ./dist
-COPY --from=builder --chown=apiuser:nodejs /app/node_modules ./node_modules
-COPY --from=builder --chown=apiuser:nodejs /app/package.json ./
-COPY --from=builder --chown=apiuser:nodejs /app/prisma ./prisma
+COPY --from=builder --chown=apiuser:nodejs /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder --chown=apiuser:nodejs /app/node_modules/@prisma ./node_modules/@prisma
+COPY --from=builder --chown=apiuser:nodejs /app/schema.prisma ./schema.prisma
+COPY --from=builder --chown=apiuser:nodejs /app/dashboard ./dashboard
+COPY --from=builder --chown=apiuser:nodejs /app/docs ./docs
 
 USER apiuser
+EXPOSE 3010
 
-EXPOSE 3333
-
-ENV PORT=3333
-ENV HOSTNAME="0.0.0.0"
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+  CMD curl -fsS http://localhost:${PORT}/ready || exit 1
 
 CMD ["node", "dist/server.js"]

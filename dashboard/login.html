@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Orkestra · Login</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: -apple-system, system-ui, sans-serif;
+    background: radial-gradient(1200px 800px at 30% 20%, #1a2340, #0a0f1c 60%);
+    color: #e6e9f2; min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .card {
+    background: rgba(22,28,48,0.85); border: 1px solid #2a3360;
+    padding: 32px 28px; border-radius: 14px;
+    width: 360px; box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    backdrop-filter: blur(8px);
+  }
+  h1 { margin: 0 0 4px; font-size: 22px; letter-spacing: 0.5px; }
+  .sub { color: #8b93b4; font-size: 13px; margin-bottom: 24px; }
+  label { display: block; font-size: 12px; color: #a7b0d0; margin: 14px 0 6px; }
+  input {
+    width: 100%; padding: 10px 12px; border-radius: 8px;
+    border: 1px solid #2a3360; background: #0f1428;
+    color: #e6e9f2; font-size: 14px; outline: none;
+  }
+  input:focus { border-color: #5b73ff; }
+  button {
+    width: 100%; margin-top: 20px; padding: 11px;
+    border: none; border-radius: 8px; cursor: pointer;
+    background: linear-gradient(90deg, #5b73ff, #8a5bff);
+    color: white; font-weight: 600; font-size: 14px;
+  }
+  button:disabled { opacity: 0.6; cursor: wait; }
+  .err { color: #ff7676; font-size: 12px; margin-top: 10px; min-height: 16px; }
+  .hint { font-size: 11px; color: #6b7299; margin-top: 20px; text-align: center; }
+</style>
+</head>
+<body>
+  <form class="card" id="form">
+    <h1>🎛️ Orkestra</h1>
+    <div class="sub">Login operacional</div>
+    <label>Email</label>
+    <input id="email" type="email" autocomplete="username" required>
+    <label>Senha</label>
+    <input id="password" type="password" autocomplete="current-password" required>
+    <button id="btn" type="submit">Entrar</button>
+    <div class="err" id="err"></div>
+    <div class="hint">Usuários seed: admin / manager / finance / operator / kitchen @orkestra.local</div>
+  </form>
+
+<script>
+const form = document.getElementById('form');
+const btn = document.getElementById('btn');
+const errEl = document.getElementById('err');
+
+const API = window.location.origin.replace(/:\d+$/, '') + ':3010';
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  errEl.textContent = '';
+  btn.disabled = true; btn.textContent = 'Entrando…';
+  try {
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const res = await fetch(`${API}/auth/login`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error(body.error?.message || body.error || 'Falha no login');
+    }
+    const { user, token } = await res.json();
+    localStorage.setItem('orkestra.token', token);
+    localStorage.setItem('orkestra.user', JSON.stringify(user));
+    window.location.href = user.role === 'admin' ? 'users.html' : 'operations.html';
+  } catch (err) {
+    errEl.textContent = err.message || String(err);
+    btn.disabled = false; btn.textContent = 'Entrar';
+  }
+});
+</script>
+</body>
+</html>

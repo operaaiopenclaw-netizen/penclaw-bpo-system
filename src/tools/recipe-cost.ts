@@ -34,23 +34,24 @@ export class RecipeCostTool implements ToolImplementation {
       }
 
       // Get ingredient costs
-      const recipeData = JSON.parse(JSON.stringify(recipe.data || {})) as { ingredients: Array<{ itemId: string; quantity: number }> };
-      
+      const rawIngredients = recipe.ingredients as { ingredients?: Array<{ itemId: string; quantity: number }> } | null;
+      const ingredientList = rawIngredients?.ingredients ?? [];
+
       const ingredientCosts = [];
       let totalCost = 0;
 
-      for (const ing of recipeData.ingredients || []) {
+      for (const ing of ingredientList) {
         const item = await prisma.inventoryItem.findUnique({
           where: { id: ing.itemId }
         });
-        
-        if (item && item.weightedAverageCost) {
-          const cost = item.weightedAverageCost * ing.quantity;
+
+        if (item && item.unitPrice) {
+          const cost = item.unitPrice * ing.quantity;
           totalCost += cost;
           ingredientCosts.push({
             name: item.name,
             quantity: ing.quantity,
-            unitCost: item.weightedAverageCost,
+            unitCost: item.unitPrice,
             totalCost: cost
           });
         }

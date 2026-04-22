@@ -15,24 +15,34 @@ const pinoConfig = config.isDev
     }
   : {};
 
-export const logger = pino(pinoConfig);
+const _pinoLogger = pino(pinoConfig);
 
-// Structured JSON logger for compatibility
-export const jsonLogger = {
-  info(message: string, meta?: unknown) {
-    logger.info({ message, meta });
-  },
-  error(message: string, meta?: unknown) {
-    logger.error({ message, meta });
-  },
-  warn(message: string, meta?: unknown) {
-    logger.warn({ message, meta });
-  },
-  debug(message: string, meta?: unknown) {
-    if (config.isDev) {
-      console.log(JSON.stringify({ level: "debug", message, meta, at: new Date().toISOString() }));
+// Flexible structured logger — accepts both call conventions:
+//   logger.info("msg", { meta })   — common app style
+//   logger.info({ meta }, "msg")   — pino native style
+function makeLogFn(level: "info" | "error" | "warn" | "debug") {
+  return function logFn(msgOrObj: string | Record<string, unknown>, metaOrMsg?: unknown): void {
+    if (level === "debug" && !config.isDev) return;
+    if (typeof msgOrObj === "string") {
+      // logger.info("msg", { meta })
+      _pinoLogger[level]({ meta: metaOrMsg }, msgOrObj);
+    } else {
+      // logger.info({ meta }, "msg")
+      const msg = typeof metaOrMsg === "string" ? metaOrMsg : "";
+      _pinoLogger[level](msgOrObj, msg);
     }
-  }
+  };
+}
+
+// Unified logger — drop-in compatible with all call sites
+export const logger = {
+  info: makeLogFn("info"),
+  error: makeLogFn("error"),
+  warn: makeLogFn("warn"),
+  debug: makeLogFn("debug"),
 };
+
+// Alias for legacy imports
+export const jsonLogger = logger;
 
 export default logger;

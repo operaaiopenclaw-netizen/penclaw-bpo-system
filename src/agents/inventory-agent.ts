@@ -1,287 +1,161 @@
-import { BaseAgent, AgentExecutionContext, AgentExecutionResult } from "./base-agent";
+// ============================================================
+// INVENTORY AGENT — Stock position, reservations, shortage detection
+// Boundary: reads stock state, detects gaps, creates reservations.
+// Does NOT select suppliers. Does NOT recommend purchases.
+// Those are procurement_agent's responsibilities.
+// ============================================================
+import { BaseAgent, AgentExecutionContext, AgentExecutionResult, AgentAction } from "./base-agent";
 import { prisma } from "../db";
 import { logger } from "../utils/logger";
+import { forecastEngine } from "../intelligence/forecast-engine";
+import { gapEngine } from "../intelligence/gap-engine";
+
+const SAFETY_FACTOR = 1.20;
 
 export class InventoryAgent extends BaseAgent {
   readonly name = "inventory_agent";
-  readonly description = "Gestão de estoque e sugestões de compra para eventos";
+  readonly description = "Posição de estoque, reservas e detecção de falta. Não faz procurement.";
   readonly defaultRiskLevel = "R2" as const;
 
   async execute(context: AgentExecutionContext): Promise<AgentExecutionResult> {
-    const startTime = Date.now();
-    
-    logger.info("InventoryAgent executing", { 
-      runId: context.agentRunId,
-      companyId: context.companyId 
-    });
-
+    const start = Date.now();
+    logger.info("InventoryAgent executing", { runId: context.agentRunId });
     await this.logStep(context.agentRunId, "running", { input: context.input });
 
     try {
-      const eventType = String(context.input.eventType || context.input.tipoEvento || "");
-      const numGuests = parseInt(String(context.input.numGuests || context.input.convidados || 0), 10);
+      const eventType  = String(context.input.eventType  ?? context.input.tipoEvento  ?? "corporativo");
+      const numGuests  = Math.max(1, parseInt(String(context.input.numGuests ?? context.input.convidados ?? 100)));
+      const durationHours = parseFloat(String(context.input.durationHours ?? context.input.duracao ?? 6)) || 6;
+      const eventId    = context.input.eventId  ? String(context.input.eventId)  : undefined;
+      const eventDate  = context.input.eventDate ? new Date(String(context.input.eventDate)) : undefined;
 
-      // Analisar necessidades baseadas no tipo de evento
-      const needs = this.analyzeNeeds(eventType, numGuests);
+      // 1. Demand forecast
+      const forecast = await forecastEngine.forecastEvent(
+        context.companyId, eventType, numGuests, durationHours, eventId
+      );
 
-      // Verificar estoque atual
-      const stockStatus = await this.checkStock(context, needs);
+      // 2. Gap analysis — accounts for committed reservations from other events
+      const gapResult = await gapEngine.analyse(
+        context.companyId, forecast.forecasts, eventType, numGuests, eventId, eventDate
+      );
 
-      // Gerar sugestões de compra
-      const purchaseSuggestions = this.generatePurchaseSuggestions(stockStatus);
+      // 3. Build _actions
+      const actions: AgentAction[] = [];
 
-      // Avaliar risco
-      const stockRisk = this.assessRisk(stockStatus, purchaseSuggestions);
+      // Reserve stock for this event (one action per item with available free stock)
+      const reservable = gapResult.items.filter(i => i.free > 0 && eventId);
+      for (const item of reservable) {
+        const qtyToReserve = Math.min(item.free, item.needed);
+        actions.push({
+          type: "CREATE_STOCK_RESERVATION",
+          payload: {
+            tenantId: context.companyId,
+            eventId: eventId!,
+            itemCode: item.itemCode,
+            itemName: item.itemName,
+            quantityReserved: qtyToReserve,
+            unit: item.unit,
+            requiredBy: eventDate?.toISOString()
+          }
+        });
+      }
 
-      // Calcular previsões
-      const forecasts = this.calculateForecasts(stockStatus, purchaseSuggestions);
+      // Alert on critical gaps
+      const critical = gapResult.items.filter(i => i.severity === "CRITICAL");
+      for (const item of critical) {
+        actions.push({
+          type: "ALERT_RISK",
+          payload: {
+            code: "CRITICAL_STOCK_SHORTAGE",
+            message: `Estoque crítico: ${item.itemName} — necessário ${item.needed}${item.unit}, livre ${item.free}${item.unit} (${Math.round(item.coverageRatio * 100)}% coberto)`,
+            severity: "critical",
+            itemCode: item.itemCode,
+            gap: item.gap,
+            estimatedCost: item.estimatedGapCost
+          }
+        });
+      }
 
-      const result = {
-        purchaseSuggestions,
-        stockRisk: stockRisk.level,
-        basis: eventType || "unknown",
-        needs,
-        currentStock: stockStatus.current,
-        shortages: stockRisk.shortages,
-        critical: stockRisk.critical,
-        alerts: stockRisk.alerts,
-        forecasts,
-        nextSteps: [
-          "Verificar fornecedores aprovados",
-          "Comparar preços de cotação",
-          "Confirmar prazos de entrega",
-          "Reservar itens críticos"
-        ],
-        suppliers: await this.getSuppliersForItems(purchaseSuggestions.map(p => p.itemId))
+      // Alert on high gaps
+      const high = gapResult.items.filter(i => i.severity === "HIGH");
+      if (high.length > 0) {
+        actions.push({
+          type: "ALERT_RISK",
+          payload: {
+            code: "HIGH_STOCK_SHORTAGE",
+            message: `${high.length} item(ns) com cobertura < 30%: ${high.map(i => i.itemName).join(", ")}`,
+            severity: "warning",
+            affectedItems: high.map(i => i.itemCode)
+          }
+        });
+      }
+
+      const riskLevel = gapResult.overallRisk === "CRITICAL" ? "R3"
+                      : gapResult.overallRisk === "HIGH"     ? "R2"
+                      : "R1";
+
+      const output = {
+        _actions: actions,
+        _summary: `${gapResult.summary.shortages} item(ns) em falta de ${gapResult.summary.totalItems} analisados. Risco: ${gapResult.overallRisk}. Custo estimado de procurement: R$${gapResult.summary.estimatedTotalProcurementCost.toLocaleString("pt-BR")}.`,
+
+        stockPosition: {
+          eventType,
+          guestCount: numGuests,
+          forecastConfidence: forecast.overallConfidence,
+          totalItems: gapResult.summary.totalItems,
+          sufficient: gapResult.summary.sufficient,
+          shortages: gapResult.summary.shortages,
+          critical: gapResult.summary.critical,
+          overallRisk: gapResult.overallRisk,
+          estimatedProcurementCost: gapResult.summary.estimatedTotalProcurementCost,
+        },
+
+        gaps: gapResult.items
+          .filter(i => i.severity !== "OK")
+          .map(i => ({
+            itemCode: i.itemCode,
+            itemName: i.itemName,
+            needed: i.needed,
+            available: i.available,
+            committed: i.committed,
+            free: i.free,
+            gap: i.gap,
+            severity: i.severity,
+            estimatedCost: i.estimatedGapCost,
+          })),
+
+        sufficient: gapResult.items
+          .filter(i => i.severity === "OK")
+          .map(i => ({ itemCode: i.itemCode, itemName: i.itemName, free: i.free, unit: i.unit })),
+
+        reservationsCreated: reservable.length,
       };
 
-      await this.logStep(context.agentRunId, "completed", { output: result });
-
-      logger.info("InventoryAgent completed", { 
+      await this.logStep(context.agentRunId, "completed", { output });
+      logger.info("InventoryAgent completed", {
         runId: context.agentRunId,
-        risk: stockRisk.level,
-        suggestions: purchaseSuggestions.length
+        risk: gapResult.overallRisk,
+        gaps: gapResult.summary.shortages,
+        actions: actions.length
       });
 
-      return {
-        success: true,
-        output: result,
-        riskLevel: stockRisk.level === "high" ? "R3" : this.defaultRiskLevel,
-        latencyMs: Date.now() - startTime
-      };
+      return { success: true, output, riskLevel, latencyMs: Date.now() - start };
 
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Unknown error";
-      
-      await this.logStep(context.agentRunId, "failed", { error: errorMessage });
-      logger.error("InventoryAgent failed", { error: errorMessage });
-
+      const msg = error instanceof Error ? error.message : String(error);
+      await this.logStep(context.agentRunId, "failed", { error: msg });
+      logger.error("InventoryAgent failed", { error: msg });
       return {
         success: false,
-        output: { error: errorMessage, stockRisk: "unknown" },
+        output: { _actions: [], _summary: `Falha: ${msg}`, error: msg },
         riskLevel: "R3",
-        latencyMs: Date.now() - startTime
+        latencyMs: Date.now() - start
       };
     }
-  }
-
-  // Analisar necessidades por tipo de evento
-  private analyzeNeeds(eventType: string, numGuests: number): Array<{
-    category: string;
-    items: Array<{ name: string; unitPerGuest: number; total: number }>;
-  }> {
-    const perGuest = numGuests || 100;
-
-    const needsMap: Record<string, Array<{ name: string; unitPerGuest: number; total: number }>> = {
-      "casamento": [
-        { name: "Guardanapos de linho", unitPerGuest: 1.2, total: Math.ceil(perGuest * 1.2) },
-        { name: "Taças de champanhe", unitPerGuest: 1.5, total: Math.ceil(perGuest * 1.5) },
-        { name: "Pratos sobremesa", unitPerGuest: 1.0, total: perGuest },
-        { name: "Velas decorativas", unitPerGuest: 0.3, total: Math.ceil(perGuest * 0.3) }
-      ],
-      "corporativo": [
-        { name: "Copos de café", unitPerGuest: 2.5, total: Math.ceil(perGuest * 2.5) },
-        { name: "Pratos executivos", unitPerGuest: 1.0, total: perGuest },
-        { name: "Garrafas de água", unitPerGuest: 1.0, total: perGuest },
-        { name: "Canudos eco", unitPerGuest: 2.0, total: perGuest * 2 }
-      ],
-      "aniversario": [
-        { name: "Pratos de bolo", unitPerGuest: 1.0, total: perGuest },
-        { name: "Copos descartáveis", unitPerGuest: 1.5, total: Math.ceil(perGuest * 1.5) },
-        { name: "Balões", unitPerGuest: 0.2, total: Math.ceil(perGuest * 0.2) }
-      ],
-      "default": [
-        { name: "Copos", unitPerGuest: 1.5, total: Math.ceil(perGuest * 1.5) },
-        { name: "Pratos", unitPerGuest: 1.0, total: perGuest },
-        { name: "Talheres", unitPerGuest: 2.0, total: perGuest * 2 }
-      ]
-    };
-
-    const needs = needsMap[eventType.toLowerCase()] || needsMap["default"];
-    
-    return [{
-      category: eventType || "geral",
-      items: needs
-    }];
-  }
-
-  // Verificar estoque atual
-  private async checkStock(
-    context: AgentExecutionContext,
-    needs: ReturnType<typeof this.analyzeNeeds>
-  ): Promise<{
-    current: Array<{ itemId: string; name: string; quantity: number; status: string }>;
-    missing: Array<{ itemId: string; name: string; needed: number; available: number; gap: number }>;
-  }> {
-    const current: Array<{ itemId: string; name: string; quantity: number; status: string }> = [];
-    const missing: Array<{ itemId: string; name: string; needed: number; available: number; gap: number }> = [];
-
-    try {
-      // Buscar itens no banco de dados
-      const items = await prisma.inventoryItem.findMany({
-        where: { companyId: context.companyId }
-      });
-
-      for (const need of needs) {
-        for (const item of need.items) {
-          const dbItem = items.find(i => 
-            i.name.toLowerCase().includes(item.name.toLowerCase())
-          );
-
-          if (dbItem) {
-            current.push({
-              itemId: dbItem.id,
-              name: dbItem.name,
-              quantity: dbItem.currentStock || 0,
-              status: this.getStockStatus(dbItem.currentStock || 0, item.total)
-            });
-
-            const gap = item.total - (dbItem.currentStock || 0);
-            if (gap > 0) {
-              missing.push({
-                itemId: dbItem.id,
-                name: dbItem.name,
-                needed: item.total,
-                available: dbItem.currentStock || 0,
-                gap
-              });
-            }
-          } else {
-            missing.push({
-              itemId: "unknown",
-              name: item.name,
-              needed: item.total,
-              available: 0,
-              gap: item.total
-            });
-          }
-        }
-      }
-    } catch (error) {
-      logger.warn("Failed to check stock via DB, using placeholder", { error });
-    }
-
-    return { current, missing };
-  }
-
-  private getStockStatus(available: number, needed: number): string {
-    const ratio = needed > 0 ? available / needed : 0;
-    if (ratio >= 1) return "sufficient";
-    if (ratio >= 0.5) return "low";
-    if (ratio >= 0.2) return "critical";
-    return "insufficient";
-  }
-
-  // Gerar sugestões de compra
-  private generatePurchaseSuggestions(
-    stockStatus: ReturnType<typeof this.checkStock>
-  ): Array<{
-    itemId: string;
-    name: string;
-    quantity: number;
-    urgency: "low" | "medium" | "high";
-    estimatedCost: number;
-    suppliers: string[];
-  }> {
-    return stockStatus.missing.map(miss => ({
-      itemId: miss.itemId,
-      name: miss.name,
-      quantity: Math.ceil(miss.gap * 1.1), // 10% buffer
-      urgency: miss.gap > 50 ? "high" : miss.gap > 20 ? "medium" : "low",
-      estimatedCost: miss.gap * (Math.random() * 10 + 5), // Simulação
-      suppliers: [] // Preenchido depois
-    }));
-  }
-
-  // Avaliar risco
-  private assessRisk(
-    stockStatus: ReturnType<typeof this.checkStock>,
-    suggestions: ReturnType<typeof this.generatePurchaseSuggestions>
-  ): {
-    level: "low" | "medium" | "high";
-    shortages: number;
-    critical: number;
-    alerts: string[];
-  } {
-    const alerts: string[] = [];
-    const criticalItems = stockStatus.missing.filter(m => m.gap > 50);
-    
-    if (criticalItems.length > 0) {
-      alerts.push(`🚨 ${criticalItems.length} itens críticos faltando > 50 unidades`);
-    }
-
-    const highUrgencyItems = suggestions.filter(s => s.urgency === "high");
-    if (highUrgencyItems.length > 3) {
-      alerts.push("⚠️ Múltiplos itens alta urgência - requer compra imediata");
-    }
-
-    return {
-      level: criticalItems.length > 0 ? "high" : highUrgencyItems.length > 0 ? "medium" : "low",
-      shortages: stockStatus.missing.length,
-      critical: criticalItems.length,
-      alerts
-    };
-  }
-
-  // Calcular previsões
-  private calculateForecasts(
-    stockStatus: ReturnType<typeof this.checkStock>,
-    suggestions: ReturnType<typeof this.generatePurchaseSuggestions>
-  ): {
-    totalInvestment: number;
-    deliveryTime: number;
-    bufferDays: number;
-  } {
-    const totalInvestment = suggestions.reduce((sum, s) => sum + s.estimatedCost, 0);
-    const maxUrgency = suggestions.some(s => s.urgency === "high") ? 2 : 
-                       suggestions.some(s => s.urgency === "medium") ? 5 : 10;
-
-    return {
-      totalInvestment,
-      deliveryTime: maxUrgency,
-      bufferDays: Math.max(3, maxUrgency + 2)
-    };
-  }
-
-  // Buscar fornecedores
-  private async getSuppliersForItems(itemIds: string[]): Promise<Array<{
-    id: string;
-    name: string;
-    rating: number;
-    leadTime: number;
-  }>> {
-    // Simulação - na realidade buscaria do banco
-    return [
-      { id: "sup-001", name: "Distribuidora São Paulo", rating: 4.5, leadTime: 2 },
-      { id: "sup-002", name: "Fornecedor Local", rating: 4.0, leadTime: 1 },
-      { id: "sup-003", name: "Importadora Rio", rating: 4.7, leadTime: 5 }
-    ].filter(() => true); // Placeholder
   }
 }
 
-// Singleton
 export const inventoryAgent = new InventoryAgent();
 
-// Auto-registration
 import { agentRegistry } from "./base-agent";
 agentRegistry.register(inventoryAgent);

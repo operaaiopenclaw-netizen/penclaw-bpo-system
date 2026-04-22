@@ -1,7 +1,10 @@
 import { prisma } from "./db";
+import { Prisma } from "@prisma/client";
 import { logger } from "./utils/logger";
 import { AppError } from "./utils/app-error";
 import { WorkflowType } from "./types/core";
+import { normalizeOutput } from "./agents/base-agent";
+import { actionDispatcher } from "./services/action-dispatcher";
 
 // Imports
 import { workflowRouter } from "./agents/workflow-router";
@@ -10,6 +13,7 @@ import { Validator } from "./validator";
 import { PolicyEngine } from "./core/policy-engine";
 import { memoryManager } from "./memory-manager";
 import { memoryService } from "./services/memory-service";
+import { alertEngine } from "./core/alert-engine";
 
 // Agents
 import {
@@ -18,7 +22,14 @@ import {
   financeAgent,
   inventoryAgent,
   eventOpsAgent,
-  reportingAgent
+  reportingAgent,
+  salesAgent,
+  operationsAgent,
+  supplyAgent,
+  crmAgent,
+  osAgent,
+  productionAgent,
+  procurementAgent
 } from "./agents";
 
 export class Orchestrator {
@@ -32,7 +43,14 @@ export class Orchestrator {
     finance_agent: financeAgent,
     inventory_agent: inventoryAgent,
     event_ops_agent: eventOpsAgent,
-    reporting_agent: reportingAgent
+    reporting_agent: reportingAgent,
+    sales_agent: salesAgent,
+    operations_agent: operationsAgent,
+    supply_agent: supplyAgent,
+    crm_agent: crmAgent,
+    os_agent: osAgent,
+    production_agent: productionAgent,
+    procurement_agent: procurementAgent
   };
 
   /**
@@ -55,7 +73,7 @@ export class Orchestrator {
       throw new AppError("Run not found", 404);
     }
 
-    if (run.status !== "waiting_approval") {
+    if (run.status !== "waiting_approval" && run.status !== "running") {
       throw new AppError(`Cannot resume run in status ${run.status}`, 400);
     }
 
@@ -110,6 +128,16 @@ export class Orchestrator {
       resumeFrom 
     });
 
+    // Run alert engine on input data
+    try {
+      const alerts = await alertEngine.evaluate(agentRunId, companyId, input);
+      if (alerts.length > 0) {
+        logger.warn("Alerts detected", { runId: agentRunId, count: alerts.length });
+      }
+    } catch (e) {
+      logger.error("Alert engine error", { error: e });
+    }
+
     try {
       // Get agent sequence from router
       const sequence = workflowRouter.route(workflowType);
@@ -124,16 +152,18 @@ export class Orchestrator {
         data: { status: "planned" }
       });
 
-      let lastOutput: Record<string, unknown> = {};
+      let accumulatedOutput: Record<string, unknown> = { ...lastOutput };
 
       // Execute each step
       for (const item of plan) {
+        // Skip steps already completed before this resume point
+        if (item.stepOrder < resumeFrom) continue;
         const result = await this.executeStep({
           item,
           agentRunId,
           companyId,
           input,
-          lastOutput,
+          lastOutput: accumulatedOutput,
           workflowType
         });
 
@@ -145,7 +175,7 @@ export class Orchestrator {
           return { status: "failed", error: result.error };
         }
 
-        lastOutput = { ...lastOutput, ...result.output };
+        accumulatedOutput = { ...accumulatedOutput, ...result.output };
       }
 
       // Update final status
@@ -153,7 +183,7 @@ export class Orchestrator {
         where: { id: agentRunId },
         data: {
           status: "completed",
-          outputSummary: JSON.stringify(lastOutput).slice(0, 200),
+          outputSummary: JSON.stringify(accumulatedOutput).slice(0, 200),
           finishedAt: new Date()
         }
       });
@@ -162,7 +192,7 @@ export class Orchestrator {
 
       return {
         status: "completed",
-        output: lastOutput
+        output: accumulatedOutput
       };
 
     } catch (error) {
@@ -215,18 +245,24 @@ export class Orchestrator {
         stepOrder: item.stepOrder,
         agentName: item.agentName,
         actionType: item.actionType,
-        inputPayload: { ...input, ...lastOutput },
+        inputPayload: ({ ...input, ...lastOutput }) as Prisma.InputJsonValue,
         status: "running",
         startedAt: new Date()
       }
     });
 
     // Execute agent
-    const result = await agent.execute({
+    const rawResult = await agent.execute({
       companyId,
       agentRunId,
       input: { ...input, ...lastOutput }
     });
+
+    // Enforce _actions[] contract — normalize regardless of agent implementation
+    const result = {
+      ...rawResult,
+      output: normalizeOutput(rawResult.output as Record<string, unknown>)
+    };
 
     // Validate output
     const valid = this.validator.validateStepOutput(result.output);
@@ -277,7 +313,7 @@ export class Orchestrator {
           where: { id: step.id },
           data: {
             status: "waiting_approval",
-            outputPayload: result.output,
+            outputPayload: result.output as Prisma.InputJsonValue,
             finishedAt: new Date()
           }
         });
@@ -296,37 +332,49 @@ export class Orchestrator {
       where: { id: step.id },
       data: {
         status: "completed",
-        outputPayload: result.output,
+        outputPayload: result.output as Prisma.InputJsonValue,
         finishedAt: new Date()
       }
     });
 
-    // Create artifact for step outputs (checklists, reports, etc)
-    const artifactTypes = ["checklist", "report", "json", "csv"];
-    const shouldCreateArtifact = result.output && (
-      result.output.checklist ||
-      result.output.report ||
-      result.output.json ||
-      result.output.csv ||
-      result.output.items ||
-      result.output.data
-    );
+    // Dispatch all _actions[] — ActionDispatcher is the ONLY DB mutation path for side effects
+    if (result.output._actions.length > 0) {
+      await actionDispatcher.dispatch(agentRunId, companyId, result.output._actions as Parameters<typeof actionDispatcher.dispatch>[2]).catch(err => {
+        logger.error("ActionDispatcher error (non-fatal)", { agentRunId, agentName: item.agentName, error: err });
+      });
+    }
 
-    if (shouldCreateArtifact) {
-      const artifactType = result.output.checklist ? "checklist" :
-                          result.output.report ? "report" :
-                          result.output.csv ? "csv" : "json";
-      
+    // Create artifact for step outputs (checklists, reports, proposals, etc)
+    let artifactType: string | null = null;
+    
+    if (result.output._gerarArtifact && result.output._tipoArtifact) {
+      // Sales agent specific marker
+      artifactType = result.output._tipoArtifact as string;
+    } else if (result.output.checklist) {
+      artifactType = "checklist";
+    } else if (result.output.report) {
+      artifactType = "report";
+    } else if (result.output.csv) {
+      artifactType = "csv";
+    } else if (result.output.items || result.output.data) {
+      artifactType = "json";
+    }
+
+    if (artifactType) {
       await prisma.artifact.create({
         data: {
           agentRunId,
           artifactType,
-          fileName: `${item.agentName}_step${item.stepOrder}_${artifactType}.json`,
+          fileName: `${item.agentName}_step${item.stepOrder}_${artifactType}.${artifactType === "proposal" ? "txt" : "json"}`,
+          storageUrl: artifactType === "proposal" && result.output.propostaFormatada
+            ? `data:text/plain;base64,${Buffer.from(String(result.output.propostaFormatada)).toString("base64")}`
+            : undefined,
           metadata: {
             agentName: item.agentName,
             stepOrder: item.stepOrder,
             workflowType,
-            contentType: artifactType
+            contentType: artifactType,
+            hasFollowUp: !!(result.output.followUp as Record<string, unknown> | undefined)?.necessario
           },
           createdAt: new Date()
         }

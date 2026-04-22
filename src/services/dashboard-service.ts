@@ -30,7 +30,7 @@ export class DashboardService {
     logger.info("DashboardService: commercial metrics", { companyId });
 
     const events = await prisma.event.findMany({
-      where: { companyId },
+      where: { tenantId: companyId },
       orderBy: { createdAt: "desc" },
       take: 50
     });
@@ -54,7 +54,7 @@ export class DashboardService {
     logger.info("DashboardService: finance metrics", { companyId });
 
     const events = await prisma.event.findMany({
-      where: { companyId, status: "completed" },
+      where: { tenantId: companyId, status: "completed" },
       take: 100
     });
 
@@ -76,7 +76,7 @@ export class DashboardService {
     logger.info("DashboardService: operations metrics", { companyId });
 
     const runs = await prisma.agentRun.findMany({
-      where: { companyId, Status: "running" as any },
+      where: { companyId, status: "running" },
       take: 20
     });
 

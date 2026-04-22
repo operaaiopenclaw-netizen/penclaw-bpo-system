@@ -28,6 +28,18 @@ const envSchema = z.object({
   
   // CORS
   CORS_ORIGIN: z.string().optional(),
+
+  // Default tenant (resolved once at startup — overridable via env)
+  DEFAULT_TENANT_ID: z.string().default("a1b2c3d4-e5f6-7890-abcd-ef1234567890"),
+
+  // Anthropic
+  ANTHROPIC_API_KEY: z.string().optional(),
+
+  // Webhook HMAC — required in prod for /operations/webhooks/*
+  WEBHOOK_HMAC_SECRET: z.string().optional(),
+
+  // Telegram — comma-separated chat_id whitelist (required for /webhooks/telegram in prod)
+  TELEGRAM_ALLOWED_CHATS: z.string().optional(),
 });
 
 function loadEnv() {
@@ -60,6 +72,11 @@ export const config = {
   
   // CORS origins array
   corsOrigins: env.CORS_ORIGIN?.split(",").map(o => o.trim()) || ["http://localhost:3000"],
+
+  // Telegram chat_id whitelist (empty array = reject all in prod)
+  telegramAllowedChats: env.TELEGRAM_ALLOWED_CHATS
+    ? env.TELEGRAM_ALLOWED_CHATS.split(",").map((s) => s.trim()).filter(Boolean)
+    : [],
 };
 
 export type Env = z.infer<typeof envSchema>;

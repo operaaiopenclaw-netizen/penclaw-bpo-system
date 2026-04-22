@@ -148,7 +148,7 @@ export class CommercialAgent extends BaseAgent {
     // Buscar eventos similares no histórico
     const similarEvents = await prisma.event.count({
       where: {
-        companyId: context.companyId,
+        tenantId: context.companyId,
         status: "completed"
       }
     });
@@ -208,8 +208,8 @@ export class CommercialAgent extends BaseAgent {
 
     const previousEvents = await prisma.event.count({
       where: {
-        companyId: context.companyId,
-        clientName
+        tenantId: context.companyId,
+        companyName: clientName
       }
     });
 

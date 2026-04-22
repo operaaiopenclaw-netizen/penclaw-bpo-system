@@ -1,6 +1,7 @@
 import { BaseAgent, AgentExecutionContext, AgentExecutionResult } from "./base-agent";
 import { prisma } from "../db";
 import { logger } from "../utils/logger";
+import { analyzeWithClaude, isClaudeAvailable } from "../services/claude-client";
 
 export class CrmAgent extends BaseAgent {
   readonly name = "crm_agent";
@@ -21,6 +22,9 @@ export class CrmAgent extends BaseAgent {
 
       const existingLead = await this.findOrSuggestLead(context.companyId, leadData);
 
+      const baseRecommendation = this.buildRecommendation(qualification, leadData);
+      const recommendation = await this.enrichWithClaude(leadData, bantScore, qualification, baseRecommendation);
+
       const result = {
         leadData,
         bantScore,
@@ -29,7 +33,7 @@ export class CrmAgent extends BaseAgent {
         nextActions,
         existingLeadId: existingLead?.id,
         alerts: this.generateAlerts(bantScore, leadData),
-        recommendation: this.buildRecommendation(qualification, leadData)
+        recommendation
       };
 
       await this.logStep(context.agentRunId, "completed", { output: result });
@@ -128,6 +132,29 @@ export class CrmAgent extends BaseAgent {
     return `Lead ${qual.level}: probabilidade de conversão ${Math.round(qual.probability * 100)}%. ` +
       `Evento tipo '${data.need || "não informado"}' para ${data.numGuests || "?"} pessoas. ` +
       `Budget estimado: R$ ${data.budget > 0 ? data.budget.toLocaleString("pt-BR") : "não informado"}.`;
+  }
+
+  private async enrichWithClaude(
+    leadData: ReturnType<typeof this.extractLeadData>,
+    bantScore: { budget: number; authority: number; need: number; timeline: number; total: number },
+    qualification: { level: string; action: string; probability: number },
+    fallback: string
+  ): Promise<string> {
+    if (!isClaudeAvailable()) return fallback;
+    try {
+      const result = await analyzeWithClaude({
+        systemPrompt: `Você é um especialista em vendas B2B de eventos de alto padrão no Brasil.
+Analise leads e forneça recomendações estratégicas concisas (máximo 3 parágrafos).
+Foco em: estratégia de abordagem, personalização da proposta, riscos e oportunidades.
+Responda em português, tom profissional e direto.`,
+        userContent: JSON.stringify({ leadData, bantScore, qualification }),
+        maxTokens: 512
+      });
+      return result.text;
+    } catch (err) {
+      logger.warn("CrmAgent: Claude enrichment failed, using fallback", { error: err });
+      return fallback;
+    }
   }
 }
 

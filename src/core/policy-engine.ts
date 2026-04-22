@@ -60,11 +60,11 @@ const POLICY_RULES: Record<string, PolicyRule> = {
 };
 
 export class PolicyEngine {
-  private rules: Record<RiskLevel, PolicyRule>;
+  private rules: Record<string, PolicyRule>;
 
-  constructor(customRules?: Partial<Record<RiskLevel, PolicyRule>>) {
+  constructor(customRules?: Partial<Record<string, PolicyRule>>) {
     // Merge default rules with any custom overrides
-    this.rules = { ...POLICY_RULES, ...customRules };
+    this.rules = { ...POLICY_RULES, ...(customRules as Record<string, PolicyRule>) };
   }
 
   /**

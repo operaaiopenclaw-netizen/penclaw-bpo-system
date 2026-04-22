@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orkestra Finance Brain — Dashboard</title>
+    <style>
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-card: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent-blue: #3b82f6;
+            --accent-green: #22c55e;
+            --accent-yellow: #eab308;
+            --accent-red: #ef4444;
+            --accent-purple: #a855f7;
+            --border: #475569;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .logo-text h1 {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .logo-text span {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn:hover { opacity: 0.9; }
+
+        /* Navigation */
+        .nav {
+            background: var(--bg-secondary);
+            padding: 0 2rem;
+            display: flex;
+            gap: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-item {
+            padding: 0.75rem 1rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            color: var(--text-primary);
+            border-bottom-color: var(--accent-blue);
+        }
+
+        /* Main Content */
+        .main { padding: 2rem; max-width: 1400px; margin: 0 auto; }
+
+        /* KPI Cards */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .kpi-card {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+        }
+
+        .kpi-card .label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .kpi-card .value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .kpi-card .change {
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .kpi-card.positive .value { color: var(--accent-green); }
+        .kpi-card.warning .value { color: var(--accent-yellow); }
+        .kpi-card.negative .value { color: var(--accent-red); }
+        .kpi-card.neutral .value { color: var(--accent-blue); }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .card-body { padding: 1.5rem; }
+
+        .card.full-width { grid-column: 1 / -1; }
+
+        /* Tables */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th {
+            text-align: left;
+            padding: 0.75rem;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .table td {
+            padding: 0.75rem;
+            font-size: 0.875rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .table tr:last-child td { border-bottom: none; }
+
+        /* Status badges */
+        .badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .badge-success { background: rgba(34, 197, 94, 0.2); color: var(--accent-green); }
+        .badge-warning { background: rgba(234, 179, 8, 0.2); color: var(--accent-yellow); }
+        .badge-error { background: rgba(239, 68, 68, 0.2); color: var(--accent-red); }
+        .badge-info { background: rgba(59, 130, 246, 0.2); color: var(--accent-blue); }
+
+        /* Progress bars */
+        .progress {
+            height: 8px;
+            background: var(--bg-card);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .progress-bar.good { background: var(--accent-green); }
+        .progress-bar.warning { background: var(--accent-yellow); }
+        .progress-bar.danger { background: var(--accent-red); }
+
+        /* Forms */
+        .form-group { margin-bottom: 1rem; }
+
+        .form-label {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+
+        /* Calculator Section */
+        .calculator {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .calc-inputs {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .calc-results {
+            background: var(--bg-card);
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .result-row:last-child {
+            border-bottom: none;
+            font-weight: 600;
+            font-size: 1.125rem;
+            color: var(--accent-green);
+        }
+
+        /* Charts placeholder */
+        .chart-container {
+            height: 200px;
+            background: var(--bg-card);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+            .dashboard-grid { grid-template-columns: 1fr; }
+            .calculator { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 768px) {
+            .kpi-grid { grid-template-columns: 1fr; }
+            .header { flex-direction: column; gap: 1rem; }
+            .nav { overflow-x: auto; }
+        }
+
+        /* Tab content */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* Event preview */
+        .event-preview {
+            background: var(--bg-card);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .event-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .event-name { font-weight: 600; font-size: 1rem; }
+
+        .event-meta {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .event-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .event-stat {
+            text-align: center;
+        }
+
+        .event-stat-value {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .event-stat-label {
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">🎛️</div>
+            <div class="logo-text">
+                <h1>Orkestra Finance Brain</h1>
+                <span>Dashboard v1.0</span>
+            </div>
+        </div>
+        <div class="header-actions">
+            <span style="color: var(--text-secondary); font-size: 0.875rem;">🟢 Online</span>
+            <button class="btn btn-secondary">Exportar</button>
+            <button class="btn btn-primary">Novo Evento</button>
+        </div>
+    </header>
+
+    <nav class="nav">
+        <div class="nav-item active" onclick="showTab('overview')">Overview</div>
+        <div class="nav-item" onclick="showTab('decisions')">Decisões IA</div>
+        <div class="nav-item" onclick="showTab('pricing')">Pricing</div>
+        <div class="nav-item" onclick="showTab('events')">Eventos</div>
+        <div class="nav-item" onclick="showTab('audit')">Audit</div>
+        <div class="nav-item" onclick="showTab('parameters')">Parâmetros</div>
+    </nav>
+
+    <main class="main">
+        <!-- OVERVIEW TAB -->
+        <div id="overview" class="tab-content active">
+            <div class="kpi-grid">
+                <div class="kpi-card positive">
+                    <div class="label">Margem Média</div>
+                    <div class="value">32.4%</div>
+                    <div class="change">↑ +2.1% vs mês anterior</div>
+                </div>
+                <div class="kpi-card neutral">
+                    <div class="label">Eventos Ativos</div>
+                    <div class="value">47</div>
+                    <div class="change">↔ 3 a confirmar</div>
+                </div>
+                <div class="kpi-card warning">
+                    <div class="label">CMV Proteína</div>
+                    <div class="value">48.2%</div>
+                    <div class="change">⚠️ Acima do ideal (30%)</div>
+                </div>
+                <div class="kpi-card negative">
+                    <div class="label">Decisões Pendentes Revisão</div>
+                    <div class="value">12</div>
+                    <div class="change">↑ +5 desde ontem</div>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">📊 Margem por Categoria</span>
+                    </div>
+                    <div class="card-body">
+                        <table class="table">
+                            <tr>
+                                <td>Proteína</td>
+                                <td><div class="progress"><div class="progress-bar danger" style="width: 48%"></div></div></td>
+                                <td style="color: var(--accent-red); font-weight: 600;">48%</td>
+                            </tr>
+                            <tr>
+                                <td>Bebida</td>
+                                <td><div class="progress"><div class="progress-bar good" style="width: 22%"></div></div></td>
+                                <td style="color: var(--accent-green); font-weight: 600;">22%</td>
+                            </tr>
+                            <tr>
+                                <td>Staff</td>
+                                <td><div class="progress"><div class="progress-bar good" style="width: 18%"></div></div></td>
+                                <td style="color: var(--accent-green); font-weight: 600;">18%</td>
+                            </tr>
+                            <tr>
+                                <td>Ambientação</td>
+                                <td><div class="progress"><div class="progress-bar good" style="width: 12%"></div></div></td>
+                                <td style="color: var(--accent-green); font-weight: 600;">12%</td>
+                            </tr>
+                            <tr>
+                                <td>Material</td>
+                                <td><div class="progress"><div class="progress-bar warning" style="width: 28%"></div></div></td>
+                                <td style="color: var(--accent-yellow); font-weight: 600;">28%</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">🤖 Últimas Decisões IA</span>
+                    </div>
+                    <div class="card-body">
+                        <table class="table">
+                            <tr>
+                                <th>ID</th>
+                                <th>Modelo</th>
+                                <th>Confiança</th>
+                                <th>Status</th>
+                            </tr>
+                            <tr>
+                                <td>DEC-2847</td>
+                                <td>Kimi-K2.5</td>
+                                <td>94%</td>
+                                <td><span class="badge badge-success">Aprovado</span></td>
+                            </tr>
+                            <tr>
+                                <td>DEC-2846</td>
+                                <td>Kimi-K2.5</td>
+                                <td>67%</td>
+                                <td><span class="badge badge-warning">Revisar</span></td>
+                            </tr>
+                            <tr>
+                                <td>DEC-2845</td>
+                                <td>Claude-3.5</td>
+                                <td>89%</td>
+                                <td><span class="badge badge-success">Aprovado</span></td>
+                            </tr>
+                            <tr>
+                                <td>DEC-2844</td>
+                                <td>Kimi-K2.5</td>
+                                <td>45%</td>
+                                <td><span class="badge badge-error">Rejeitado</span></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card full-width">
+                    <div class="card-header">
+                        <span class="card-title">💰 Fluxo de Caixa - Próximos 30 Dias</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            [Gráfico de Projeção de Caixa - R$ 1.017.587 consolidado]
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PRICING TAB -->
+        <div id="pricing" class="tab-content">
+            <div class="dashboard-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">🧮 Calculadora de Scoring</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="calculator">
+                            <div class="calc-inputs">
+                                <div class="form-group">
+                                    <label class="form-label">Número de Convidados</label>
+                                    <input type="number" class="form-input" id="guests" value="150" onchange="calculate()">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Tipo de Evento</label>
+                                    <select class="form-select" id="eventType" onchange="calculate()">
+                                        <option value="corporate">Corporativo</option>
+                                        <option value="social" selected>Social</option>
+                                        <option value="wedding">Casamento</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Cardápio (R$/pessoa)</label>
+                                    <input type="number" class="form-input" id="menuPrice" value="85" onchange="calculate()">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Bebida (R$/pessoa)</label>
+                                    <input type="number" class="form-input" id="drinkPrice" value="45" onchange="calculate()">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Staff (%)</label>
+                                    <input type="number" class="form-input" id="staffRate" value="18" onchange="calculate()">
+                                </div>
+                            </div>
+                            <div class="calc-results">
+                                <h4 style="margin-bottom: 1rem; color: var(--accent-blue);">🎯 Resultado</h4>
+                                <div class="result-row">
+                                    <span>Receita Estimada:</span>
+                                    <span id="revenue">R$ 26.250</span>
+                                </div>
+                                <div class="result-row">
+                                    <span>CMV Total:</span>
+                                    <span id="cmv">R$ 14.175</span>
+                                </div>
+                                <div class="result-row">
+                                    <span>Lucro Líquido:</span>
+                                    <span id="profit">R$ 12.075</span>
+                                </div>
+                                <div class="result-row" id="marginRow">
+                                    <span>Margem:</span>
+                                    <span id="margin">46%</span>
+                                </div>
+                                <div style="margin-top: 1rem; padding: 0.75rem; background: var(--bg-secondary); border-radius: 6px;">
+                                    <span id="scoringStatus" class="badge badge-success">✅ GO — Margem acima do threshold</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">📋 Eventos em Pipeline</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="event-preview">
+                            <div class="event-header">
+                                <span class="event-name">Festa Corporativa ACME</span>
+                                <span class="badge badge-info">Negociando</span>
+                            </div>
+                            <div class="event-meta">CTT-2025-0147 • 120 pessoas • 15/04/2025</div>
+                            <div class="event-stats">
+                                <div class="event-stat">
+                                    <div class="event-stat-value">R$ 18K</div>
+                                    <div class="event-stat-label">Receita</div>
+                                </div>
+                                <div class="event-stat">
+                                    <div class="event-stat-value">38%</div>
+                                    <div class="event-stat-label">Margem</div>
+                                </div>
+                                <div class="event-stat">
+                                    <div class="event-stat-value" style="color: var(--accent-green);">GO</div>
+                                    <div class="event-stat-label">Score</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="event-preview">
+                            <div class="event-header">
+                                <span class="event-name">Casamento Silva & Santos</span>
+                                <span class="badge badge-success">Confirmado</span>
+                            </div>
+                            <div class="event-meta">CTT-2025-0142 • 200 pessoas • 22/04/2025</div>
+                            <div class="event-stats">
+                                <div class="event-stat">
+                                    <div class="event-stat-value">R$ 45K</div>
+                                    <div class="event-stat-label">Receita</div>
+                                </div>
+                                <div class="event-stat">
+                                    <div class="event-stat-value">42%</div>
+                                    <div class="event-stat-label">Margem</div>
+                                </div>
+                                <div class="event-stat">
+                                    <div class="event-stat-value" style="color: var(--accent-green);">GO</div>
+                                    <div class="event-stat-label">Score</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="event-preview">
+                            <div class="event-header">
+                                <span class="event-name">Evento Tech Startup XYZ</span>
+                                <span class="badge badge-warning">Proposta</span>
+                            </div>
+                            <div class="event-meta">CTT-2025-0153 • 80 pessoas • 28/04/2025</div>
+                            <div class="event-stats">
+                                <div class="event-stat">
+                                    <div class="event-stat-value">R$ 12K</div>
+                                    <div class="event-stat-label">Receita</div>
+                                </div>
+                                <div class="event-stat">
+                                    <div class="event-stat-value">22%</div>
+                                    <div class="event-stat-label">Margem</div>
+                                </div>
+                                <div class="event-stat">
+                                    <div class="event-stat-value" style="color: var(--accent-red);">NO-GO</div>
+                                    <div class="event-stat-label">Score</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DECISIONS TAB -->
+        <div id="decisions" class="tab-content">
+            <div class="kpi-grid">
+                <div class="kpi-card positive">
+                    <div class="label">Total Decisões</div>
+                    <div class="value">1,247</div>
+                    <div class="change">↑ +89 esta semana</div>
+                </div>
+                <div class="kpi-card neutral">
+                    <div class="label">Tempo Médio</div>
+                    <div class="value">1.2s</div>
+                    <div class="change">↓ -0.3s otimizado</div>
+                </div>
+                <div class="kpi-card positive">
+                    <div class="label">Taxa Aprovação</div>
+                    <div class="value">87%</div>
+                    <div class="change">↑ bom desempenho</div>
+                </div>
+                <div class="kpi-card warning">
+                    <div class="label">Custo Médio</div>
+                    <div class="value">$0.0042</div>
+                    <div class="change">↔ dentro do orçamento</div>
+                </div>
+            </div>
+
+            <div class="card full-width">
+                <div class="card-header">
+                    <span class="card-title">🔍 Detalhes das Decisões</span>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <tr>
+                            <th>ID</th>
+                            <th>Input Context</th>
+                            <th>Output</th>
+                            <th>Confiança</th>
+                            <th>Revisão</th>
+                        </tr>
+                        <tr>
+                            <td>DEC-2847</td>
+                            <td>Evento 150p, bufê churrasco, open bar</td>
+                            <td>GO | Margem 46%</td>
+                            <td>94%</td>
+                            <td><button class="btn btn-secondary">Ver</button></td>
+                        </tr>
+                        <tr>
+                            <td>DEC-2846</td>
+                            <td>Evento 80p, coffee break, sem álcool</td>
+                            <td>NO-GO | Margem 15%</td>
+                            <td>67%</td>
+                            <td><button class="btn btn-primary">Revisar</button></td>
+                        </tr>
+                        <tr>
+                            <td>DEC-2845</td>
+                            <td>Conferência 300p, catering completo</td>
+                            <td>GO | Margem 38%</td>
+                            <td>89%</td>
+                            <td><button class="btn btn-secondary">Ver</button></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- EVENTS TAB -->
+        <div id="events" class="tab-content">
+            <div class="dashboard-grid">
+                <div class="card full-width">
+                    <div class="card-header">
+                        <span class="card-title">📅 Todos os Eventos</span>
+                    </div>
+                    <div class="card-body">
+                        <table class="table">
+                            <tr>
+                                <th>CTT</th>
+                                <th>Nome</th>
+                                <th>Data</th>
+                                <th>Pessoas</th>
+                                <th>Status</th>
+                                <th>Receita</th>
+                                <th>Margem</th>
+                                <th>Score</th>
+                            </tr>
+                            <tr>
+                                <td>CTT-0142</td>
+                                <td>Casamento Silva & Santos</td>
+                                <td>22/04/2025</td>
+                                <td>200</td>
+                                <td><span class="badge badge-success">Confirmado</span></td>
+                                <td>R$ 45.000</td>
+                                <td>42%</td>
+                                <td>GO</td>
+                            </tr>
+                            <tr>
+                                <td>CTT-0147</td>
+                                <td>Festa Corporativa ACME</td>
+                                <td>15/04/2025</td>
+                                <td>120</td>
+                                <td><span class="badge badge-info">Negociando</span></td>
+                                <td>R$ 18.000</td>
+                                <td>38%</td>
+                                <td>GO</td>
+                            </tr>
+                            <tr>
+                                <td>CTT-0153</td>
+                                <td>Evento Tech Startup XYZ</td>
+                                <td>28/04/2025</td>
+                                <td>80</td>
+                                <td><span class="badge badge-warning">Proposta</span></td>
+                                <td>R$ 12.000</td>
+                                <td>22%</td>
+                                <td>NO-GO</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AUDIT TAB -->
+        <div id="audit" class="tab-content">
+            <div class="card full-width">
+                <div class="card-header">
+                    <span class="card-title">🔐 Logs de Auditoria</span>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>Ator</th>
+                            <th>Ação</th>
+                            <th>Recurso</th>
+                            <th>ID</th>
+                            <th>Checksum</th>
+                        </tr>
+                        <tr>
+                            <td>2025-04-08 13:30:15</td>
+                            <td>user:admin@orkestra.io</td>
+                            <td>UPDATE</td>
+                            <td>event</td>
+                            <td>CTT-0147</td>
+                            <td><code style="font-size: 0.65rem;">a1b2c3...</code></td>
+                        </tr>
+                        <tr>
+                            <td>2025-04-08 13:28:42</td>
+                            <td>system:auto</td>
+                            <td>CREATE</td>
+                            <td>decision</td>
+                            <td>DEC-2847</td>
+                            <td><code style="font-size: 0.65rem;">d4e5f6...</code></td>
+                        </tr>
+                        <tr>
+                            <td>2025-04-08 12:45:00</td>
+                            <td>user:finance@orkestra.io</td>
+                            <td>APPROVE</td>
+                            <td>payment</td>
+                            <td>PAY-0892</td>
+                            <td><code style="font-size: 0.65rem;">g7h8i9...</code></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- PARAMETERS TAB -->
+        <div id="parameters" class="tab-content">
+            <div class="card full-width">
+                <div class="card-header">
+                    <span class="card-title">⚙️ Parâmetros do Sistema</span>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <tr>
+                            <th>Categoria</th>
+                            <th>Chave</th>
+                            <th>Valor</th>
+                            <th>Tipo</th>
+                            <th>Atualizado</th>
+                        </tr>
+                        <tr>
+                            <td>scoring</td>
+                            <td>threshold_go</td>
+                            <td>35%</td>
+                            <td>number</td>
+                            <td>v3 — 2025-04-01</td>
+                        </tr>
+                        <tr>
+                            <td>scoring</td>
+                            <td>limite_confianca</td>
+                            <td>0.70</td>
+                            <td>number</td>
+                            <td>v1 — 2025-03-15</td>
+                        </tr>
+                        <tr>
+                            <td>financial</td>
+                            <td>margem_minima</td>
+                            <td>25%</td>
+                            <td>number</td>
+                            <td>v2 — 2025-03-20</td>
+                        </tr>
+                        <tr>
+                            <td>forecast</td>
+                            <td>dias_previsao</td>
+                            <td>90</td>
+                            <td>number</td>
+                            <td>v1 — 2025-04-01</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // --- Auth guard + authenticated fetch wrapper ---
+        (function () {
+          const t = localStorage.getItem('orkestra.token');
+          if (!t) { window.location.href = 'login.html'; return; }
+          const _fetch = window.fetch.bind(window);
+          window.fetch = (input, init = {}) => {
+            init.headers = { ...(init.headers || {}), authorization: `Bearer ${t}` };
+            return _fetch(input, init).then((r) => {
+              if (r.status === 401) {
+                localStorage.clear();
+                window.location.href = 'login.html';
+              }
+              return r;
+            });
+          };
+        })();
+
+        // Tab switching
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Calculator
+        function calculate() {
+            const guests = parseInt(document.getElementById('guests').value) || 0;
+            const menuPrice = parseFloat(document.getElementById('menuPrice').value) || 0;
+            const drinkPrice = parseFloat(document.getElementById('drinkPrice').value) || 0;
+            const staffRate = parseFloat(document.getElementById('staffRate').value) || 0;
+
+            const revenue = guests * (menuPrice + drinkPrice);
+            const foodCost = guests * menuPrice * 0.65;
+            const drinkCost = guests * drinkPrice * 0.45;
+            const staffCost = revenue * (staffRate / 100);
+            const cmv = foodCost + drinkCost + staffCost;
+            const profit = revenue - cmv;
+            const margin = revenue > 0 ? ((profit / revenue) * 100).toFixed(1) : 0;
+
+            document.getElementById('revenue').textContent = 'R$ ' + revenue.toLocaleString('pt-BR');
+            document.getElementById('cmv').textContent = 'R$ ' + cmv.toLocaleString('pt-BR');
+            document.getElementById('profit').textContent = 'R$ ' + profit.toLocaleString('pt-BR');
+            document.getElementById('margin').textContent = margin + '%';
+
+            const marginRow = document.getElementById('marginRow');
+            const statusBadge = document.getElementById('scoringStatus');
+
+            if (margin >= 35) {
+                marginRow.style.color = 'var(--accent-green)';
+                statusBadge.className = 'badge badge-success';
+                statusBadge.textContent = '✅ GO — Margem excelente';
+            } else if (margin >= 25) {
+                marginRow.style.color = 'var(--accent-blue)';
+                statusBadge.className = 'badge badge-info';
+                statusBadge.textContent = '✅ GO — Margem aceitável';
+            } else if (margin >= 15) {
+                marginRow.style.color = 'var(--accent-yellow)';
+                statusBadge.className = 'badge badge-warning';
+                statusBadge.textContent = '⚠️ ATENÇÃO — Margem apertada';
+            } else {
+                marginRow.style.color = 'var(--accent-red)';
+                statusBadge.className = 'badge badge-error';
+                statusBadge.textContent = '❌ NO-GO — Margem crítica';
+            }
+        }
+
+        // Initial calculation
+        calculate();
+    </script>
+</body>
+</html>

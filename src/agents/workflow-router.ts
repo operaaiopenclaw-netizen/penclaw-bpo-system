@@ -17,7 +17,7 @@ export class WorkflowRouter {
         "contract_agent",
         "sales_agent",
         "operations_agent",
-        "supply_agent",
+        "procurement_agent",
         "commercial_agent",
         "finance_agent",
         "inventory_agent",
@@ -65,7 +65,7 @@ export class WorkflowRouter {
     });
 
     this.sequences.set("event_planning", {
-      agents: ["os_agent", "production_agent", "supply_agent", "finance_agent", "reporting_agent"],
+      agents: ["os_agent", "production_agent", "procurement_agent", "finance_agent", "reporting_agent"],
       description: "Planejamento de evento: OS → OP → Supply → Financeiro",
       estimatedLatency: 5000,
       riskLevel: "R2"
@@ -82,6 +82,13 @@ export class WorkflowRouter {
       agents: ["os_agent", "production_agent", "inventory_agent", "finance_agent", "reporting_agent"],
       description: "Contrato assinado → OS → OP → Estoque → Financeiro → Resumo",
       estimatedLatency: 6000,
+      riskLevel: "R2"
+    });
+
+    this.sequences.set("event_procurement", {
+      agents: ["procurement_agent", "finance_agent", "reporting_agent"],
+      description: "Procurement completo: demanda → gap → fornecedor → decisão → aprovação → auditoria",
+      estimatedLatency: 4000,
       riskLevel: "R2"
     });
   }

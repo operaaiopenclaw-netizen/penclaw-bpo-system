@@ -9,32 +9,26 @@ export const prismaWithLogging = new PrismaClient({
     : undefined,
 });
 
-// Extensão com métodos úteis
-export const prismaExtended = new PrismaClient().$extends({
-  model: {
-    agentRun: {
-      async findWithSteps(id: string) {
-        return this.findUnique({
-          where: { id },
-          include: { 
-            steps: { 
-              orderBy: { stepOrder: "asc" },
-              include: { toolCalls: true }
-            },
-            approvals: true,
-            artifacts: true
-          }
-        });
-      },
-    },
-  },
-});
-
 // Helper para transações
 export async function runInTransaction<T>(
-  fn: (tx: PrismaClient) => Promise<T>
+  fn: (tx: Omit<PrismaClient, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<T>
 ): Promise<T> {
-  return prisma.$transaction(fn);
+  return prisma.$transaction(fn as (tx: Parameters<PrismaClient["$transaction"]>[0] extends (tx: infer TX) => unknown ? TX : never) => Promise<T>);
+}
+
+// Convenience: fetch an AgentRun with all its relations
+export async function findAgentRunWithSteps(id: string) {
+  return prisma.agentRun.findUnique({
+    where: { id },
+    include: {
+      steps: {
+        orderBy: { stepOrder: "asc" },
+        include: { toolCalls: true }
+      },
+      approvals: true,
+      artifacts: true
+    }
+  });
 }
 
 // Graceful shutdown

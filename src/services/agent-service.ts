@@ -73,7 +73,7 @@ export class AgentService {
       // Check policy
       const policy = this.policyEngine.evaluate(data.riskLevel || "R1_SAFE_WRITE");
 
-      if (policy === "BLOCKED") {
+      if (!policy.allowed) {
         throw new Error("Run blocked by policy");
       }
 

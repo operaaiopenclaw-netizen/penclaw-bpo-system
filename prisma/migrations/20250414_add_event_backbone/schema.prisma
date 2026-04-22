@@ -1,0 +1,147 @@
+// ============================================================
+// MIGRATION: Event Backbone Foundation - Sprint 1
+// Version: 1.5.0
+// Description: Tabela central de eventos e logs estruturados
+// ============================================================
+
+// ============================================================
+// EVENT BACKBONE: Tabela central de eventos de domínio
+// ============================================================
+
+model SystemEvent {
+  id                String    @id @default(uuid())
+  tenantId          String    // Multi-tenant obrigatório
+  
+  // Identificação do agregado
+  aggregateType     String    // "event", "inventory", "procurement", "finance", "commercial"
+  aggregateId       String    // ID do agregado (ex: eventId, inventoryItemId)
+  
+  // Tipo e conteúdo
+  eventType         String    // ex: "event.created", "event.updated", "margin.calculated"
+  payload           Json      // Dados completos do evento
+  
+  // Rastreabilidade
+  source            String    // "api", "agent", "system", "manual"
+  correlationId     String?   // ID de correlação entre eventos
+  causationId       String?   // ID do evento que causou este
+  
+  // Status e processamento
+  status            String    @default("pending") // pending, processing, processed, failed
+  errorMessage      String?   // Mensagem de erro se falhou
+  processedAt       DateTime? // Quando foi processado
+  
+  // Metadados
+  createdBy         String?   // Usuário/agente que gerou
+  ipAddress         String?   // Para audit
+  
+  // Timestamps
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // Relações
+  domainLogs        DomainLog[] // Logs de processamento deste evento
+
+  @@index([tenantId, aggregateType, aggregateId])
+  @@index([tenantId, eventType, createdAt])
+  @@index([tenantId, status, createdAt])
+  @@index([correlationId])
+  @@index([createdAt])
+  @@index([aggregateId, aggregateType])
+  @@map("system_events")
+}
+
+// ============================================================
+// DOMAIN LOGS: Logs por domínio para rastreabilidade
+// ============================================================
+
+model DomainLog {
+  id                String    @id @default(uuid())
+  
+  // Vinculação
+  systemEventId     String
+  tenantId          String
+  domain            String    // "event", "inventory", "procurement", "finance", "commercial"
+  
+  // Conteúdo
+  action            String    // ex: "event.created", "inventory.reserved"
+  entityId          String    // ID da entidade afetada
+  entityType        String    // Tipo da entidade
+  oldState          Json?     // Estado anterior
+  newState          Json      // Novo estado
+  
+  // Metadados
+  processedBy       String?   // Agent ou service que processou
+  processingTimeMs  Int?      // Tempo de processamento
+  
+  createdAt         DateTime  @default(now())
+
+  // Relações
+  systemEvent       SystemEvent @relation(fields: [systemEventId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, domain, createdAt])
+  @@index([tenantId, entityType, entityId])
+  @@index([tenantId, action, createdAt])
+  @@index([systemEventId])
+  @@map("domain_logs")
+}
+
+// ============================================================
+// EVENT PROCESSOR: Controle de processamento de eventos
+// ============================================================
+
+model EventProcessor {
+  id                String    @id @default(uuid())
+  
+  tenantId          String
+  processorName     String    // ex: "event-processor", "finance-handler"
+  handlerType       String    // "sync", "async", "queue", "stream"
+  
+  // Configuração
+  eventTypes        String[]  // Quais tipos de evento processa
+  aggregateTypes    String[]  // Quais agregados
+  
+  // Status
+  status            String    @default("active") // active, paused, error
+  lastProcessedAt   DateTime?
+  lastEventId       String?
+  
+  // Métricas
+  eventsProcessed   Int       @default(0)
+  eventsFailed      Int       @default(0)
+  averageLatencyMs  Float?
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@unique([tenantId, processorName])
+  @@index([tenantId, status, lastProcessedAt])
+  @@map("event_processors")
+}
+
+// ============================================================
+// EVENT SNAPSHOT: Snapshots de estado para replay rápido
+// ============================================================
+
+model EventSnapshot {
+  id                String    @id @default(uuid())
+  
+  tenantId          String
+  aggregateType     String
+  aggregateId       String
+  
+  // Estado
+  version           Int       // Número da versão
+  state             Json      // Estado completo do agregado
+  
+  // Metadados
+  lastEventId       String    // Último evento incluído
+  lastEventType     String
+  eventCount        Int       // Quantos eventos compõem o snapshot
+  
+  createdAt         DateTime  @default(now())
+
+  @@unique([tenantId, aggregateType, aggregateId, version])
+  @@index([tenantId, aggregateType, aggregateId])
+  @@index([tenantId, createdAt])
+  @@map("event_snapshots")
+}

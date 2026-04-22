@@ -83,6 +83,7 @@
   <button class="tab" onclick="showTab('production-orders')">🍳 OP</button>
   <button class="tab" onclick="showTab('execution')">⚡ Execução</button>
   <button class="tab" onclick="showTab('agent-runs')">🤖 Agentes</button>
+  <button class="tab" onclick="showTab('ops-live')">🎛️ Operação Live</button>
 </div>
 
 <!-- ─── CRM ─────────────────────────────────────────────── -->
@@ -232,8 +233,63 @@
   </div>
 </div>
 
+<!-- ─── OPS LIVE (Sprint 6) ─────────────────────────────── -->
+<div id="tab-ops-live" class="panel">
+  <div class="kpi-row" id="ops-kpis">
+    <div class="kpi"><div class="label">Próx. 14 dias</div><div class="value blue" id="kpi-ops-upcoming">—</div><div class="sub">eventos agendados</div></div>
+    <div class="kpi"><div class="label">POs abertos</div><div class="value yellow" id="kpi-ops-pos">—</div></div>
+    <div class="kpi"><div class="label">Aprovações pendentes</div><div class="value orange" id="kpi-ops-approvals">—</div></div>
+    <div class="kpi"><div class="label">Canais ativos</div><div class="value green" id="kpi-ops-channels">—</div><div class="sub" id="kpi-ops-channels-names">—</div></div>
+  </div>
+
+  <div class="section-title">
+    Eventos a caminho
+    <button class="btn btn-primary btn-sm" onclick="loadOpsLive()">↻ Atualizar</button>
+  </div>
+  <div class="card">
+    <table>
+      <thead><tr><th>Evento</th><th>Data</th><th>Convidados</th><th>Margem</th><th>Status</th><th>Radar</th></tr></thead>
+      <tbody id="ops-events-table"><tr><td colspan="6" class="empty"><span class="loader"></span> Carregando...</td></tr></tbody>
+    </table>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h3>Radar de riscos — evento selecionado</h3>
+      <div style="display:flex;gap:8px;margin-bottom:12px">
+        <input type="text" id="ops-risk-eventid" placeholder="eventId" style="flex:1">
+        <button class="btn btn-primary btn-sm" onclick="loadOpsRisks()">Avaliar</button>
+      </div>
+      <div id="ops-risks-output"><div class="empty">Digite um eventId</div></div>
+    </div>
+    <div class="card">
+      <h3>Reconciliações recentes</h3>
+      <table>
+        <thead><tr><th>Evento</th><th>Accuracy</th><th>Margem Proj.</th><th>Margem Real</th></tr></thead>
+        <tbody id="ops-recons-table"><tr><td colspan="4" class="empty">—</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
 <script>
-const API = 'http://localhost:3333';
+// --- Auth guard + authenticated fetch wrapper ---
+const TOKEN = localStorage.getItem('orkestra.token');
+const ME = JSON.parse(localStorage.getItem('orkestra.user') || 'null');
+if (!TOKEN || !ME) window.location.href = 'login.html';
+const _fetch = window.fetch.bind(window);
+window.fetch = (input, init = {}) => {
+  init.headers = { ...(init.headers || {}), authorization: `Bearer ${TOKEN}` };
+  return _fetch(input, init).then((r) => {
+    if (r.status === 401) {
+      localStorage.clear();
+      window.location.href = 'login.html';
+    }
+    return r;
+  });
+};
+
+const API = (window.location.origin.replace(/:\d+$/, '')) + ':3010';
 
 function showTab(name) {
   document.querySelectorAll('.tab').forEach((t,i) => t.classList.remove('active'));
@@ -245,6 +301,79 @@ function showTab(name) {
   if (name === 'production-orders') loadProductionOrders();
   if (name === 'execution') loadExecutionSessions();
   if (name === 'agent-runs') loadAgentRuns();
+  if (name === 'ops-live') loadOpsLive();
+}
+
+async function loadOpsLive() {
+  try {
+    const [ovRes, chRes] = await Promise.all([
+      fetch(`${API}/operations/overview`).then(r => r.json()),
+      fetch(`${API}/operations/channels`).then(r => r.json())
+    ]);
+    const ov = ovRes.data || {};
+    document.getElementById('kpi-ops-upcoming').textContent = ov.counters?.upcomingEvents ?? 0;
+    document.getElementById('kpi-ops-pos').textContent = ov.counters?.openPurchaseOrders ?? 0;
+    document.getElementById('kpi-ops-approvals').textContent = ov.counters?.pendingApprovals ?? 0;
+    const channels = chRes.data || [];
+    const active = channels.filter(c => c.configured);
+    document.getElementById('kpi-ops-channels').textContent = active.length;
+    document.getElementById('kpi-ops-channels-names').textContent = active.map(c => c.name).join(', ') || 'nenhum';
+
+    const evs = ov.upcomingEvents || [];
+    const tbody = document.getElementById('ops-events-table');
+    tbody.innerHTML = evs.length ? evs.map(e => `
+      <tr>
+        <td><code>${e.id.slice(0,8)}</code> ${e.name}</td>
+        <td>${fmtDate(e.eventDate)}</td>
+        <td>${e.guests ?? '—'}</td>
+        <td>${e.marginPct != null ? e.marginPct.toFixed(1) + '%' : '—'}</td>
+        <td>${badge(e.status || 'planned')}</td>
+        <td><button class="btn btn-primary btn-sm" onclick="pickEventForRisk('${e.id}')">🎯 Radar</button></td>
+      </tr>`).join('') : '<tr><td colspan="6" class="empty">Sem eventos nos próximos 14 dias</td></tr>';
+
+    const recons = ov.recentReconciliations || [];
+    const rtb = document.getElementById('ops-recons-table');
+    rtb.innerHTML = recons.length ? recons.map(r => `
+      <tr>
+        <td><code>${(r.eventId || '').slice(0,8)}</code></td>
+        <td>${(r.meanAccuracy || 0).toFixed(0)}%</td>
+        <td>${r.projectedMargin != null ? r.projectedMargin.toFixed(1) + '%' : '—'}</td>
+        <td>${r.realMargin != null ? r.realMargin.toFixed(1) + '%' : '—'}</td>
+      </tr>`).join('') : '<tr><td colspan="4" class="empty">Nenhuma reconciliação registrada</td></tr>';
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+function pickEventForRisk(eventId) {
+  document.getElementById('ops-risk-eventid').value = eventId;
+  loadOpsRisks();
+}
+
+async function loadOpsRisks() {
+  const eventId = document.getElementById('ops-risk-eventid').value.trim();
+  const out = document.getElementById('ops-risks-output');
+  if (!eventId) { out.innerHTML = '<div class="empty">Digite um eventId</div>'; return; }
+  out.innerHTML = '<div class="empty"><span class="loader"></span> Avaliando...</div>';
+  try {
+    const res = await fetch(`${API}/operations/risks?eventId=${encodeURIComponent(eventId)}`).then(r => r.json());
+    if (!res.success) {
+      out.innerHTML = `<div class="alert alert-red">${res.error || 'Falha ao avaliar'}</div>`;
+      return;
+    }
+    const alerts = res.data?.alerts || [];
+    if (!alerts.length) {
+      out.innerHTML = '<div class="alert alert-green">✅ Nenhum alerta detectado</div>';
+      return;
+    }
+    const sevClass = {CRITICAL:'alert-red', HIGH:'alert-red', MEDIUM:'alert-yellow', LOW:'alert-yellow'};
+    out.innerHTML = alerts.map(a => `
+      <div class="alert ${sevClass[a.severity] || 'alert-yellow'}">
+        <strong>[${a.severity}] ${a.rule}</strong> — ${a.message}
+      </div>`).join('');
+  } catch (err) {
+    out.innerHTML = `<div class="alert alert-red">${err.message}</div>`;
+  }
 }
 
 function fmtCur(v) { return v != null ? 'R$ ' + parseFloat(v).toLocaleString('pt-BR', {minimumFractionDigits:0}) : '—'; }

@@ -6,7 +6,8 @@ import swagger from "@fastify/swagger";
 import swaggerUi from "@fastify/swagger-ui";
 import { config } from "./config/env";
 import { prisma } from "./db";
-import { agentRunsRoutes, approvalsRoutes, memoryRoutes, artifactsRoutes, dashboardRoutes, metricsRoutes, eventsRoutes, statesRoutes, kitchenRoutes, intelligenceRoutes, crmRoutes, serviceOrdersRoutes, productionOrdersRoutes, executionRoutes } from "./routes";
+import { agentRunsRoutes, approvalsRoutes, memoryRoutes, artifactsRoutes, dashboardRoutes, metricsRoutes, eventsRoutes, statesRoutes, kitchenRoutes, intelligenceRoutes, crmRoutes, serviceOrdersRoutes, productionOrdersRoutes, executionRoutes, operationsRoutes, authRoutes, usersRoutes } from "./routes";
+import { registerAuditHook } from "./middleware/audit";
 import { errorHandler, notFoundHandler } from "./utils/error-handler";
 import { logger } from "./utils/logger";
 import agentRunWorker, { closeWorker } from "./worker";
@@ -34,7 +35,12 @@ async function bootstrap() {
 
   await app.register(swaggerUi, { routePrefix: "/docs" });
 
+  // Audit hook (records every mutating request after response)
+  registerAuditHook(app);
+
   // Routes
+  await app.register(authRoutes, { prefix: "/auth" });
+  await app.register(usersRoutes, { prefix: "/users" });
   await app.register(agentRunsRoutes, { prefix: "/agent-runs" });
   await app.register(approvalsRoutes, { prefix: "/approvals" });
   await app.register(memoryRoutes, { prefix: "/memory" });
@@ -49,9 +55,41 @@ async function bootstrap() {
   await app.register(serviceOrdersRoutes, { prefix: "/service-orders" });
   await app.register(productionOrdersRoutes, { prefix: "/production-orders" });
   await app.register(executionRoutes, { prefix: "/execution" });
+  await app.register(operationsRoutes, { prefix: "/operations" });
 
-  // Health check
+  // Liveness — always 200 while process is up.
   app.get("/health", async () => ({ status: "ok", ts: Date.now() }));
+
+  // Readiness — verifies DB + Redis reachable. Returns 503 if any fails.
+  app.get("/ready", async (_req, reply) => {
+    const checks: Record<string, { ok: boolean; error?: string; ms?: number }> = {};
+    const t0 = Date.now();
+    try {
+      await prisma.$queryRaw`SELECT 1`;
+      checks.database = { ok: true, ms: Date.now() - t0 };
+    } catch (err) {
+      checks.database = {
+        ok: false,
+        error: err instanceof Error ? err.message : String(err),
+      };
+    }
+
+    const t1 = Date.now();
+    try {
+      const { agentRunQueue } = await import("./queue");
+      const client = await agentRunQueue.client;
+      const pong = await client.ping();
+      checks.redis = { ok: pong === "PONG", ms: Date.now() - t1 };
+    } catch (err) {
+      checks.redis = {
+        ok: false,
+        error: err instanceof Error ? err.message : String(err),
+      };
+    }
+
+    const ok = Object.values(checks).every((c) => c.ok);
+    return reply.status(ok ? 200 : 503).send({ ok, checks, ts: Date.now() });
+  });
 
   // Error handlers
   app.setErrorHandler(errorHandler);

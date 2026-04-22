@@ -1,331 +1,459 @@
-import { BaseAgent, AgentExecutionContext, AgentExecutionResult } from "./base-agent";
+// ============================================================
+// EVENT OPS AGENT — Gastronomy execution engine
+// Boundary: pre-event readiness, execution checkpoints,
+//           occurrence logging, teardown, consumption snapshot.
+// Does NOT do procurement. Does NOT do financial projection.
+// ============================================================
+import { BaseAgent, AgentExecutionContext, AgentExecutionResult, AgentAction } from "./base-agent";
 import { prisma } from "../db";
 import { logger } from "../utils/logger";
 
+// Checkpoint sequence for a gastronomy event
+const CHECKPOINT_SEQUENCE = [
+  "SETUP",          // venue setup, kitchen prep, equipment check
+  "PRE_SERVICE",    // staff briefing, bar setup, coffee station ready
+  "SERVICE_START",  // service begins, floor active
+  "SERVICE_ACTIVE", // mid-service monitoring
+  "COFFEE_BREAK",   // optional — coffee / cocktail hour
+  "SERVICE_END",    // last course served
+  "TEARDOWN",       // breakdown, leftover record, equipment return
+] as const;
+
+type CheckpointStage = typeof CHECKPOINT_SEQUENCE[number];
+
+interface ReadinessArea {
+  area: string;
+  ready: boolean;
+  issues: string[];
+  responsible: string;
+}
+
 export class EventOpsAgent extends BaseAgent {
   readonly name = "event_ops_agent";
-  readonly description = "Operações de evento e gestão de kickoff";
-  readonly defaultRiskLevel = "R2" as const;
+  readonly description = "Execução gastronômica: prontidão, checkpoints, ocorrências, desmontagem, consumo real";
+  readonly defaultRiskLevel = "R1" as const;
 
   async execute(context: AgentExecutionContext): Promise<AgentExecutionResult> {
-    const startTime = Date.now();
-    
-    logger.info("EventOpsAgent executing", { 
-      runId: context.agentRunId,
-      companyId: context.companyId 
-    });
-
+    const start = Date.now();
+    logger.info("EventOpsAgent executing", { runId: context.agentRunId });
     await this.logStep(context.agentRunId, "running", { input: context.input });
 
     try {
-      const eventId = String(context.input.eventId || "");
-      const eventDate = String(context.input.eventDate || "");
-      const eventType = String(context.input.eventType || "");
+      const mode = String(context.input.mode ?? "pre_event"); // pre_event | execution | post_event
+      const eventId    = context.input.eventId    ? String(context.input.eventId)    : undefined;
+      const sessionId  = context.input.sessionId  ? String(context.input.sessionId)  : undefined;
 
-      // Verificar kickoff
-      const kickoffStatus = await this.checkKickoffReady(context);
+      let result: Record<string, unknown>;
+      let actions: AgentAction[];
+      let riskLevel: "R0" | "R1" | "R2" | "R3" | "R4";
 
-      // Gerar checklist completo
-      const checklistItems = this.generateChecklist(context, kickoffStatus);
+      switch (mode) {
+        case "execution":
+          ({ result, actions, riskLevel } = await this.executionMode(context, eventId, sessionId) as { result: Record<string, unknown>; actions: AgentAction[]; riskLevel: "R0" | "R1" | "R2" | "R3" | "R4" });
+          break;
+        case "post_event":
+          ({ result, actions, riskLevel } = await this.postEventMode(context, eventId, sessionId) as { result: Record<string, unknown>; actions: AgentAction[]; riskLevel: "R0" | "R1" | "R2" | "R3" | "R4" });
+          break;
+        default:
+          ({ result, actions, riskLevel } = await this.preEventMode(context, eventId) as { result: Record<string, unknown>; actions: AgentAction[]; riskLevel: "R0" | "R1" | "R2" | "R3" | "R4" });
+      }
 
-      // Verificar equipe
-      const staffStatus = await this.checkStaff(context);
-
-      // Verificar cronograma
-      const scheduleStatus = this.checkSchedule(context);
-
-      // Verificar responsável operacional
-      const responsibleStatus = await this.assignResponsibles(context);
-
-      // Insumos
-      const suppliesStatus = await this.checkSupplies(context);
-
-      const result = {
-        kickoffReady: kickoffStatus.ready,
-        checklistItems,
-        status: {
-          staff: staffStatus,
-          schedule: scheduleStatus,
-          responsible: responsibleStatus,
-          supplies: suppliesStatus
-        },
-        riskFactors: this.identifyRisks(staffStatus, suppliesStatus, scheduleStatus),
-        actionRequired: kickoffStatus.ready ? [] : this.getRequiredActions(checklistItems),
-        timeline: this.generateTimeline(eventDate)
+      const output: Record<string, unknown> = {
+        _actions: actions,
+        _summary: String(result._summary ?? ""),
+        ...result,
       };
+      output["_summary"] = String(result._summary ?? ""); // ensure top-level
 
-      await this.logStep(context.agentRunId, "completed", { output: result });
+      await this.logStep(context.agentRunId, "completed", { output });
+      logger.info("EventOpsAgent completed", { runId: context.agentRunId, mode, actions: actions.length });
 
-      logger.info("EventOpsAgent completed", { 
-        runId: context.agentRunId,
-        kickoffReady: result.kickoffReady
-      });
-
-      return {
-        success: true,
-        output: result,
-        riskLevel: kickoffStatus.ready ? "R1" : "R3",
-        latencyMs: Date.now() - startTime
-      };
+      return { success: true, output, riskLevel, latencyMs: Date.now() - start };
 
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Unknown error";
-      
-      await this.logStep(context.agentRunId, "failed", { error: errorMessage });
-      logger.error("EventOpsAgent failed", { error: errorMessage });
-
+      const msg = error instanceof Error ? error.message : String(error);
+      await this.logStep(context.agentRunId, "failed", { error: msg });
       return {
         success: false,
-        output: { error: errorMessage, kickoffReady: false },
+        output: { _actions: [], _summary: `Falha: ${msg}`, error: msg },
         riskLevel: "R3",
-        latencyMs: Date.now() - startTime
+        latencyMs: Date.now() - start
       };
     }
   }
 
-  // Verificar se kickoff está pronto
-  private async checkKickoffReady(context: AgentExecutionContext): Promise<{
-    ready: boolean;
-    missing: string[];
-    percentComplete: number;
-  }> {
-    const required = [
-      "Confirmar equipe",
-      "Confirmar insumos", 
-      "Confirmar cronograma",
-      "Confirmar responsável operacional"
-    ];
-
-    const missing: string[] = [];
-    let checkCount = 0;
-
-    // Simular verificações (na realidade buscaria do DB)
-    for (const item of required) {
-      const confirmed = await this.checkItemStatus(item, context);
-      if (!confirmed) {
-        missing.push(item);
-      } else {
-        checkCount++;
-      }
-    }
-
-    return {
-      ready: missing.length === 0,
-      missing,
-      percentComplete: Math.round((checkCount / required.length) * 100)
-    };
-  }
-
-  // Gerar checklist completo
-  private generateChecklist(
+  // ----------------------------------------------------------
+  // MODE: pre_event — readiness checks before the event
+  // ----------------------------------------------------------
+  private async preEventMode(
     context: AgentExecutionContext,
-    kickoffStatus: ReturnType<typeof this.checkKickoffReady>
-  ): Array<{
-    item: string;
-    status: "pending" | "in_progress" | "completed";
-    owner: string;
-    priority: "high" | "medium" | "low";
-    deadline: string;
-  }> {
-    const eventDate = String(context.input.eventDate || "");
-    const daysUntil = this.daysUntil(eventDate);
+    eventId?: string
+  ) {
+    const numGuests   = Math.max(1, parseInt(String(context.input.numGuests ?? 100)));
+    const eventType   = String(context.input.eventType ?? "corporativo").toLowerCase();
+    const eventDate   = context.input.eventDate ? new Date(String(context.input.eventDate)) : undefined;
+    const daysUntil   = eventDate ? Math.ceil((eventDate.getTime() - Date.now()) / 86_400_000) : 30;
 
+    const areas = this.assessReadiness(numGuests, eventType, daysUntil, context.input);
+    const blockers = areas.filter(a => !a.ready);
+    const actions: AgentAction[] = [];
+
+    // Alert on unready critical areas
+    for (const area of blockers) {
+      actions.push({
+        type: "ALERT_RISK",
+        payload: {
+          code: "READINESS_FAIL",
+          message: `Área não pronta: ${area.area} — ${area.issues.join("; ")}`,
+          severity: area.area === "kitchen" || area.area === "staff" ? "critical" : "warning",
+          area: area.area,
+          eventId,
+          daysUntil
+        }
+      });
+    }
+
+    const allReady = blockers.length === 0;
+    const riskLevel: "R1" | "R2" | "R3" = allReady ? "R1"
+      : blockers.some(b => b.area === "staff" || b.area === "kitchen") ? "R3"
+      : "R2";
+
+    const result = {
+      _summary: allReady
+        ? `Evento pronto. ${areas.length} áreas verificadas. ${numGuests} pax.`
+        : `${blockers.length} área(s) com pendências: ${blockers.map(b => b.area).join(", ")}`,
+      mode: "pre_event",
+      ready: allReady,
+      daysUntil,
+      readiness: areas,
+      checklistTimeline: this.buildPreEventTimeline(daysUntil, eventType, numGuests),
+      staffPlan: this.buildStaffPlan(numGuests, eventType),
+      kitchenTimeline: this.buildKitchenTimeline(eventDate),
+    };
+
+    return { result, actions, riskLevel };
+  }
+
+  // ----------------------------------------------------------
+  // MODE: execution — live event monitoring & checkpoints
+  // ----------------------------------------------------------
+  private async executionMode(
+    context: AgentExecutionContext,
+    eventId?: string,
+    sessionId?: string
+  ) {
+    const stage = String(context.input.stage ?? "SERVICE_ACTIVE") as CheckpointStage;
+    const numGuests = parseInt(String(context.input.numGuests ?? 100));
+    const occurrences = this.extractOccurrences(context.input);
+    const actions: AgentAction[] = [];
+
+    // Confirm the current checkpoint
+    if (sessionId) {
+      actions.push({
+        type: "CONFIRM_CHECKPOINT",
+        payload: {
+          sessionId,
+          stage,
+          confirmedAt: new Date().toISOString(),
+          guestCount: numGuests,
+          notes: context.input.notes ?? null
+        }
+      });
+    }
+
+    // Log any occurrences reported
+    for (const occ of occurrences) {
+      actions.push({
+        type: "FLAG_OCCURRENCE",
+        payload: {
+          sessionId,
+          eventId,
+          type: occ.type,
+          severity: occ.severity,
+          description: occ.description,
+          area: occ.area,
+          reportedAt: new Date().toISOString()
+        }
+      });
+    }
+
+    const criticalOccs = occurrences.filter(o => o.severity === "critical");
+    const riskLevel = criticalOccs.length > 0 ? "R3" : occurrences.length > 0 ? "R2" : "R1";
+
+    const result = {
+      _summary: `Checkpoint ${stage} confirmado. ${occurrences.length} ocorrência(s) registrada(s)${criticalOccs.length > 0 ? ` — ${criticalOccs.length} CRÍTICA(S)` : ""}.`,
+      mode: "execution",
+      stage,
+      nextStage: this.nextCheckpoint(stage),
+      checkpointConfirmed: !!sessionId,
+      occurrencesLogged: occurrences.length,
+      criticalOccurrences: criticalOccs.length,
+      serviceMonitor: this.buildServiceMonitor(stage, numGuests, context.input),
+    };
+
+    return { result, actions, riskLevel };
+  }
+
+  // ----------------------------------------------------------
+  // MODE: post_event — teardown + consumption snapshot
+  // ----------------------------------------------------------
+  private async postEventMode(
+    context: AgentExecutionContext,
+    eventId?: string,
+    sessionId?: string
+  ) {
+    const numGuests    = parseInt(String(context.input.numGuests ?? 100));
+    const consumedItems = this.extractConsumedItems(context.input);
+    const actions: AgentAction[] = [];
+
+    // Record actual consumption per item
+    for (const item of consumedItems) {
+      actions.push({
+        type: "RECORD_CONSUMPTION",
+        payload: {
+          eventId,
+          sessionId,
+          itemCode: item.itemCode,
+          itemName: item.itemName,
+          quantityConsumed: item.quantityConsumed,
+          quantityLeftover: item.quantityLeftover ?? 0,
+          unit: item.unit,
+          recordedAt: new Date().toISOString()
+        }
+      });
+    }
+
+    // Confirm teardown
+    if (sessionId) {
+      actions.push({
+        type: "CONFIRM_TEARDOWN",
+        payload: {
+          sessionId,
+          eventId,
+          numGuests,
+          itemsRecorded: consumedItems.length,
+          confirmedAt: new Date().toISOString(),
+          notes: context.input.teardownNotes ?? null
+        }
+      });
+    }
+
+    // Trigger reconciliation if consumption data provided
+    if (consumedItems.length > 0 && eventId) {
+      actions.push({
+        type: "RECONCILE_EVENT",
+        payload: {
+          eventId,
+          sessionId,
+          numGuests,
+          consumedItems
+        }
+      });
+    }
+
+    const result = {
+      _summary: `Desmontagem confirmada. ${consumedItems.length} item(ns) de consumo registrado(s). Reconciliação ${consumedItems.length > 0 ? "solicitada" : "pendente (sem dados de consumo)"}.`,
+      mode: "post_event",
+      teardownConfirmed: !!sessionId,
+      consumptionSnapshot: consumedItems,
+      reconciliationRequested: consumedItems.length > 0,
+      nextSteps: [
+        "Conferir baixa de estoque via reconciliação",
+        "Gerar relatório financeiro pós-evento",
+        "Registrar consumo real no histórico para melhorar previsões futuras",
+      ],
+    };
+
+    return { result, actions, riskLevel: "R1" as const };
+  }
+
+  // ----------------------------------------------------------
+  // Readiness assessment — per area
+  // ----------------------------------------------------------
+  private assessReadiness(
+    numGuests: number,
+    eventType: string,
+    daysUntil: number,
+    input: Record<string, unknown>
+  ): ReadinessArea[] {
+    const staffRequired = Math.ceil(numGuests / 20) + 2;
+    const staffConfirmed = parseInt(String(input.staffConfirmed ?? 0));
+    const hasMenu       = Boolean(input.menuConfirmed ?? false);
+    const hasVenue      = Boolean(input.venueConfirmed ?? daysUntil > 14);
+    const hasEquipment  = Boolean(input.equipmentConfirmed ?? daysUntil > 7);
+    const hasBar        = ["casamento", "formatura", "aniversario", "confraternizacao"].includes(eventType);
+
+    const areas: ReadinessArea[] = [
+      {
+        area: "kitchen",
+        ready: hasMenu,
+        issues: hasMenu ? [] : ["Cardápio não confirmado com a cozinha"],
+        responsible: "Chef de Produção"
+      },
+      {
+        area: "staff",
+        ready: staffConfirmed >= staffRequired,
+        issues: staffConfirmed >= staffRequired ? [] : [
+          `${staffRequired - staffConfirmed} pessoa(s) faltando (necessário: ${staffRequired}, confirmado: ${staffConfirmed})`
+        ],
+        responsible: "Gerente de Operações"
+      },
+      {
+        area: "venue",
+        ready: hasVenue,
+        issues: hasVenue ? [] : ["Localização não confirmada"],
+        responsible: "Coordenador de Logística"
+      },
+      {
+        area: "equipment",
+        ready: hasEquipment,
+        issues: hasEquipment ? [] : ["Equipamentos não conferidos"],
+        responsible: "Coordenador de Logística"
+      },
+    ];
+
+    if (hasBar) {
+      const barReady = Boolean(input.barConfirmed ?? daysUntil > 3);
+      areas.push({
+        area: "bar",
+        ready: barReady,
+        issues: barReady ? [] : ["Setup do bar não confirmado"],
+        responsible: "Barman Responsável"
+      });
+    }
+
+    if (eventType === "corporativo") {
+      const coffeeReady = Boolean(input.coffeeStationConfirmed ?? true);
+      areas.push({
+        area: "coffee_station",
+        ready: coffeeReady,
+        issues: coffeeReady ? [] : ["Estação de café não montada"],
+        responsible: "Equipe de Apoio"
+      });
+    }
+
+    return areas;
+  }
+
+  private buildPreEventTimeline(
+    daysUntil: number,
+    eventType: string,
+    numGuests: number
+  ): Array<{ milestone: string; deadline: string; responsible: string; critical: boolean }> {
+    const setupHours = this.calcSetupHours(eventType, numGuests);
     return [
-      {
-        item: "Confirmar equipe de trabalho",
-        status: kickoffStatus.percentComplete >= 25 ? "completed" : "pending",
-        owner: "Chef de Produção",
-        priority: "high",
-        deadline: daysUntil > 7 ? "3 dias" : "24h"
-      },
-      {
-        item: "Confirmar insumos e materiais",
-        status: kickoffStatus.percentComplete >= 50 ? "completed" : "pending",
-        owner: "Gestor de Estoque",
-        priority: "high",
-        deadline: daysUntil > 7 ? "48h" : "12h"
-      },
-      {
-        item: "Confirmar cronograma de setup",
-        status: kickoffStatus.percentComplete >= 75 ? "completed" : "pending",
-        owner: "Coordenador de Logística",
-        priority: "medium",
-        deadline: daysUntil > 5 ? "48h" : "6h"
-      },
-      {
-        item: "Confirmar responsável operacional",
-        status: kickoffStatus.percentComplete === 100 ? "completed" : "pending",
-        owner: "Gerente de Operações",
-        priority: "high",
-        deadline: daysUntil > 3 ? "24h" : "2h"
-      },
-      {
-        item: "Briefing completo com equipe",
-        status: "pending",
-        owner: "Chef de Produção",
-        priority: "medium",
-        deadline: daysUntil > 2 ? "12h" : "1h"
-      },
-      {
-        item: "Check-in final no local",
-        status: "pending",
-        owner: "Responsável no local",
-        priority: "high",
-        deadline: "0h"
-      }
+      { milestone: "Confirmar cardápio com chef",      deadline: `D-${Math.max(daysUntil - 1, 5)}`,  responsible: "Chef de Produção",         critical: true  },
+      { milestone: "Confirmar equipe de serviço",      deadline: "D-3",                               responsible: "Gerente de Operações",     critical: true  },
+      { milestone: "Verificar estoque de bebidas",     deadline: "D-3",                               responsible: "Gestor de Estoque",        critical: true  },
+      { milestone: "Briefing completo da equipe",      deadline: "D-1",                               responsible: "Chef de Produção",         critical: true  },
+      { milestone: "Conferência de equipamentos",      deadline: "D-1",                               responsible: "Coordenador de Logística", critical: false },
+      { milestone: "Chegada da equipe ao local",       deadline: `H-${setupHours}`,                   responsible: "Todos",                   critical: true  },
+      { milestone: "Finalização do setup",             deadline: "H-1",                               responsible: "Coordenador de Logística", critical: true  },
+      { milestone: "Último check antes de abertura",   deadline: "H-0:30",                            responsible: "Gerente de Operações",     critical: true  },
     ];
   }
 
-  // Verificar equipe
-  private async checkStaff(context: AgentExecutionContext): Promise<{
-    confirmed: number;
-    required: number;
-    status: "sufficient" | "partial" | "critical";
-    gaps: string[];
-  }> {
-    const numGuests = parseInt(String(context.input.numGuests || 0), 10);
-    const required = Math.ceil(numGuests / 20) + 2; // 1 staff por 20 convidados + 2
-
-    // Simulação - na realidade buscaria availability do DB
-    const confirmed = required - Math.floor(Math.random() * 3);
-
-    const status = confirmed >= required ? "sufficient" :
-                   confirmed >= required * 0.7 ? "partial" : "critical";
-
-    const gaps: string[] = [];
-    if (confirmed < required) {
-      gaps.push(`Faltam ${required - confirmed} pessoas na equipe`);
-    }
-    if (confirmed < required * 0.5) {
-      gaps.push("Equipe crítica - contratação emergencial necessária");
-    }
-
-    return { confirmed, required, status, gaps };
-  }
-
-  // Verificar cronograma
-  private checkSchedule(context: AgentExecutionContext): {
-    defined: boolean;
-    setupHours: number;
-    bufferMinutes: number;
-    risks: string[];
-  } {
-    const eventType = String(context.input.eventType || "");
-    const size = parseInt(String(context.input.numGuests || 0), 10);
-
-    const baseSetup = {
-      "casamento": 4,
-      "corporativo": 2,
-      "aniversario": 3,
-      "congresso": 6
-    }[eventType.toLowerCase()] || 3;
-
-    const setupHours = baseSetup + (size > 100 ? Math.ceil(size / 100) : 0);
-    
-    return {
-      defined: true,
-      setupHours,
-      bufferMinutes: setupHours > 4 ? 60 : 30,
-      risks: setupHours < 2 ? ["Setup curto - risco de atraso"] : []
+  private buildStaffPlan(numGuests: number, eventType: string): Record<string, number> {
+    const base = Math.ceil(numGuests / 20);
+    const plan: Record<string, number> = {
+      garcons: base,
+      supervisores: Math.max(1, Math.ceil(base / 5)),
+      cozinha: Math.ceil(numGuests / 50) + 1,
     };
-  }
-
-  // Atribuir responsáveis
-  private async assignResponsibles(context: AgentExecutionContext): Promise<{
-    assigned: boolean;
-    responsibles: Array<{ role: string; name: string; phone: string }>;
-  }> {
-    // Simulação
-    return {
-      assigned: true,
-      responsibles: [
-        { role: "Gerente de Operações", name: "Chef Principal", phone: "" },
-        { role: "Responsável no Local", name: "TBD", phone: "" }
-      ]
-    };
-  }
-
-  // Verificar insumos
-  private async checkSupplies(context: AgentExecutionContext): Promise<{
-    complete: boolean;
-    items: Array<{ name: string; ready: boolean; location: string }>;
-  }> {
-    return {
-      complete: false,
-      items: [
-        { name: "Materiais de montagem", ready: false, location: "Centro de distribuição" },
-        { name: "Insumos de preparação", ready: false, location: "Cozinha central" },
-        { name: "Equipamentos de service", ready: false, location: "Galpão" }
-      ]
-    };
-  }
-
-  // Ações obrigatórias
-  private getRequiredActions(checklist: ReturnType<typeof this.generateChecklist>): string[] {
-    return checklist
-      .filter(item => item.status === "pending" && item.priority === "high")
-      .map(item => `${item.item} (${item.deadline})`);
-  }
-
-  // Identificar riscos
-  private identifyRisks(
-    staff: ReturnType<typeof this.checkStaff>,
-    supplies: ReturnType<typeof this.checkSupplies>,
-    schedule: ReturnType<typeof this.checkSchedule>
-  ): Array<{ level: "high" | "medium" | "low"; description: string }> {
-    const risks: Array<{ level: "high" | "medium" | "low"; description: string }> = [];
-
-    if (staff.status === "critical") {
-      risks.push({ level: "high", description: "Equipe insuficiente" });
+    if (["casamento", "formatura", "aniversario"].includes(eventType)) {
+      plan.barmans = Math.ceil(numGuests / 80) + 1;
     }
-    if (!supplies.complete) {
-      risks.push({ level: "medium", description: "Insumos não confirmados" });
+    if (eventType === "corporativo") {
+      plan.coffee_station = 1;
     }
-    if (schedule.setupHours < 3) {
-      risks.push({ level: "medium", description: "Setup em tempo curto" });
-    }
-
-    return risks;
+    plan.total = Object.values(plan).reduce((s, v) => s + v, 0);
+    return plan;
   }
 
-  // Gerar timeline
-  private generateTimeline(eventDateStr: string): Array<{
-    time: string;
-    activity: string;
-    responsible: string;
-  }> {
-    if (!eventDateStr) return [];
-
-    const eventDate = new Date(eventDateStr);
-    
+  private buildKitchenTimeline(eventDate?: Date): Array<{ time: string; activity: string }> {
+    if (!eventDate) return [];
+    const d = eventDate;
     return [
-      { time: "D-3", activity: "Briefing completo com equipe", responsible: "Chef Produção" },
-      { time: "D-2", activity: "Insumos despachados para local", responsible: "Estoque" },
-      { time: "D-1", activity: "Setup de estruturas (se necessário)", responsible: "Logística" },
-      { time: "H-4", activity: "Chegada da equipe e insumos", responsible: "Coordenação" },
-      { time: "H-2", activity: "Preparações em andamento", responsible: "Cozinha" },
-      { time: "H-1", activity: "Finalização de montagem", responsible: "Equipe geral" },
-      { time: "H-0", activity: "Evento início", responsible: "Todos" }
+      { time: this.fmtRelative(d, -48), activity: "Compras e recebimento de insumos" },
+      { time: this.fmtRelative(d, -24), activity: "Pré-preparo: marinadas, bases, massas" },
+      { time: this.fmtRelative(d, -6),  activity: "Montagem de mise en place completa" },
+      { time: this.fmtRelative(d, -3),  activity: "Início da cocção de proteínas" },
+      { time: this.fmtRelative(d, -1),  activity: "Finalização e montagem de pratos frios" },
+      { time: this.fmtRelative(d, 0),   activity: "Início do serviço — linha de produção ativa" },
     ];
   }
 
-  // Helper: verificar item
-  private async checkItemStatus(item: string, context: AgentExecutionContext): Promise<boolean> {
-    // Na realidade, buscaria o status real do DB
-    return Math.random() > 0.3; // 70% chance de estar pronto (simulação)
+  private buildServiceMonitor(
+    stage: CheckpointStage,
+    numGuests: number,
+    input: Record<string, unknown>
+  ): Record<string, unknown> {
+    return {
+      stage,
+      guestCount: numGuests,
+      tablesTurned: input.tablesTurned ?? 0,
+      coursesServed: input.coursesServed ?? 0,
+      beverageConsumptionPct: input.beverageConsumptionPct ?? 0,
+      kitchenStatus: input.kitchenStatus ?? "unknown",
+      barStatus: input.barStatus ?? "unknown",
+    };
   }
 
-  // Helper: dias até evento
-  private daysUntil(dateStr: string): number {
-    if (!dateStr) return 30;
-    const eventDate = new Date(dateStr);
-    return Math.ceil((eventDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+  private extractOccurrences(input: Record<string, unknown>): Array<{
+    type: string; severity: string; description: string; area: string;
+  }> {
+    const raw = input.occurrences;
+    if (!Array.isArray(raw)) return [];
+    return raw.map((o: unknown) => {
+      const obj = o as Record<string, unknown>;
+      return {
+        type:        String(obj.type        ?? "operational"),
+        severity:    String(obj.severity    ?? "warning"),
+        description: String(obj.description ?? ""),
+        area:        String(obj.area        ?? "general"),
+      };
+    });
+  }
+
+  private extractConsumedItems(input: Record<string, unknown>): Array<{
+    itemCode: string; itemName: string; quantityConsumed: number;
+    quantityLeftover?: number; unit: string;
+  }> {
+    const raw = input.consumedItems ?? input.consumption;
+    if (!Array.isArray(raw)) return [];
+    return raw.map((i: unknown) => {
+      const obj = i as Record<string, unknown>;
+      return {
+        itemCode:          String(obj.itemCode ?? ""),
+        itemName:          String(obj.itemName ?? ""),
+        quantityConsumed:  parseFloat(String(obj.quantityConsumed ?? obj.consumed ?? 0)),
+        quantityLeftover:  obj.quantityLeftover !== undefined ? parseFloat(String(obj.quantityLeftover)) : undefined,
+        unit:              String(obj.unit ?? "un"),
+      };
+    }).filter(i => i.itemCode);
+  }
+
+  private nextCheckpoint(stage: CheckpointStage): CheckpointStage | null {
+    const idx = CHECKPOINT_SEQUENCE.indexOf(stage);
+    return idx >= 0 && idx < CHECKPOINT_SEQUENCE.length - 1
+      ? CHECKPOINT_SEQUENCE[idx + 1]
+      : null;
+  }
+
+  private calcSetupHours(eventType: string, numGuests: number): number {
+    const base: Record<string, number> = {
+      casamento: 5, formatura: 6, corporativo: 3, aniversario: 4, confraternizacao: 4
+    };
+    return (base[eventType] ?? 4) + Math.ceil(numGuests / 150);
+  }
+
+  private fmtRelative(base: Date, offsetHours: number): string {
+    const d = new Date(base.getTime() + offsetHours * 3_600_000);
+    return d.toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
   }
 }
 
-// Singleton
 export const eventOpsAgent = new EventOpsAgent();
 
-// Auto-registration
 import { agentRegistry } from "./base-agent";
 agentRegistry.register(eventOpsAgent);

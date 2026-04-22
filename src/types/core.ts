@@ -31,7 +31,8 @@ export type WorkflowType =
   | "lead_qualification"
   | "event_planning"
   | "event_execution"
-  | "contract_to_event";
+  | "contract_to_event"
+  | "event_procurement";
 
 // Additional types for Orkestra domain
 export type MemoryType =
