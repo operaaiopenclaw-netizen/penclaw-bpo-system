@@ -42,12 +42,21 @@ async function bootstrap() {
 
   await app.register(swaggerUi, { routePrefix: "/docs" });
 
-  // Static dashboard UI at /ui/* (index.html, login.html, operations.html, users.html)
+  // Static dashboard UI at /ui/* (index.html, login.html, operations.html, users.html).
+  // cacheControl:false + setHeaders forces no-store so browsers always fetch the
+  // latest HTML/JS — dashboard code lives inline so staleness = silent breakage.
   await app.register(fastifyStatic, {
     root: path.resolve(process.cwd(), "dashboard"),
     prefix: "/ui/",
     decorateReply: false,
+    cacheControl: false,
+    setHeaders: (res) => {
+      res.setHeader("Cache-Control", "no-store, must-revalidate");
+    },
   });
+
+  // Friendly root — bounce to the login page.
+  app.get("/", async (_req, reply) => reply.redirect("/ui/login.html", 302));
 
   // Audit hook (records every mutating request after response)
   registerAuditHook(app);
