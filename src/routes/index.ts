@@ -15,3 +15,4 @@ export { executionRoutes } from "./execution";
 export { operationsRoutes } from "./operations";
 export { authRoutes } from "./auth";
 export { usersRoutes } from "./users";
+export { commercialRoutes } from "./commercial";

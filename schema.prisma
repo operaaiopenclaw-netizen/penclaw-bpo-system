@@ -34,10 +34,10 @@ model AgentRun {
   updatedAt     DateTime  @updatedAt
 
   // Relações
-  steps      AgentStep[]
-  approvals  ApprovalRequest[]
-  artifacts  Artifact[]
-  costs      CostEvent[]
+  steps     AgentStep[]
+  approvals ApprovalRequest[]
+  artifacts Artifact[]
+  costs     CostEvent[]
 
   @@index([companyId])
   @@index([status])
@@ -59,8 +59,8 @@ model AgentStep {
   finishedAt    DateTime?
 
   // Relações
-  agentRun   AgentRun    @relation(fields: [agentRunId], references: [id], onDelete: Cascade)
-  toolCalls  ToolCall[]
+  agentRun  AgentRun   @relation(fields: [agentRunId], references: [id], onDelete: Cascade)
+  toolCalls ToolCall[]
 
   @@unique([agentRunId, stepOrder])
   @@index([agentRunId])
@@ -70,16 +70,16 @@ model AgentStep {
 }
 
 model ToolCall {
-  id            String    @id @default(uuid())
-  agentStepId   String
-  toolName      String
-  toolInput     Json?
-  toolOutput    Json?
-  context       Json?
-  status        String    @default("pending")
-  latencyMs     Int?
-  costEstimate  Float?
-  createdAt     DateTime  @default(now())
+  id           String   @id @default(uuid())
+  agentStepId  String
+  toolName     String
+  toolInput    Json?
+  toolOutput   Json?
+  context      Json?
+  status       String   @default("pending")
+  latencyMs    Int?
+  costEstimate Float?
+  createdAt    DateTime @default(now())
 
   // Relações
   agentStep AgentStep @relation(fields: [agentStepId], references: [id], onDelete: Cascade)
@@ -116,18 +116,18 @@ model ApprovalRequest {
 // ============================================================
 
 model MemoryItem {
-  id                String    @id @default(uuid())
-  companyId         String?
-  memoryType        String
-  title             String
-  content           String
-  tags              String[]  @default([])
-  sourceType        String?
-  sourceRef         String?
-  confidenceScore   Float?
+  id              String   @id @default(uuid())
+  companyId       String?
+  memoryType      String
+  title           String
+  content         String
+  tags            String[] @default([])
+  sourceType      String?
+  sourceRef       String?
+  confidenceScore Float?
   // embedding_vector  Unsupported("vector")?  // Requer extensão pgvector
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   @@index([companyId])
   @@index([memoryType])
@@ -137,16 +137,16 @@ model MemoryItem {
 }
 
 model DomainRule {
-  id              String    @id @default(uuid())
+  id              String   @id @default(uuid())
   companyId       String?
   domain          String
   ruleName        String
   ruleDescription String?
   ruleLogic       Json
-  priority        Int       @default(100)
-  active          Boolean   @default(true)
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  priority        Int      @default(100)
+  active          Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   @@unique([companyId, domain, ruleName])
   @@index([companyId])
@@ -156,17 +156,17 @@ model DomainRule {
 }
 
 model Artifact {
-  id            String    @id @default(uuid())
-  agentRunId    String
-  artifactType  String
-  fileName      String
-  storageUrl    String?
-  checksum      String?
-  sizeBytes     Int?
-  contentType   String?
-  version       Int       @default(1)
-  metadata      Json?
-  createdAt     DateTime  @default(now())
+  id           String   @id @default(uuid())
+  agentRunId   String
+  artifactType String
+  fileName     String
+  storageUrl   String?
+  checksum     String?
+  sizeBytes    Int?
+  contentType  String?
+  version      Int      @default(1)
+  metadata     Json?
+  createdAt    DateTime @default(now())
 
   // Relações
   agentRun AgentRun @relation(fields: [agentRunId], references: [id], onDelete: Cascade)
@@ -178,14 +178,14 @@ model Artifact {
 }
 
 model CostEvent {
-  id            String    @id @default(uuid())
-  agentRunId    String
-  modelName     String?
-  tokensIn      Int       @default(0)
-  tokensOut     Int       @default(0)
-  monetaryCost  Float     @default(0)
-  costCategory  String    @default("inference")
-  createdAt     DateTime  @default(now())
+  id           String   @id @default(uuid())
+  agentRunId   String
+  modelName    String?
+  tokensIn     Int      @default(0)
+  tokensOut    Int      @default(0)
+  monetaryCost Float    @default(0)
+  costCategory String   @default("inference")
+  createdAt    DateTime @default(now())
 
   // Relações
   agentRun AgentRun @relation(fields: [agentRunId], references: [id], onDelete: Cascade)
@@ -213,13 +213,13 @@ model Event {
   status       String?   @default("planned")
 
   // Financeiro
-  revenueTotal Float?    @map("revenue_total")
-  cmvTotal     Float?    @map("cmv_total")
-  marginPct    Float?    @map("margin_pct")
-  netProfit    Float?    @map("net_profit")
+  revenueTotal Float? @map("revenue_total")
+  cmvTotal     Float? @map("cmv_total")
+  marginPct    Float? @map("margin_pct")
+  netProfit    Float? @map("net_profit")
 
-  createdAt    DateTime? @default(now()) @map("created_at")
-  updatedAt    DateTime? @updatedAt @map("updated_at")
+  createdAt DateTime? @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
 
   @@index([tenantId])
   @@index([status])
@@ -228,19 +228,19 @@ model Event {
 }
 
 model Recipe {
-  id              String    @id @default(uuid())
-  recipeId        String    @unique  // REC###
-  name            String
-  category        String?
-  yield           Int?
-  prepTimeMin     Int?
-  complexity      String?
-  ingredients     Json?     // Array de ingredientes
-  costPerServing  Float?
-  instructions    String?
-  active          Boolean   @default(true)
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  id             String   @id @default(uuid())
+  recipeId       String   @unique // REC###
+  name           String
+  category       String?
+  yield          Int?
+  prepTimeMin    Int?
+  complexity     String?
+  ingredients    Json? // Array de ingredientes
+  costPerServing Float?
+  instructions   String?
+  active         Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   @@index([category])
   @@index([active])
@@ -248,21 +248,21 @@ model Recipe {
 }
 
 model InventoryItem {
-  id                String    @id @default(uuid())
-  code              String    @unique  // CAR-001, LEG-001, etc
-  name              String
-  currentQty        Float     @default(0)
-  unit              String
-  unitPrice         Float?
-  supplier          String?
-  minStockLevel     Float?
-  reorderPoint      Float?
-  
+  id            String  @id @default(uuid())
+  code          String  @unique // CAR-001, LEG-001, etc
+  name          String
+  currentQty    Float   @default(0)
+  unit          String
+  unitPrice     Float?
+  supplier      String?
+  minStockLevel Float?
+  reorderPoint  Float?
+
   // Histórico de entradas
-  entryHistory      Json?     // Array de entradas
-  
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
+  entryHistory Json? // Array de entradas
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([supplier])
   @@index([currentQty])
@@ -277,39 +277,39 @@ model InventoryItem {
 // Aqui definimos como modelos de dados para referência
 
 model AgentRunSummary {
-  id              String
-  workflowType    String
-  status          String
-  riskLevel       String
-  totalCost       Float?
-  totalTokens     Int?
-  latencyMs       Int?
-  totalSteps      Int?
-  completedSteps  Int?
+  id               String
+  workflowType     String
+  status           String
+  riskLevel        String
+  totalCost        Float?
+  totalTokens      Int?
+  latencyMs        Int?
+  totalSteps       Int?
+  completedSteps   Int?
   pendingApprovals Int?
-  createdAt       DateTime?
-  startedAt       DateTime?
-  finishedAt      DateTime?
+  createdAt        DateTime?
+  startedAt        DateTime?
+  finishedAt       DateTime?
 
-  @@ignore  // View não gerenciada pelo Prisma
+  @@ignore // View não gerenciada pelo Prisma
 }
 
 model FinancialEvent {
-  id            String
-  eventId       String
-  nCtt          String
-  companyName   String
-  clientName    String?
-  eventType     String?
-  eventDate     DateTime?
-  status        String
-  revenueTotal  Float?
-  cmvTotal      Float?
-  netProfit     Float?
-  marginPct     Float?
-  marginStatus  String?
+  id           String
+  eventId      String
+  nCtt         String
+  companyName  String
+  clientName   String?
+  eventType    String?
+  eventDate    DateTime?
+  status       String
+  revenueTotal Float?
+  cmvTotal     Float?
+  netProfit    Float?
+  marginPct    Float?
+  marginStatus String?
 
-  @@ignore  // View não gerenciada pelo Prisma
+  @@ignore // View não gerenciada pelo Prisma
 }
 
 // ============================================================
@@ -318,14 +318,14 @@ model FinancialEvent {
 
 // Opcional: Criar tabelas de lookup para enums
 model WorkflowType {
-  id    String @id
-  name  String
+  id          String  @id
+  name        String
   description String?
 }
 
 model RiskLevel {
-  id    String @id
-  name  String
+  id       String @id
+  name     String
   minValue Int
   maxValue Int
 }
@@ -342,35 +342,35 @@ model RiskLevel {
 // ============================================================
 
 model SystemEvent {
-  id                String    @id @default(uuid())
-  tenantId          String    // Multi-tenant obrigatório
-  
-  // Identificação do agregado
-  aggregateType     String    // "event", "inventory", "procurement", "finance", "commercial"
-  aggregateId       String    // ID do agregado
-  
-  // Tipo e conteúdo
-  eventType         String    // ex: "event.created", "finance.margin_calculated"
-  payload           Json      // Dados completos do evento
-  
-  // Rastreabilidade
-  source            String    @default("api") // "api", "agent", "system", "manual"
-  correlationId     String?   // ID de correlação entre eventos
-  causationId       String?   // ID do evento que causou este
-  
-  // Status e processamento
-  status            String    @default("pending") // pending, processing, processed, failed
-  errorMessage      String?   
-  processedAt       DateTime? 
-  
-  // Metadados
-  createdBy         String?   
-  ipAddress         String?   
-  
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
+  id       String @id @default(uuid())
+  tenantId String // Multi-tenant obrigatório
 
-  domainLogs        DomainLog[] 
+  // Identificação do agregado
+  aggregateType String // "event", "inventory", "procurement", "finance", "commercial"
+  aggregateId   String // ID do agregado
+
+  // Tipo e conteúdo
+  eventType String // ex: "event.created", "finance.margin_calculated"
+  payload   Json // Dados completos do evento
+
+  // Rastreabilidade
+  source        String  @default("api") // "api", "agent", "system", "manual"
+  correlationId String? // ID de correlação entre eventos
+  causationId   String? // ID do evento que causou este
+
+  // Status e processamento
+  status       String    @default("pending") // pending, processing, processed, failed
+  errorMessage String?
+  processedAt  DateTime?
+
+  // Metadados
+  createdBy String?
+  ipAddress String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  domainLogs DomainLog[]
 
   @@index([tenantId, aggregateType, aggregateId])
   @@index([tenantId, eventType, createdAt])
@@ -382,23 +382,23 @@ model SystemEvent {
 }
 
 model DomainLog {
-  id                String    @id @default(uuid())
-  systemEventId     String
-  tenantId          String
-  domain            String    // "event", "inventory", "procurement", "finance", "commercial"
-  
-  action            String    
-  entityId          String    
-  entityType        String    
-  oldState          Json?     
-  newState          Json      
-  
-  processedBy       String?   
-  processingTimeMs  Int?      
-  
-  createdAt         DateTime  @default(now())
+  id            String @id @default(uuid())
+  systemEventId String
+  tenantId      String
+  domain        String // "event", "inventory", "procurement", "finance", "commercial"
 
-  systemEvent       SystemEvent @relation(fields: [systemEventId], references: [id], onDelete: Cascade)
+  action     String
+  entityId   String
+  entityType String
+  oldState   Json?
+  newState   Json
+
+  processedBy      String?
+  processingTimeMs Int?
+
+  createdAt DateTime @default(now())
+
+  systemEvent SystemEvent @relation(fields: [systemEventId], references: [id], onDelete: Cascade)
 
   @@index([tenantId, domain, createdAt])
   @@index([tenantId, entityType, entityId])
@@ -408,24 +408,24 @@ model DomainLog {
 }
 
 model EventProcessor {
-  id                String    @id @default(uuid())
-  tenantId          String
-  processorName     String    
-  handlerType       String    @default("sync") // "sync", "async", "queue"
-  
-  eventTypes        String[]  
-  aggregateTypes    String[]  
-  
-  status            String    @default("active")
-  lastProcessedAt   DateTime?
-  lastEventId       String?
-  
-  eventsProcessed   Int       @default(0)
-  eventsFailed      Int       @default(0)
-  averageLatencyMs  Float?
-  
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
+  id            String @id @default(uuid())
+  tenantId      String
+  processorName String
+  handlerType   String @default("sync") // "sync", "async", "queue"
+
+  eventTypes     String[]
+  aggregateTypes String[]
+
+  status          String    @default("active")
+  lastProcessedAt DateTime?
+  lastEventId     String?
+
+  eventsProcessed  Int    @default(0)
+  eventsFailed     Int    @default(0)
+  averageLatencyMs Float?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([tenantId, processorName])
   @@index([tenantId, status, lastProcessedAt])
@@ -433,20 +433,20 @@ model EventProcessor {
 }
 
 model EventSnapshot {
-  id                String    @id @default(uuid())
-  
-  tenantId          String
-  aggregateType     String
-  aggregateId       String
-  
-  version           Int       
-  state             Json      
-  
-  lastEventId       String    
-  lastEventType     String
-  eventCount        Int       
-  
-  createdAt         DateTime  @default(now())
+  id String @id @default(uuid())
+
+  tenantId      String
+  aggregateType String
+  aggregateId   String
+
+  version Int
+  state   Json
+
+  lastEventId   String
+  lastEventType String
+  eventCount    Int
+
+  createdAt DateTime @default(now())
 
   @@unique([tenantId, aggregateType, aggregateId, version])
   @@index([tenantId, aggregateType, aggregateId])
@@ -465,7 +465,7 @@ enum EntityState {
   PROPOSED
   APPROVED
   CONTRACTED
-  
+
   // Operação
   PLANNED
   READY_FOR_PRODUCTION
@@ -474,39 +474,39 @@ enum EntityState {
   EXECUTING
   CLOSED
   ANALYZED
-  
+
   // Cancelamento
   CANCELLED
 }
 
 // Estado atual das entidades
 model EntityStateRecord {
-  id              String    @id @default(uuid())
-  tenantId        String
-  
+  id       String @id @default(uuid())
+  tenantId String
+
   // Entidade
-  entityType      String    // "event", "proposal", "contract", "service_order", "production_order"
-  entityId        String    // ID da entidade
-  
+  entityType String // "event", "proposal", "contract", "service_order", "production_order"
+  entityId   String // ID da entidade
+
   // Estado
-  currentState    String    // valores do enum EntityState
-  previousState   String?
-  
+  currentState  String // valores do enum EntityState
+  previousState String?
+
   // Metadados
-  enteredAt       DateTime  @default(now())
-  enteredBy       String?   // user_id ou agent_id
-  actorType       String    @default("system") // "user", "agent", "system", "api"
-  reason          String?   // motivo da transição
-  source          String?   // origem da ação
-  
+  enteredAt DateTime @default(now())
+  enteredBy String? // user_id ou agent_id
+  actorType String   @default("system") // "user", "agent", "system", "api"
+  reason    String? // motivo da transição
+  source    String? // origem da ação
+
   // Consistência
-  version         Int       @default(1) // optimistic locking
-  validFrom       DateTime  @default(now())
-  validUntil      DateTime? // null = estado atual
-  isCurrent       Boolean   @default(true)
-  
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  version    Int       @default(1) // optimistic locking
+  validFrom  DateTime  @default(now())
+  validUntil DateTime? // null = estado atual
+  isCurrent  Boolean   @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([tenantId, entityType, entityId])
   @@index([tenantId, currentState, isCurrent])
@@ -517,46 +517,46 @@ model EntityStateRecord {
 
 // Log de transições de estado
 model StateTransition {
-  id              String    @id @default(uuid())
-  tenantId        String
-  
+  id       String @id @default(uuid())
+  tenantId String
+
   // Entidade
-  entityType      String
-  entityId        String
-  
+  entityType String
+  entityId   String
+
   // Transição
-  fromState       String
-  toState         String
-  
+  fromState String
+  toState   String
+
   // Actor
-  actorType       String    // "user", "agent", "system", "api", "webhook"
-  actorId         String?   // ID do usuário/agente
-  
+  actorType String // "user", "agent", "system", "api", "webhook"
+  actorId   String? // ID do usuário/agente
+
   // Motivação
-  reason          String?
-  triggerEvent    String?   // ex: "proposal.approved", "contract.signed"
-  source          String?   // API endpoint ou source
-  ipAddress       String?
-  
+  reason       String?
+  triggerEvent String? // ex: "proposal.approved", "contract.signed"
+  source       String? // API endpoint ou source
+  ipAddress    String?
+
   // Validadores
-  validationResult Json?   // resultado de validações
-  warnings        String[]  @default([])
-  blockedBy       String?   // se transição foi bloqueada
-  
+  validationResult Json? // resultado de validações
+  warnings         String[] @default([])
+  blockedBy        String? // se transição foi bloqueada
+
   // Sistema de origem
-  systemEventId   String?   // vinculação com SystemEvent
+  systemEventId String? // vinculação com SystemEvent
 
   // Timestamps
-  attemptedAt     DateTime  @default(now())
-  completedAt     DateTime?
-  durationMs      Int?      // tempo da transição
-  
+  attemptedAt DateTime  @default(now())
+  completedAt DateTime?
+  durationMs  Int? // tempo da transição
+
   // Status da transição
-  status          String    @default("completed") // completed, failed, blocked, rolled_back
-  errorMessage    String?
-  
+  status       String  @default("completed") // completed, failed, blocked, rolled_back
+  errorMessage String?
+
   // Referência ao estado atual (após transição)
-  resultingStateId String?   // ID do EntityStateRecord resultante
+  resultingStateId String? // ID do EntityStateRecord resultante
 
   @@index([tenantId, entityType, entityId, attemptedAt])
   @@index([tenantId, fromState, toState])
@@ -568,37 +568,37 @@ model StateTransition {
 
 // Regras de transição válidas
 model StateTransitionRule {
-  id              String    @id @default(uuid())
-  tenantId        String
-  
+  id       String @id @default(uuid())
+  tenantId String
+
   // Regra
-  entityType      String    // para que tipo de entidade
-  fromState       String    // estado de origem
-  toState         String    // estado de destino
-  
+  entityType String // para que tipo de entidade
+  fromState  String // estado de origem
+  toState    String // estado de destino
+
   // Validações obrigatórias
-  preConditions   Json      // { "field_a": { "required": true, "min": 0 } }
-  requiredFields  String[]  // campos que precisam estar preenchidos
-  
+  preConditions  Json // { "field_a": { "required": true, "min": 0 } }
+  requiredFields String[] // campos que precisam estar preenchidos
+
   // Autorização
-  allowedActors   String[]  // ["user:admin", "agent:finance", "system"]
+  allowedActors    String[] // ["user:admin", "agent:finance", "system"]
   requiresApproval Boolean  @default(false)
-  approvalLevel   String?   // "manager", "director", etc
-  
+  approvalLevel    String? // "manager", "director", etc
+
   // Ações automáticas
-  autoActions     Json?     // ações automáticas ao fazer a transição
-  sideEffects     Json?     // efeitos colaterais esperados
-  
+  autoActions Json? // ações automáticas ao fazer a transição
+  sideEffects Json? // efeitos colaterais esperados
+
   // Controle
-  isActive        Boolean   @default(true)
-  priority        Int       @default(100)
-  
+  isActive Boolean @default(true)
+  priority Int     @default(100)
+
   // Mensagens
-  successMessage  String    @default("Transição realizada com sucesso")
-  failureMessage  String?
-  
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  successMessage String  @default("Transição realizada com sucesso")
+  failureMessage String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([tenantId, entityType, fromState, toState])
   @@index([tenantId, entityType, isActive])
@@ -607,30 +607,30 @@ model StateTransitionRule {
 
 // Validadores de integridade entre domínios
 model DomainIntegrityCheck {
-  id              String    @id @default(uuid())
-  tenantId        String
-  
+  id       String @id @default(uuid())
+  tenantId String
+
   // Check
-  checkName       String
-  checkType       String    // "financial", "planning", "commercial", "operational"
-  
+  checkName String
+  checkType String // "financial", "planning", "commercial", "operational"
+
   // Relações
-  fromDomain      String    // domínio de origem
-  toDomain        String    // domínio de destino
-  
+  fromDomain String // domínio de origem
+  toDomain   String // domínio de destino
+
   // Regra
-  ruleCondition   Json      // condição SQL/JSON para validação
-  errorMessage    String    // mensagem se falhar
-  severity        String    @default("warning") // "info", "warning", "blocking"
-  
+  ruleCondition Json // condição SQL/JSON para validação
+  errorMessage  String // mensagem se falhar
+  severity      String @default("warning") // "info", "warning", "blocking"
+
   // Status
-  isActive        Boolean   @default(true)
-  lastCheckedAt   DateTime?
-  lastFailedAt    DateTime?
-  failureCount    Int       @default(0)
-  
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  isActive      Boolean   @default(true)
+  lastCheckedAt DateTime?
+  lastFailedAt  DateTime?
+  failureCount  Int       @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([tenantId, checkName])
   @@index([tenantId, checkType, isActive])
@@ -639,27 +639,27 @@ model DomainIntegrityCheck {
 
 // Log de verificações de integridade
 model IntegrityCheckLog {
-  id              String    @id @default(uuid())
-  tenantId        String
-  
+  id       String @id @default(uuid())
+  tenantId String
+
   // Check
-  checkId         String
-  checkName       String
-  
+  checkId   String
+  checkName String
+
   // Contexto
-  entityType      String
-  entityId        String
-  
+  entityType String
+  entityId   String
+
   // Resultado
-  passed          Boolean
-  violations      Json?     // lista de violações encontradas
-  errorDetails    String?
-  
+  passed       Boolean
+  violations   Json? // lista de violações encontradas
+  errorDetails String?
+
   // Ação tomada
-  actionTaken     String?   // "blocked", "warned", "auto_fixed", "ignored"
-  actionBy        String?
-  
-  createdAt       DateTime  @default(now())
+  actionTaken String? // "blocked", "warned", "auto_fixed", "ignored"
+  actionBy    String?
+
+  createdAt DateTime @default(now())
 
   @@index([tenantId, checkId, entityType, entityId])
   @@index([tenantId, passed, createdAt])
@@ -672,28 +672,28 @@ model IntegrityCheckLog {
 // ============================================================
 
 model Supplier {
-  id                 String    @id @default(uuid())
-  tenantId           String
-  name               String
-  code               String?
-  categories         String[]  // e.g. ["beverage_alcohol", "beverage_soft"]
-  contactEmail       String?
-  contactPhone       String?
-  leadTimeDays       Int       @default(3)
-  minOrderValue      Float?
-  priceTable         Json?     // { itemCode|category: unitPrice } — optional price overrides
-  reliabilityScore   Float?    // manual seed score 0-100; computed score takes precedence when orders exist
+  id               String   @id @default(uuid())
+  tenantId         String
+  name             String
+  code             String?
+  categories       String[] // e.g. ["beverage_alcohol", "beverage_soft"]
+  contactEmail     String?
+  contactPhone     String?
+  leadTimeDays     Int      @default(3)
+  minOrderValue    Float?
+  priceTable       Json? // { itemCode|category: unitPrice } — optional price overrides
+  reliabilityScore Float? // manual seed score 0-100; computed score takes precedence when orders exist
 
   // Aggregate performance (updated on each order delivery)
-  totalOrders        Int       @default(0)
-  onTimeDeliveries   Int       @default(0)
-  lateDeliveries     Int       @default(0)
+  totalOrders      Int @default(0)
+  onTimeDeliveries Int @default(0)
+  lateDeliveries   Int @default(0)
 
-  isActive           Boolean   @default(true)
-  createdAt          DateTime  @default(now())
-  updatedAt          DateTime  @updatedAt
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  purchaseOrders     PurchaseOrder[]
+  purchaseOrders PurchaseOrder[]
 
   @@index([tenantId])
   @@index([tenantId, isActive])
@@ -701,34 +701,34 @@ model Supplier {
 }
 
 model PurchaseOrder {
-  id                  String    @id @default(uuid())
-  tenantId            String
-  supplierId          String?
-  supplier            Supplier? @relation(fields: [supplierId], references: [id])
+  id         String    @id @default(uuid())
+  tenantId   String
+  supplierId String?
+  supplier   Supplier? @relation(fields: [supplierId], references: [id])
 
   // Lifecycle
-  status              String    @default("draft")  // draft|sent|confirmed|delivered|cancelled
-  sourceDecisionId    String?   // OperationalDecision that triggered this PO
+  status           String  @default("draft") // draft|sent|confirmed|delivered|cancelled
+  sourceDecisionId String? // OperationalDecision that triggered this PO
 
   // Financials
-  totalEstimatedCost  Float?
-  totalActualCost     Float?
-  currency            String    @default("BRL")
+  totalEstimatedCost Float?
+  totalActualCost    Float?
+  currency           String @default("BRL")
 
   // Timing
-  requestedDelivery   DateTime?
-  confirmedDelivery   DateTime?
-  actualDelivery      DateTime?
+  requestedDelivery DateTime?
+  confirmedDelivery DateTime?
+  actualDelivery    DateTime?
 
   // Context
-  relatedEventId      String?
-  notes               String?
-  metadata            Json?     // { supplierSuggestions, alternatives, selectionReason, confidence }
+  relatedEventId String?
+  notes          String?
+  metadata       Json? // { supplierSuggestions, alternatives, selectionReason, confidence }
 
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  items               PurchaseOrderItem[]
+  items PurchaseOrderItem[]
 
   @@unique([sourceDecisionId])
   @@index([tenantId])
@@ -738,47 +738,47 @@ model PurchaseOrder {
 }
 
 model PurchaseOrderItem {
-  id                String    @id @default(uuid())
-  purchaseOrderId   String
-  purchaseOrder     PurchaseOrder @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+  id              String        @id @default(uuid())
+  purchaseOrderId String
+  purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
 
-  inventoryItemId   String?   // may be null for items not yet in inventory
-  itemCode          String
-  itemName          String
-  category          String?
+  inventoryItemId String? // may be null for items not yet in inventory
+  itemCode        String
+  itemName        String
+  category        String?
 
-  quantityOrdered   Float
-  unit              String
-  unitPrice         Float?
-  totalPrice        Float?
+  quantityOrdered Float
+  unit            String
+  unitPrice       Float?
+  totalPrice      Float?
 
-  quantityReceived  Float?
-  status            String    @default("pending")  // pending|delivered|cancelled
+  quantityReceived Float?
+  status           String @default("pending") // pending|delivered|cancelled
 
-  createdAt         DateTime  @default(now())
+  createdAt DateTime @default(now())
 
   @@index([purchaseOrderId])
   @@map("purchase_order_items")
 }
 
 model EventConsumptionHistory {
-  id                String    @id @default(uuid())
-  tenantId          String
+  id       String @id @default(uuid())
+  tenantId String
 
-  eventId           String?   // null for synthetic/seeded records
-  eventType         String    // casamento|corporativo|aniversario|etc
-  guestCount        Int
-  durationHours     Float     @default(6)
+  eventId       String? // null for synthetic/seeded records
+  eventType     String // casamento|corporativo|aniversario|etc
+  guestCount    Int
+  durationHours Float   @default(6)
 
   // Consumption record per item
-  itemCode          String
-  itemName          String
-  category          String
-  quantityConsumed  Float
-  unit              String
-  perGuestRate      Float     // quantityConsumed / guestCount
+  itemCode         String
+  itemName         String
+  category         String
+  quantityConsumed Float
+  unit             String
+  perGuestRate     Float // quantityConsumed / guestCount
 
-  recordedAt        DateTime  @default(now())
+  recordedAt DateTime @default(now())
 
   @@index([tenantId, eventType])
   @@index([tenantId, itemCode])
@@ -791,23 +791,23 @@ model EventConsumptionHistory {
 // ============================================================
 
 model EventConsumption {
-  id                  String    @id @default(uuid())
-  tenantId            String
-  eventId             String
+  id       String @id @default(uuid())
+  tenantId String
+  eventId  String
 
-  itemCode            String
-  itemName            String
-  category            String
-  unit                String
+  itemCode String
+  itemName String
+  category String
+  unit     String
 
-  quantityConsumed    Float     @default(0)
-  quantityWasted      Float     @default(0)
-  quantityReturned    Float     @default(0)
+  quantityConsumed Float @default(0)
+  quantityWasted   Float @default(0)
+  quantityReturned Float @default(0)
 
   // Optional link back to the PO line that delivered this item
   purchaseOrderItemId String?
 
-  recordedAt          DateTime  @default(now())
+  recordedAt DateTime @default(now())
 
   @@index([tenantId, eventId])
   @@index([tenantId, itemCode])
@@ -816,22 +816,22 @@ model EventConsumption {
 }
 
 model ForecastAccuracy {
-  id              String   @id @default(uuid())
-  tenantId        String
+  id       String @id @default(uuid())
+  tenantId String
 
   // Scope of the accuracy sample
-  scope           String   // 'item' | 'category' | 'eventType'
-  scopeKey        String   // e.g., 'cerveja' | 'beverage_alcohol' | 'casamento'
+  scope    String // 'item' | 'category' | 'eventType'
+  scopeKey String // e.g., 'cerveja' | 'beverage_alcohol' | 'casamento'
 
-  eventId         String?
-  eventType       String?
+  eventId   String?
+  eventType String?
 
-  forecasted      Float
-  actual          Float
-  variancePct     Float    // (actual - forecasted) / forecasted  (can be negative)
-  accuracyScore   Float    // 0-100 — 100 = perfect
+  forecasted    Float
+  actual        Float
+  variancePct   Float // (actual - forecasted) / forecasted  (can be negative)
+  accuracyScore Float // 0-100 — 100 = perfect
 
-  recordedAt      DateTime @default(now())
+  recordedAt DateTime @default(now())
 
   @@index([tenantId, scope, scopeKey])
   @@index([tenantId, eventType])
@@ -841,19 +841,19 @@ model ForecastAccuracy {
 
 // Learned per-item correction factors. Applied by ForecastEngine on every forecast.
 model ItemAdjustment {
-  id              String   @id @default(uuid())
-  tenantId        String
+  id       String @id @default(uuid())
+  tenantId String
 
-  itemCode        String
-  eventType       String   // 'global' used as sentinel for cross-type adjustment
+  itemCode  String
+  eventType String // 'global' used as sentinel for cross-type adjustment
 
   // Multiplicative correction — 1.0 = neutral, >1 = scale up, <1 = scale down
-  factor          Float    @default(1.0)
+  factor Float @default(1.0)
 
   // Running stats that produced the factor
   sampleSize      Int      @default(0)
-  meanVariancePct Float?   // EWMA of variancePct
-  lastVariancePct Float?   // most recent sample (debug)
+  meanVariancePct Float? // EWMA of variancePct
+  lastVariancePct Float? // most recent sample (debug)
   lastUpdated     DateTime @updatedAt
   createdAt       DateTime @default(now())
 
@@ -863,27 +863,27 @@ model ItemAdjustment {
 }
 
 model ReconciliationReport {
-  id              String   @id @default(uuid())
-  tenantId        String
-  eventId         String
-  eventType       String
-  guestCount      Int
+  id         String @id @default(uuid())
+  tenantId   String
+  eventId    String
+  eventType  String
+  guestCount Int
 
   // Aggregate metrics
   itemsReconciled Int
-  meanAccuracy    Float    // 0-100
+  meanAccuracy    Float // 0-100
 
   // Financial reality
   projectedCost   Float
   realCost        Float
   wasteCost       Float
-  projectedMargin Float?   // percentage, from Event.marginPct
-  realMargin      Float?   // percentage, computed
+  projectedMargin Float? // percentage, from Event.marginPct
+  realMargin      Float? // percentage, computed
 
   // Full per-item payload for audit
-  payload         Json
+  payload Json
 
-  createdAt       DateTime @default(now())
+  createdAt DateTime @default(now())
 
   @@unique([eventId])
   @@index([tenantId, eventType])
@@ -892,29 +892,29 @@ model ReconciliationReport {
 }
 
 model OperationalDecision {
-  id              String    @id @default(uuid())
-  tenantId        String
+  id       String @id @default(uuid())
+  tenantId String
 
   // Decision classification
-  action          String    // CREATE_PURCHASE_ORDER|ALERT_RISK|SUGGEST_REORDER|etc
-  confidence      Float     // 0.0–1.0
-  riskLevel       String    // R0–R4
+  action     String // CREATE_PURCHASE_ORDER|ALERT_RISK|SUGGEST_REORDER|etc
+  confidence Float // 0.0–1.0
+  riskLevel  String // R0–R4
 
   // Full decision payload (typed JSON)
-  payload         Json
+  payload Json
 
   // Execution tracking
-  status          String    @default("pending")  // pending|executed|rejected|expired
-  executedAt      DateTime?
-  executedBy      String?
+  status     String    @default("pending") // pending|executed|rejected|expired
+  executedAt DateTime?
+  executedBy String?
 
   // Links
-  relatedEventId  String?
-  relatedOrderId  String?
-  expiresAt       DateTime?
+  relatedEventId String?
+  relatedOrderId String?
+  expiresAt      DateTime?
 
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([tenantId])
   @@index([tenantId, status])
@@ -951,10 +951,10 @@ model Lead {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
-  activities  LeadActivity[]
-  proposals   Proposal[]
-  contracts   Contract[]
-  clients     Client[]
+  activities LeadActivity[]
+  proposals  Proposal[]
+  contracts  Contract[]
+  clients    Client[]
 
   @@index([tenantId])
   @@index([status])
@@ -992,9 +992,17 @@ model Proposal {
   approvedAt     DateTime?
   rejectedReason String?
   documentUrl    String?
-  metadata       Json?
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+
+  // Desconto concedido sobre o preço tabela (0.0 - 1.0). Usado pelo
+  // CommissionPlan para aplicar discountPenaltyPct quando > threshold.
+  discountAppliedPct     Float     @default(0)
+  discountAuthorizedById String?
+  discountAuthorizedBy   User?     @relation("ProposalDiscountAuth", fields: [discountAuthorizedById], references: [id])
+  discountAuthorizedAt   DateTime?
+
+  metadata  Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   items    ProposalItem[]
   contract Contract?
@@ -1037,17 +1045,37 @@ model Contract {
   signedByClient      String?
   signedByCompany     String?
   totalValue          Float
+  // Margem projetada no momento da assinatura — base para comissão quando
+  // CommissionPlan.baseType = MARGIN. Calculada a partir da Proposal.
+  projectedMargin     Float?
   paymentTerms        String?
   cancellationPolicy  String?
   contractDocumentUrl String?
   status              String   @default("ACTIVE")
-  metadata            Json?
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+
+  // Atribuição comercial — quem ganha comissão. Opcional para não
+  // quebrar contratos existentes; obrigatório via validação na criação
+  // de novos contratos.
+  salespersonId  String? // closer — titular da comissão
+  salesperson    User?   @relation("ContractSalesperson", fields: [salespersonId], references: [id])
+  salesManagerId String? // gerente — recebe override
+  salesManager   User?   @relation("ContractSalesManager", fields: [salesManagerId], references: [id])
+  sdrId          String? // SDR — recebe split se houver
+  sdr            User?   @relation("ContractSdr", fields: [sdrId], references: [id])
+
+  metadata  Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  installments      ContractInstallment[]
+  payments          Payment[]
+  commissionPlan    CommissionPlan?
+  commissionEntries CommissionEntry[]
 
   @@index([tenantId])
   @@index([eventId])
   @@index([status])
+  @@index([salespersonId])
   @@map("contracts")
 }
 
@@ -1283,19 +1311,19 @@ model ProductionBatch {
 // ============================================================
 
 model ProductionStation {
-  id              String   @id @default(uuid())
-  tenantId        String
-  name            String   // 'kitchen' | 'bar' | 'pastry' | 'prep'
-  stationType     String   // kitchen|bar|pastry|prep
-  maxHoursPerDay  Float    @default(12)
-  maxParallel     Int      @default(3)   // simultaneous production orders
-  staffCount      Int      @default(4)
-  isActive        Boolean  @default(true)
-  metadata        Json?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id             String   @id @default(uuid())
+  tenantId       String
+  name           String // 'kitchen' | 'bar' | 'pastry' | 'prep'
+  stationType    String // kitchen|bar|pastry|prep
+  maxHoursPerDay Float    @default(12)
+  maxParallel    Int      @default(3) // simultaneous production orders
+  staffCount     Int      @default(4)
+  isActive       Boolean  @default(true)
+  metadata       Json?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
-  schedules       ProductionSchedule[]
+  schedules ProductionSchedule[]
 
   @@unique([tenantId, name])
   @@index([tenantId])
@@ -1303,21 +1331,21 @@ model ProductionStation {
 }
 
 model ProductionSchedule {
-  id                  String   @id @default(uuid())
-  tenantId            String
-  stationId           String
-  station             ProductionStation @relation(fields: [stationId], references: [id])
-  productionOrderId   String
-  productionOrder     ProductionOrder @relation(fields: [productionOrderId], references: [id], onDelete: Cascade)
-  scheduledStart      DateTime
-  scheduledEnd        DateTime
-  estimatedHours      Float
-  actualStart         DateTime?
-  actualEnd           DateTime?
-  status              String   @default("SCHEDULED") // SCHEDULED|IN_PROGRESS|COMPLETED|DELAYED|FAILED
-  delayReason         String?
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  id                String            @id @default(uuid())
+  tenantId          String
+  stationId         String
+  station           ProductionStation @relation(fields: [stationId], references: [id])
+  productionOrderId String
+  productionOrder   ProductionOrder   @relation(fields: [productionOrderId], references: [id], onDelete: Cascade)
+  scheduledStart    DateTime
+  scheduledEnd      DateTime
+  estimatedHours    Float
+  actualStart       DateTime?
+  actualEnd         DateTime?
+  status            String            @default("SCHEDULED") // SCHEDULED|IN_PROGRESS|COMPLETED|DELAYED|FAILED
+  delayReason       String?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
 
   @@index([tenantId, stationId, scheduledStart])
   @@index([productionOrderId])
@@ -1564,14 +1592,27 @@ model User {
   email        String    @unique
   name         String
   passwordHash String
-  role         String    // operator | manager | finance | kitchen | admin
+  role         String // operator | manager | finance | kitchen | admin | sales | sales_manager | sdr
+  managerId    String? // hierarquia comercial: gerente vê o time
+  manager      User?     @relation("UserManager", fields: [managerId], references: [id])
+  reports      User[]    @relation("UserManager")
   isActive     Boolean   @default(true)
   lastLoginAt  DateTime?
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 
+  // Relações comerciais
+  contractsAsSalesperson  Contract[]        @relation("ContractSalesperson")
+  contractsAsSalesManager Contract[]        @relation("ContractSalesManager")
+  contractsAsSdr          Contract[]        @relation("ContractSdr")
+  proposalDiscounts       Proposal[]        @relation("ProposalDiscountAuth")
+  commissionEntries       CommissionEntry[]
+  bonusRules              BonusRule[]
+  bonusAccruals           BonusAccrual[]
+
   @@index([tenantId])
   @@index([role])
+  @@index([managerId])
   @@map("users")
 }
 
@@ -1599,6 +1640,256 @@ model AuditLog {
 }
 
 // ============================================================
+// DOMÍNIO: COMERCIAL ↔ FINANCEIRO (commission, bonus, installments)
+// ============================================================
+
+// Parcelas do contrato. Substitui o campo livre Contract.paymentTerms
+// como fonte da verdade para agendamento de recebíveis e gatilho de
+// liberação de comissão pro-rata.
+model ContractInstallment {
+  id         String   @id @default(uuid())
+  tenantId   String
+  contractId String
+  contract   Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  seq        Int // 1..N — ordem da parcela no cronograma
+  dueDate    DateTime
+  amount     Float
+  paidAmount Float    @default(0)
+  status     String   @default("PENDING") // PENDING | PARTIAL | PAID | CANCELLED | OVERDUE
+  metadata   Json?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  payments          Payment[]
+  commissionEntries CommissionEntry[]
+
+  @@unique([contractId, seq])
+  @@index([tenantId])
+  @@index([status])
+  @@index([dueDate])
+  @@map("contract_installments")
+}
+
+// Confirmações de recebimento. Um Payment pode quitar total ou
+// parcialmente uma ContractInstallment. É o evento que dispara a
+// liberação de comissão pro-rata.
+model Payment {
+  id            String               @id @default(uuid())
+  tenantId      String
+  contractId    String
+  contract      Contract             @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  installmentId String?
+  installment   ContractInstallment? @relation(fields: [installmentId], references: [id])
+  amount        Float
+  paidAt        DateTime
+  method        String // PIX | BOLETO | CARD | TRANSFER | CHECK | OTHER
+  externalRef   String? // id do gateway/banco
+  status        String               @default("CONFIRMED") // CONFIRMED | REVERSED
+  note          String?
+  metadata      Json?
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+
+  @@index([tenantId])
+  @@index([contractId])
+  @@index([installmentId])
+  @@index([paidAt])
+  @@map("payments")
+}
+
+// Snapshot da regra de comissão no momento da assinatura. Imutável.
+// Mudanças na política só afetam contratos futuros — este registro
+// documenta qual regra valeu para ESTE contrato.
+model CommissionPlan {
+  id         String   @id @default(uuid())
+  tenantId   String
+  contractId String   @unique
+  contract   Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+
+  // Base de cálculo: REVENUE (faturamento) ou MARGIN (margem de contribuição).
+  // Default MARGIN — proteção contra venda com desconto que destrói margem.
+  baseType      String @default("MARGIN")
+  baseAmount    Float // valor absoluto da base no snapshot
+  baseMarginPct Float? // % de margem usada (se baseType=MARGIN)
+
+  // Percentuais da regra 40/60 (parametrizável por contrato)
+  signingPct     Float @default(0.40)
+  installmentPct Float @default(0.60)
+
+  // Carência em dias entre Payment.confirmed e CommissionEntry.RELEASED.
+  // Reduz risco de pagar comissão sobre pagamento que será estornado.
+  carencyDays Int @default(0)
+
+  // Override do gerente sobre a comissão do vendedor (ex: 0.10 = 10%).
+  managerOverridePct Float @default(0)
+
+  // Split SDR/Closer quando ambos participam da venda. Soma = 1.0.
+  sdrSplitPct    Float @default(0)
+  closerSplitPct Float @default(1.0)
+
+  // Desconto autorizado na venda e impacto na comissão.
+  // discountAppliedPct é o desconto dado em relação ao preço tabela.
+  // Se > discountThreshold, aplica discountPenaltyPct de redução no
+  // percentual final de comissão (ex: 0.5 = comissão cai pela metade).
+  discountAppliedPct Float @default(0)
+  discountThreshold  Float @default(0.10)
+  discountPenaltyPct Float @default(0)
+
+  // Percentual base da comissão total (ex: 0.05 = 5% sobre a base).
+  commissionPct Float
+
+  createdAt DateTime @default(now())
+  createdBy String? // User.id de quem assinou a regra
+
+  @@index([tenantId])
+  @@map("commission_plans")
+}
+
+// Cada entry é uma obrigação financeira individual da empresa com um
+// beneficiário. Um contrato gera N entries (1 signing + M installments)
+// × P pessoas (closer, sdr, manager). Append-only após PAID.
+model CommissionEntry {
+  id            String               @id @default(uuid())
+  tenantId      String
+  contractId    String
+  contract      Contract             @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  installmentId String?
+  installment   ContractInstallment? @relation(fields: [installmentId], references: [id])
+  paymentId     String? // se triggerType=INSTALLMENT, o payment que liberou
+  userId        String // beneficiário
+  user          User                 @relation(fields: [userId], references: [id])
+
+  role         String // CLOSER | SDR | MANAGER_OVERRIDE
+  triggerType  String // SIGNING | INSTALLMENT
+  amount       Float
+  baseAmount   Float // base usada no cálculo (margem ou faturamento)
+  effectivePct Float // % aplicado (já com penalty de desconto)
+
+  // Ciclo de vida:
+  // FORECAST   — previsão (ex: parcela 3 ainda não venceu, ainda não pagou)
+  // LOCKED     — travado no previsto, aguardando gatilho (40% no mês da assinatura)
+  // RELEASED   — liberado para pagamento (Payment confirmado + carência)
+  // PAID       — pago ao beneficiário (imutável)
+  // CLAWED_BACK — estornado (cancelamento/inadimplência)
+  status String @default("FORECAST")
+
+  scheduledFor    DateTime // quando vira RELEASED (assinatura+mês-fim ou payment+carência)
+  releasedAt      DateTime?
+  paidAt          DateTime?
+  paidInPayrollId String? // folha que pagou — rastreabilidade
+  clawedBackAt    DateTime?
+  clawbackReason  String?
+
+  metadata  Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tenantId])
+  @@index([contractId])
+  @@index([userId, status])
+  @@index([status, scheduledFor])
+  @@map("commission_entries")
+}
+
+// Regra de bônus composto. Um vendedor/gerente pode ter uma regra
+// ativa por período (ex: mensal). Componentes somados por peso.
+model BonusRule {
+  id            String    @id @default(uuid())
+  tenantId      String
+  name          String
+  userId        String? // se null, aplica por role
+  user          User?     @relation(fields: [userId], references: [id])
+  role          String? // operator | manager | ... — quando userId null
+  periodType    String    @default("MONTHLY") // MONTHLY | QUARTERLY | ANNUAL
+  effectiveFrom DateTime
+  effectiveTo   DateTime?
+  rampUpMonths  Int       @default(0) // meta reduzida nos primeiros N meses
+  rampUpFactor  Float     @default(0.6) // 60% da meta durante ramp-up
+  maxPayout     Float? // teto total do bônus no período
+  status        String    @default("ACTIVE") // ACTIVE | ARCHIVED
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  components BonusComponent[]
+  accruals   BonusAccrual[]
+
+  @@index([tenantId])
+  @@index([userId])
+  @@index([status])
+  @@map("bonus_rules")
+}
+
+// Componente de bônus: métrica + peso + target + acceleradores.
+// Ex: { metric:"REVENUE", weight:0.4, target:500000,
+//       bands:[{min:0,max:1,mult:1},{min:1,max:1.2,mult:1.5},{min:1.2,mult:2}] }
+model BonusComponent {
+  id               String    @id @default(uuid())
+  bonusRuleId      String
+  bonusRule        BonusRule @relation(fields: [bonusRuleId], references: [id], onDelete: Cascade)
+  metric           String // REVENUE | MARGIN | CONVERSION | TICKET_AVG | NPS | EVENTS_CLOSED
+  weight           Float // 0.0 - 1.0; soma dos componentes deve = 1.0
+  target           Float
+  // Bandas de aceleração: JSON array [{minRatio, maxRatio, multiplier}]
+  // minRatio/maxRatio são frações do target atingido.
+  acceleratorBands Json?
+  basePayout       Float // valor pago ao atingir 100% deste componente
+  metadata         Json?
+  createdAt        DateTime  @default(now())
+
+  @@index([bonusRuleId])
+  @@map("bonus_components")
+}
+
+// Cálculo consolidado do bônus do período. Append-only após PAID.
+model BonusAccrual {
+  id          String    @id @default(uuid())
+  tenantId    String
+  bonusRuleId String
+  bonusRule   BonusRule @relation(fields: [bonusRuleId], references: [id])
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+  periodStart DateTime
+  periodEnd   DateTime
+  computedAt  DateTime  @default(now())
+  totalAmount Float
+  // Breakdown por componente: [{componentId, metric, actual, target, ratio, multiplier, subtotal}]
+  breakdown   Json
+  status      String    @default("COMPUTED") // COMPUTED | APPROVED | PAID | REVERSED
+  approvedBy  String?
+  approvedAt  DateTime?
+  paidAt      DateTime?
+  notes       String?
+
+  @@unique([bonusRuleId, periodStart, periodEnd])
+  @@index([tenantId])
+  @@index([userId, status])
+  @@map("bonus_accruals")
+}
+
+// Despesa provisionada no fluxo de caixa. Abstrai commission/bonus em
+// um modelo único de "despesa travada/liberada/paga" — o que permite
+// consolidar em previsão única no dashboard financeiro.
+model ProvisionedExpense {
+  id             String   @id @default(uuid())
+  tenantId       String
+  sourceType     String // COMMISSION | BONUS | OTHER
+  sourceId       String // CommissionEntry.id ou BonusAccrual.id
+  beneficiaryId  String? // User.id (quando aplicável)
+  amount         Float
+  forecastMonth  String // YYYY-MM — mês da previsão de despesa
+  status         String   @default("LOCKED") // LOCKED | RELEASED | PAID | REVERSED
+  reversedReason String?
+  metadata       Json?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([tenantId, forecastMonth])
+  @@index([sourceType, sourceId])
+  @@index([beneficiaryId, status])
+  @@map("provisioned_expenses")
+}
+
+// ============================================================
 // FIM DO SCHEMA
-// Versão: 2.1.0 - Full Business Domain + RBAC
+// Versão: 2.2.0 - + Commercial↔Finance (commission/bonus/installments)
 // ============================================================

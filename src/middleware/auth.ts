@@ -3,7 +3,15 @@ import jwt from "jsonwebtoken";
 import { config } from "../config/env";
 import { AppError } from "../utils/app-error";
 
-export type Role = "operator" | "manager" | "finance" | "kitchen" | "admin";
+export type Role =
+  | "operator"
+  | "manager"
+  | "finance"
+  | "kitchen"
+  | "admin"
+  | "sales"          // closer / vendedor
+  | "sales_manager"  // gerente comercial
+  | "sdr";           // qualificador
 
 export const ROLES: readonly Role[] = [
   "operator",
@@ -11,6 +19,9 @@ export const ROLES: readonly Role[] = [
   "finance",
   "kitchen",
   "admin",
+  "sales",
+  "sales_manager",
+  "sdr",
 ] as const;
 
 export interface AuthUser {
@@ -94,6 +105,19 @@ export const PERMISSIONS = {
   "intelligence.execute":         ["manager", "finance", "admin"] as Role[],
   "users.manage":                 ["admin"] as Role[],
   "channels.manage":              ["admin"] as Role[],
+
+  // Commercial ↔ Finance
+  "commercial.pipeline.read":     ["sales", "sales_manager", "sdr", "manager", "finance", "admin"] as Role[],
+  "commercial.dashboard.read":    ["sales", "sales_manager", "sdr", "manager", "finance", "admin"] as Role[],
+  "contracts.write":              ["sales", "sales_manager", "manager", "admin"] as Role[],
+  "installments.write":           ["sales_manager", "finance", "admin"] as Role[],
+  "payments.write":               ["finance", "admin"] as Role[],
+  "commission.plan.write":        ["sales_manager", "finance", "admin"] as Role[],
+  "commission.entry.read":        ["sales", "sales_manager", "sdr", "finance", "admin"] as Role[],
+  "commission.entry.pay":         ["finance", "admin"] as Role[],
+  "bonus.rule.write":             ["sales_manager", "finance", "admin"] as Role[],
+  "bonus.accrual.compute":        ["sales_manager", "finance", "admin"] as Role[],
+  "bonus.accrual.approve":        ["finance", "admin"] as Role[],
 } as const;
 
 export type Permission = keyof typeof PERMISSIONS;

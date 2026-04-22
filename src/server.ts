@@ -6,7 +6,7 @@ import swagger from "@fastify/swagger";
 import swaggerUi from "@fastify/swagger-ui";
 import { config } from "./config/env";
 import { prisma } from "./db";
-import { agentRunsRoutes, approvalsRoutes, memoryRoutes, artifactsRoutes, dashboardRoutes, metricsRoutes, eventsRoutes, statesRoutes, kitchenRoutes, intelligenceRoutes, crmRoutes, serviceOrdersRoutes, productionOrdersRoutes, executionRoutes, operationsRoutes, authRoutes, usersRoutes } from "./routes";
+import { agentRunsRoutes, approvalsRoutes, memoryRoutes, artifactsRoutes, dashboardRoutes, metricsRoutes, eventsRoutes, statesRoutes, kitchenRoutes, intelligenceRoutes, crmRoutes, serviceOrdersRoutes, productionOrdersRoutes, executionRoutes, operationsRoutes, authRoutes, usersRoutes, commercialRoutes } from "./routes";
 import { registerAuditHook } from "./middleware/audit";
 import { errorHandler, notFoundHandler } from "./utils/error-handler";
 import { logger } from "./utils/logger";
@@ -59,6 +59,7 @@ async function bootstrap() {
   await app.register(productionOrdersRoutes, { prefix: "/production-orders" });
   await app.register(executionRoutes, { prefix: "/execution" });
   await app.register(operationsRoutes, { prefix: "/operations" });
+  await app.register(commercialRoutes, { prefix: "/commercial" });
 
   // Liveness — always 200 while process is up.
   app.get("/health", async () => ({ status: "ok", ts: Date.now() }));
