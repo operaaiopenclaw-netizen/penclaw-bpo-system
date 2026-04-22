@@ -50,7 +50,8 @@ __pycache__/
 .mypy_cache/
 
 # Package managers
-package-lock.json
+# NOTE: package-lock.json MUST be committed — Dockerfile uses `npm ci` which
+# requires the lockfile for reproducible builds. Railway/Fly build fails without it.
 yarn.lock
 pnpm-lock.yaml
 
