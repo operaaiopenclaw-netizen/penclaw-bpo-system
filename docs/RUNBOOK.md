@@ -64,23 +64,24 @@ Regra: CRITICAL não-ackd em 15 min → escalar para admin.
 
 ## 3) Pausar o sistema
 
-Ordem (menos → mais invasivo):
+Ordem (menos → mais invasivo). Host atual: **Railway** (projeto `alert-happiness`, serviço `orkestra-api`).
 
-1. **Pausar notificações**: remover `TELEGRAM_ALLOWED_CHATS` + `WEBHOOK_URL` do env, redeploy.
-2. **Pausar decisões automáticas**: `ENABLE_AGENT_RUNS=false`.
+1. **Pausar notificações**: Railway → `orkestra-api` → Variables → remover `TELEGRAM_ALLOWED_CHATS` + `WEBHOOK_URL`. Redeploy automático no save.
+2. **Pausar decisões automáticas**: setar `ENABLE_AGENT_RUNS=false` na mesma tela. Redeploy automático.
 3. **Kill switch total**: desativar todos os users não-admin com
    ```sql
    UPDATE users SET is_active=false WHERE role <> 'admin';
    ```
-4. **Emergência absoluta**: `fly scale count=0` (API fica off).
+   Exec via Railway → Postgres plugin → Query tab, ou `railway connect Postgres` local.
+4. **Emergência absoluta**: Railway → `orkestra-api` → Settings → **Remove Service** (ou toggle "Deploy Trigger" off). API fica off em <1 min.
 
 ---
 
 ## 4) Rollback
 
-- **Schema**: `git revert <migration commit>` + `npx prisma migrate deploy` (staging primeiro).
-- **Código**: `fly deploy --image <previous tag>` — nunca faça hotfix em prod sem PR.
-- **Dados**: restore do último snapshot gerenciado (RDS/Neon/Fly Postgres). NUNCA `pg_restore` sem double-check de tenant isolation.
+- **Schema**: `git revert <migration commit>` + push. Railway rebuild automático roda `prisma migrate deploy` no container start.
+- **Código**: Railway → `orkestra-api` → Deployments → escolher deploy anterior bem-sucedido → **Redeploy**. Nunca faça hotfix em prod sem PR.
+- **Dados**: Railway Postgres plugin → Backups → restore do snapshot mais recente. NUNCA `pg_restore` manual sem double-check de tenant isolation.
 
 ---
 

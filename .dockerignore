@@ -1,0 +1,71 @@
+# ============================================================
+# Docker build context — keep only what the Node API needs.
+# ============================================================
+
+# Git + CI metadata
+.git
+.github
+.gitignore
+.gitattributes
+
+# Agent / session state
+.claude
+.agents
+
+# Local env — secrets must come from the platform, never the image
+.env
+.env.*
+!.env.example
+
+# Node
+node_modules
+dist
+coverage
+.nyc_output
+*.tsbuildinfo
+
+# Editor / OS
+.vscode
+.idea
+.DS_Store
+*.swp
+
+# Legacy Python stack (the pre-Fastify FastAPI version)
+api/
+*.py
+*.pyc
+__pycache__
+.pytest_cache
+.mypy_cache
+venv
+.venv
+
+# Legacy raw SQL / old migration directory (Prisma migrations live in prisma/migrations)
+migrations/
+*.sql
+
+# Data dumps and artifacts — regenerated at runtime
+artifacts/
+kitchen_data/
+output/
+storage/
+
+# Loose docs + status files not needed by the runtime
+*.md
+!docs/**/*.md
+!README.md
+
+# Loose JSON/CSV inputs that aren't consumed by the server
+catalog_products.json
+cmv_by_event.json
+dashboard_data.json
+production_logs.json
+inventory_batches.json
+dre_final.json
+*.csv
+
+# Shell / infra config not used inside the image
+docker-compose*.yml
+nginx.conf
+fly.toml
+pgbackrest.conf
