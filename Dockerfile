@@ -51,4 +51,6 @@ EXPOSE 3010
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
   CMD curl -fsS http://localhost:${PORT}/ready || exit 1
 
-CMD ["node", "dist/server.js"]
+# Apply Prisma migrations before starting. `prisma` is in `dependencies`
+# so it's present in the runtime image after `npm ci --omit=dev`.
+CMD ["sh", "-c", "npx prisma migrate deploy --schema=./schema.prisma && node dist/server.js"]
