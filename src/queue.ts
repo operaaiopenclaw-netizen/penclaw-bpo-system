@@ -7,11 +7,22 @@ import { Queue, Job } from "bullmq";
 import { logger } from "./utils/logger";
 import { WorkflowType } from "./types/core";
 
-// Redis connection - simple config
-export const redisConnection = {
-  host: "127.0.0.1",
-  port: 6379,
-};
+// Redis connection — parsed from REDIS_URL (supports redis:// and rediss://).
+// Default to localhost for dev; managed providers (Upstash, Fly Redis) set REDIS_URL.
+function parseRedisConnection(url: string) {
+  const u = new URL(url);
+  return {
+    host: u.hostname,
+    port: Number(u.port || 6379),
+    password: u.password ? decodeURIComponent(u.password) : undefined,
+    username: u.username ? decodeURIComponent(u.username) : undefined,
+    ...(u.protocol === "rediss:" ? { tls: {} } : {}),
+  };
+}
+
+export const redisConnection = parseRedisConnection(
+  process.env.REDIS_URL ?? "redis://127.0.0.1:6379",
+);
 
 // Main queue for agent runs
 export const agentRunQueue = new Queue("agent-run", {

@@ -1,0 +1,61 @@
+# ============================================================
+# Orkestra.AI — Fly.io app configuration (TEMPLATE — not yet deployed)
+#
+# One-time provisioning (run manually, in this order):
+#   flyctl auth login
+#   flyctl apps create orkestra-api                        # pick region when prompted (e.g. gru / sao)
+#   flyctl postgres create --name orkestra-db --region gru # managed Postgres cluster
+#   flyctl postgres attach orkestra-db --app orkestra-api  # sets DATABASE_URL secret
+#   flyctl redis create --name orkestra-redis              # Upstash-backed managed Redis
+#   flyctl redis status orkestra-redis                     # copy the rediss:// URL
+#   flyctl secrets set --app orkestra-api \
+#       REDIS_URL="rediss://..." \
+#       JWT_SECRET="$(openssl rand -hex 32)" \
+#       JWT_REFRESH_SECRET="$(openssl rand -hex 32)" \
+#       WEBHOOK_HMAC_SECRET="$(openssl rand -hex 32)" \
+#       DEFAULT_TENANT_ID="a1b2c3d4-e5f6-7890-abcd-ef1234567890" \
+#       CORS_ORIGIN="https://app.orkestra.com" \
+#       ANTHROPIC_API_KEY="sk-ant-..." \
+#       TELEGRAM_BOT_TOKEN="..." \
+#       TELEGRAM_ALLOWED_CHATS="-100123,456"
+#   flyctl deploy
+#
+# Scale out later: flyctl scale count=2 --region gru
+# Pause in emergency: flyctl scale count=0
+# ============================================================
+
+app = "orkestra-api"
+primary_region = "gru"   # São Paulo — change if your users are elsewhere
+kill_signal = "SIGINT"
+kill_timeout = "10s"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  NODE_ENV = "production"
+  PORT = "3010"
+  LOG_LEVEL = "info"
+  STORAGE_TYPE = "local"
+  ARTIFACTS_DIR = "/app/storage/artifacts"
+  ALERT_HORIZON_DAYS = "14"
+
+[http_service]
+  internal_port = 3010
+  force_https = true
+  auto_stop_machines = false   # don't let queue worker get killed mid-job
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ["app"]
+
+  [[http_service.checks]]
+    interval = "30s"
+    timeout = "5s"
+    grace_period = "20s"
+    method = "GET"
+    path = "/ready"
+
+[[vm]]
+  cpu_kind = "shared"
+  cpus = 1
+  memory_mb = 512

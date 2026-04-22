@@ -13,6 +13,9 @@ const envSchema = z.object({
   
   // Database
   DATABASE_URL: z.string().min(1, "DATABASE_URL is required"),
+
+  // Redis (BullMQ). redis:// for plaintext, rediss:// for TLS (Upstash/Fly).
+  REDIS_URL: z.string().default("redis://127.0.0.1:6379"),
   
   // Security
   JWT_SECRET: z.string().min(32, "JWT_SECRET must be at least 32 characters"),
