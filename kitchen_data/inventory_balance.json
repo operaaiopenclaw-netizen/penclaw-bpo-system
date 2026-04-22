@@ -1,0 +1,88 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "calculated_at": "2026-04-15T16:08:55.245401",
+    "total_products": 6,
+    "total_stock_value": 6258.0
+  },
+  "balances": {
+    "CAR-001": {
+      "product_id": "CAR-001",
+      "product_name": "Carne Bovina (picanha/alcatra)",
+      "category": "proteina",
+      "unit": "kg",
+      "balance_qty": 22.0,
+      "total_purchased": 50.0,
+      "total_consumed": 28.5,
+      "last_unit_cost": 85.0,
+      "movements_count": 3,
+      "stock_value": 1870.0,
+      "calculated_at": "2026-04-15T16:08:55.245373"
+    },
+    "FRG-001": {
+      "product_id": "FRG-001",
+      "product_name": "Frango à Passarinho",
+      "category": "proteina",
+      "unit": "kg",
+      "balance_qty": 30.0,
+      "total_purchased": 30.0,
+      "total_consumed": 0.0,
+      "last_unit_cost": 28.0,
+      "movements_count": 1,
+      "stock_value": 840.0,
+      "calculated_at": "2026-04-15T16:08:55.245385"
+    },
+    "SAL-001": {
+      "product_id": "SAL-001",
+      "product_name": "Salgado Frito",
+      "category": "acompanhamento",
+      "unit": "un",
+      "balance_qty": 420.0,
+      "total_purchased": 800.0,
+      "total_consumed": 380.0,
+      "last_unit_cost": 3.5,
+      "movements_count": 2,
+      "stock_value": 1470.0,
+      "calculated_at": "2026-04-15T16:08:55.245391"
+    },
+    "CER-001": {
+      "product_id": "CER-001",
+      "product_name": "Cerveja Pilsen",
+      "category": "bebida",
+      "unit": "lit",
+      "balance_qty": 148.0,
+      "total_purchased": 200.0,
+      "total_consumed": 52.0,
+      "last_unit_cost": 8.5,
+      "movements_count": 2,
+      "stock_value": 1258.0,
+      "calculated_at": "2026-04-15T16:08:55.245394"
+    },
+    "DIS-001": {
+      "product_id": "DIS-001",
+      "product_name": "Copo Descartável",
+      "category": "material",
+      "unit": "un",
+      "balance_qty": 2000.0,
+      "total_purchased": 2000.0,
+      "total_consumed": 0.0,
+      "last_unit_cost": 0.25,
+      "movements_count": 1,
+      "stock_value": 500.0,
+      "calculated_at": "2026-04-15T16:08:55.245397"
+    },
+    "GEL-001": {
+      "product_id": "GEL-001",
+      "product_name": "Gelo",
+      "category": "insumo",
+      "unit": "kg",
+      "balance_qty": 100.0,
+      "total_purchased": 100.0,
+      "total_consumed": 0.0,
+      "last_unit_cost": 3.2,
+      "movements_count": 1,
+      "stock_value": 320.0,
+      "calculated_at": "2026-04-15T16:08:55.245399"
+    }
+  }
+}

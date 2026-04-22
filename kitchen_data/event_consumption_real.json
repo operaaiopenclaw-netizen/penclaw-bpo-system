@@ -1,0 +1,240 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "description": "Consumo REAL por evento. Preenchido pelo operador após execução.",
+    "statuses": {
+      "planned": "Evento criado mas não executado",
+      "in_progress": "Dados sendo inseridos durante/após evento",
+      "completed": "Dados validados — DRE usa estes valores (modo real)"
+    },
+    "how_to_use": [
+      "1. Criar checklist: python3 event_input.py create EVT001",
+      "2. Registrar consumo: python3 event_input.py record EVT001 CAR-001 28.5 --returned 0.5",
+      "3. Finalizar: python3 event_input.py complete EVT001 --pax 130",
+      "4. Rodar pipeline: python3 kitchen_control.py --mode auto"
+    ]
+  },
+  "events": {
+    "EVT001": {
+      "event_id": "EVT001",
+      "event_name": "Casamento Silva Eventos",
+      "date": "2026-04-15",
+      "status": "completed",
+      "pax_estimated": 135,
+      "pax_actual": 130,
+      "recorded_by": "Chef Ana",
+      "recorded_at": "2026-04-15T23:30:00",
+      "notes": "Evento correu bem. Cerveja mais popular que previsto. Frango sobrou.",
+      "consumption": [
+        {
+          "product_id": "CAR-001",
+          "product_name": "Carne Bovina",
+          "qty_used": 28.5,
+          "qty_returned": 0.5,
+          "net_consumption": 28.0,
+          "unit": "kg",
+          "source": "medicao_real"
+        },
+        {
+          "product_id": "FRG-001",
+          "product_name": "Frango à Passarinho",
+          "qty_used": 15.0,
+          "qty_returned": 0.0,
+          "net_consumption": 15.0,
+          "unit": "kg",
+          "source": "medicao_real"
+        },
+        {
+          "product_id": "QUE-001",
+          "product_name": "Queijo Coalho Espeto",
+          "qty_used": 140.0,
+          "qty_returned": 0.0,
+          "net_consumption": 140.0,
+          "unit": "un",
+          "source": "contagem"
+        },
+        {
+          "product_id": "SAL-001",
+          "product_name": "Salgado Frito",
+          "qty_used": 380.0,
+          "qty_returned": 0.0,
+          "net_consumption": 380.0,
+          "unit": "un",
+          "source": "contagem"
+        },
+        {
+          "product_id": "PAO-001",
+          "product_name": "Pão de Alho",
+          "qty_used": 260.0,
+          "qty_returned": 0.0,
+          "net_consumption": 260.0,
+          "unit": "un",
+          "source": "contagem"
+        },
+        {
+          "product_id": "CER-001",
+          "product_name": "Cerveja Pilsen",
+          "qty_used": 52.0,
+          "qty_returned": 2.0,
+          "net_consumption": 50.0,
+          "unit": "lit",
+          "source": "medicao_real"
+        },
+        {
+          "product_id": "REF-001",
+          "product_name": "Refrigerante Cola",
+          "qty_used": 25.0,
+          "qty_returned": 0.0,
+          "net_consumption": 25.0,
+          "unit": "lit",
+          "source": "medicao_real"
+        },
+        {
+          "product_id": "AGU-001",
+          "product_name": "Água Mineral",
+          "qty_used": 35.0,
+          "qty_returned": 0.0,
+          "net_consumption": 35.0,
+          "unit": "lit",
+          "source": "medicao_real"
+        },
+        {
+          "product_id": "ESP-001",
+          "product_name": "Espumante",
+          "qty_used": 14.0,
+          "qty_returned": 0.0,
+          "net_consumption": 14.0,
+          "unit": "lit",
+          "source": "medicao_real"
+        },
+        {
+          "product_id": "GEL-001",
+          "product_name": "Gelo",
+          "qty_used": 60.0,
+          "qty_returned": 0.0,
+          "net_consumption": 60.0,
+          "unit": "kg",
+          "source": "medicao_real"
+        },
+        {
+          "product_id": "DIS-001",
+          "product_name": "Copo Descartável",
+          "qty_used": 410.0,
+          "qty_returned": 0.0,
+          "net_consumption": 410.0,
+          "unit": "un",
+          "source": "contagem"
+        },
+        {
+          "product_id": "DIS-002",
+          "product_name": "Prato Descartável",
+          "qty_used": 138.0,
+          "qty_returned": 0.0,
+          "net_consumption": 138.0,
+          "unit": "un",
+          "source": "contagem"
+        },
+        {
+          "product_id": "DIS-003",
+          "product_name": "Talher Descartável",
+          "qty_used": 140.0,
+          "qty_returned": 0.0,
+          "net_consumption": 140.0,
+          "unit": "un",
+          "source": "contagem"
+        },
+        {
+          "product_id": "GAR-001",
+          "product_name": "Serviço Garçom",
+          "qty_used": 28.0,
+          "qty_returned": 0.0,
+          "net_consumption": 28.0,
+          "unit": "hora",
+          "source": "timesheet"
+        },
+        {
+          "product_id": "BAR-001",
+          "product_name": "Serviço Bartender",
+          "qty_used": 16.0,
+          "qty_returned": 0.0,
+          "net_consumption": 16.0,
+          "unit": "hora",
+          "source": "timesheet"
+        },
+        {
+          "product_id": "COP-001",
+          "product_name": "Serviço Copeiro",
+          "qty_used": 20.0,
+          "qty_returned": 0.0,
+          "net_consumption": 20.0,
+          "unit": "hora",
+          "source": "timesheet"
+        },
+        {
+          "product_id": "CRD-001",
+          "product_name": "Coordenador Evento",
+          "qty_used": 8.0,
+          "qty_returned": 0.0,
+          "net_consumption": 8.0,
+          "unit": "hora",
+          "source": "timesheet"
+        },
+        {
+          "product_id": "EQU-001",
+          "product_name": "Aluguel Equipamentos",
+          "qty_used": 1.0,
+          "qty_returned": 0.0,
+          "net_consumption": 1.0,
+          "unit": "evento",
+          "source": "nota_fiscal"
+        },
+        {
+          "product_id": "LOG-001",
+          "product_name": "Logística Transporte",
+          "qty_used": 52.0,
+          "qty_returned": 0.0,
+          "net_consumption": 52.0,
+          "unit": "km",
+          "source": "odometro"
+        }
+      ],
+      "variance_notes": [
+        "Cerveja: 7% acima do previsto — público bebia mais",
+        "Frango: sobra de 10% — considerar reduzir porção",
+        "Gelo: 11% acima do previsto — dia mais quente"
+      ]
+    },
+    "EVT002": {
+      "event_id": "EVT002",
+      "event_name": "ACME Corp",
+      "date": "2026-04-20",
+      "status": "completed",
+      "pax_estimated": 0,
+      "pax_actual": 175,
+      "recorded_by": "Chef João",
+      "recorded_at": "2026-04-15T16:08:32.444384",
+      "notes": "Evento corporativo ACME, catering mais leve",
+      "consumption": [
+        {
+          "product_id": "FRG-001",
+          "product_name": "Frango à Passarinho",
+          "qty_used": 27.0,
+          "qty_returned": 0.0,
+          "net_consumption": 27.0,
+          "unit": "kg",
+          "source": "medicao_real"
+        },
+        {
+          "product_id": "CER-001",
+          "product_name": "Cerveja Pilsen",
+          "qty_used": 40.0,
+          "qty_returned": 2.0,
+          "net_consumption": 38.0,
+          "unit": "lit",
+          "source": "medicao_real"
+        }
+      ],
+      "variance_notes": []
+    }
+  }
+}

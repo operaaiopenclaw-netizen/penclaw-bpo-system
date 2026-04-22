@@ -1,0 +1,94 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "description": "Pedidos de compra. Cada PO pode ter múltiplos itens e múltiplos eventos alvo.",
+    "statuses": ["draft", "sent", "confirmed", "delivered", "cancelled"]
+  },
+  "orders": [
+    {
+      "po_id": "PO-001",
+      "date": "2026-04-09",
+      "target_events": ["EVT001", "EVT003"],
+      "supplier_id": "SUP-001",
+      "supplier_name": "Açougue Premium",
+      "items": [
+        {
+          "product_id": "CAR-001",
+          "product_name": "Carne Bovina",
+          "qty_ordered": 50.0,
+          "unit": "kg",
+          "unit_cost": 85.00,
+          "total": 4250.00
+        },
+        {
+          "product_id": "FRG-001",
+          "product_name": "Frango à Passarinho",
+          "qty_ordered": 30.0,
+          "unit": "kg",
+          "unit_cost": 28.00,
+          "total": 840.00
+        }
+      ],
+      "total_order": 5090.00,
+      "status": "delivered",
+      "delivery_date": "2026-04-10",
+      "nfe": "NF-2026-00101",
+      "requested_by": "Chef Ana",
+      "notes": "Pedido urgente para eventos da semana"
+    },
+    {
+      "po_id": "PO-002",
+      "date": "2026-04-10",
+      "target_events": ["EVT001", "EVT002", "EVT003", "EVT004"],
+      "supplier_id": "SUP-005",
+      "supplier_name": "Cervejaria BR / Bebidas Sul / Salgados Festa",
+      "items": [
+        {
+          "product_id": "CER-001",
+          "product_name": "Cerveja Pilsen",
+          "qty_ordered": 200.0,
+          "unit": "lit",
+          "unit_cost": 8.50,
+          "total": 1700.00
+        },
+        {
+          "product_id": "SAL-001",
+          "product_name": "Salgado Frito",
+          "qty_ordered": 800.0,
+          "unit": "un",
+          "unit_cost": 3.50,
+          "total": 2800.00
+        }
+      ],
+      "total_order": 4500.00,
+      "status": "delivered",
+      "delivery_date": "2026-04-11",
+      "nfe": "NF-2026-00210, NF-2026-00315",
+      "requested_by": "Operações",
+      "notes": "Estoque base mês de abril"
+    },
+    {
+      "po_id": "PO-003",
+      "date": "2026-04-11",
+      "target_events": ["EVT001", "EVT002", "EVT003", "EVT004"],
+      "supplier_id": "SUP-009",
+      "supplier_name": "Descartáveis BR",
+      "items": [
+        {
+          "product_id": "DIS-001",
+          "product_name": "Copo Descartável",
+          "qty_ordered": 2000.0,
+          "unit": "un",
+          "unit_cost": 0.25,
+          "total": 500.00
+        }
+      ],
+      "total_order": 500.00,
+      "status": "delivered",
+      "delivery_date": "2026-04-12",
+      "nfe": "NF-2026-00420",
+      "requested_by": "Operações",
+      "notes": ""
+    }
+  ]
+}

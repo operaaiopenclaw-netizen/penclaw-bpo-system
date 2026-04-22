@@ -1,0 +1,132 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "generated_at": "2026-04-15T16:08:46.506425",
+    "total_audits": 4,
+    "resumo": {
+      "CONSISTENTE": 4,
+      "ALERTA": 0,
+      "INCONSISTENTE": 0
+    },
+    "risco": {
+      "ALTO": 0,
+      "MEDIO": 0,
+      "BAIXO": 4
+    },
+    "ordenado_por": "risco_financeiro_desc"
+  },
+  "audits": [
+    {
+      "event_id": "EVT001",
+      "n_ctt": "CTT001",
+      "company": "opera",
+      "date_event": "2026-04-15",
+      "status": "CONSISTENTE",
+      "receita_total": 25000.0,
+      "cmv_total": 13590.26,
+      "margem_bruta_pct": 45.63896,
+      "estoque_saida_total": null,
+      "consumo_real": null,
+      "producao_total": 130,
+      "venda_total": 120,
+      "validacoes": {
+        "venda_vs_producao_ok": true,
+        "venda_vs_producao_status": "CONSISTENTE",
+        "venda_vs_producao_msg": "Venda/produção dentro dos parâmetros",
+        "receita_vs_cmv_ok": true,
+        "receita_vs_cmv_status": "LUCRO_CONFIRMADO",
+        "receita_vs_cmv_msg": "Margem de 45.6%",
+        "margem_bruta_pct": 45.63896
+      },
+      "divergencias": [],
+      "issues": [],
+      "confidence_score": 0.67,
+      "risco_financeiro": "BAIXO",
+      "timestamp": "2026-04-15T16:08:46.506294"
+    },
+    {
+      "event_id": "EVT002",
+      "n_ctt": "CTT002",
+      "company": "la_orana",
+      "date_event": "2026-04-20",
+      "status": "CONSISTENTE",
+      "receita_total": 18000.0,
+      "cmv_total": 9966.4,
+      "margem_bruta_pct": 44.63111111111112,
+      "estoque_saida_total": null,
+      "consumo_real": null,
+      "producao_total": 175,
+      "venda_total": 162,
+      "validacoes": {
+        "venda_vs_producao_ok": true,
+        "venda_vs_producao_status": "CONSISTENTE",
+        "venda_vs_producao_msg": "Venda/produção dentro dos parâmetros",
+        "receita_vs_cmv_ok": true,
+        "receita_vs_cmv_status": "LUCRO_CONFIRMADO",
+        "receita_vs_cmv_msg": "Margem de 44.6%",
+        "margem_bruta_pct": 44.63111111111112
+      },
+      "divergencias": [],
+      "issues": [],
+      "confidence_score": 0.67,
+      "risco_financeiro": "BAIXO",
+      "timestamp": "2026-04-15T16:08:46.506344"
+    },
+    {
+      "event_id": "EVT003",
+      "n_ctt": "CTT003",
+      "company": "opera",
+      "date_event": "2026-04-25",
+      "status": "CONSISTENTE",
+      "receita_total": 15000.0,
+      "cmv_total": 9315.41,
+      "margem_bruta_pct": 37.89726666666667,
+      "estoque_saida_total": null,
+      "consumo_real": null,
+      "producao_total": 100,
+      "venda_total": 93,
+      "validacoes": {
+        "venda_vs_producao_ok": true,
+        "venda_vs_producao_status": "CONSISTENTE",
+        "venda_vs_producao_msg": "Venda/produção dentro dos parâmetros",
+        "receita_vs_cmv_ok": true,
+        "receita_vs_cmv_status": "LUCRO_CONFIRMADO",
+        "receita_vs_cmv_msg": "Margem de 37.9%",
+        "margem_bruta_pct": 37.89726666666667
+      },
+      "divergencias": [],
+      "issues": [],
+      "confidence_score": 0.67,
+      "risco_financeiro": "BAIXO",
+      "timestamp": "2026-04-15T16:08:46.506365"
+    },
+    {
+      "event_id": "EVT004",
+      "n_ctt": "CTT004",
+      "company": "la_orana",
+      "date_event": "2026-04-28",
+      "status": "CONSISTENTE",
+      "receita_total": 12000.0,
+      "cmv_total": 7185.61,
+      "margem_bruta_pct": 40.11991666666667,
+      "estoque_saida_total": null,
+      "consumo_real": null,
+      "producao_total": 100,
+      "venda_total": 93,
+      "validacoes": {
+        "venda_vs_producao_ok": true,
+        "venda_vs_producao_status": "CONSISTENTE",
+        "venda_vs_producao_msg": "Venda/produção dentro dos parâmetros",
+        "receita_vs_cmv_ok": true,
+        "receita_vs_cmv_status": "LUCRO_CONFIRMADO",
+        "receita_vs_cmv_msg": "Margem de 40.1%",
+        "margem_bruta_pct": 40.11991666666667
+      },
+      "divergencias": [],
+      "issues": [],
+      "confidence_score": 0.67,
+      "risco_financeiro": "BAIXO",
+      "timestamp": "2026-04-15T16:08:46.506380"
+    }
+  ]
+}

@@ -1,0 +1,1461 @@
+{
+  "event": "Aniversário 15 anos Yohanna",
+  "pax": 150,
+  "total_cost": 16948.97,
+  "cost_per_pax": 112.99,
+  "estimated_at": "2026-04-17",
+  "method": "Claude knowledge-based estimation",
+  "market": "Curitiba/PR - Atacado/Food Service - Abril 2026",
+  "disclaimer": "Estimativas baseadas em preços típicos de atacado/distribuidores Curitiba. Valide com fornecedores reais.",
+  "ingredients": [
+    {
+      "name": "Queijo Mozzarella de Búfala",
+      "qty": 15.0,
+      "unit": "KG",
+      "price_per_unit": 80.0,
+      "total_cost": 1200.0,
+      "confidence": "medium",
+      "notes": "búfala peça atacado"
+    },
+    {
+      "name": "Coxinha Cremosa",
+      "qty": 300.0,
+      "unit": "UN",
+      "price_per_unit": 3.5,
+      "total_cost": 1050.0,
+      "confidence": "medium",
+      "notes": "semi-pronto industrial, UN"
+    },
+    {
+      "name": "Azeite",
+      "qty": 21.5,
+      "unit": "L",
+      "price_per_unit": 45.0,
+      "total_cost": 967.5,
+      "confidence": "medium",
+      "notes": "azeite extravirgem lata 5L atacado"
+    },
+    {
+      "name": "Água Mineral",
+      "qty": 225.0,
+      "unit": "L",
+      "price_per_unit": 2.5,
+      "total_cost": 562.5,
+      "confidence": "high",
+      "notes": "garrafão 20L atacado"
+    },
+    {
+      "name": "Chocolate Meio Amargo",
+      "qty": 9.5,
+      "unit": "KG",
+      "price_per_unit": 45.0,
+      "total_cost": 427.5,
+      "confidence": "medium",
+      "notes": "cobertura callebaut ou similar"
+    },
+    {
+      "name": "Espeto Coalho",
+      "qty": 100.0,
+      "unit": "UN",
+      "price_per_unit": 4.0,
+      "total_cost": 400.0,
+      "confidence": "medium",
+      "notes": "espeto porção unitária"
+    },
+    {
+      "name": "Mini Donuts",
+      "qty": 150.0,
+      "unit": "UN",
+      "price_per_unit": 2.5,
+      "total_cost": 375.0,
+      "confidence": "medium",
+      "notes": "donut individual pré-frito"
+    },
+    {
+      "name": "Batata Palito Congelada",
+      "qty": 30.0,
+      "unit": "KG",
+      "price_per_unit": 12.0,
+      "total_cost": 360.0,
+      "confidence": "high",
+      "notes": "batata congelada food service"
+    },
+    {
+      "name": "Pão de Brioche Burger",
+      "qty": 100.0,
+      "unit": "UN",
+      "price_per_unit": 3.5,
+      "total_cost": 350.0,
+      "confidence": "medium",
+      "notes": "pão artesanal brioche UN"
+    },
+    {
+      "name": "Óleo",
+      "qty": 42.0,
+      "unit": "L",
+      "price_per_unit": 8.0,
+      "total_cost": 336.0,
+      "confidence": "high",
+      "notes": "óleo soja garrafão 5L"
+    },
+    {
+      "name": "Peito Bovino",
+      "qty": 8.0,
+      "unit": "KG",
+      "price_per_unit": 35.0,
+      "total_cost": 280.0,
+      "confidence": "medium",
+      "notes": "peito boi atacado frigorífico"
+    },
+    {
+      "name": "Água com Gás",
+      "qty": 79.0,
+      "unit": "L",
+      "price_per_unit": 3.5,
+      "total_cost": 276.5,
+      "confidence": "high",
+      "notes": "agua mineral com gas 500ml"
+    },
+    {
+      "name": "Refrigerante",
+      "qty": 45.0,
+      "unit": "L",
+      "price_per_unit": 6.0,
+      "total_cost": 270.0,
+      "confidence": "high",
+      "notes": "2L atacado varejo"
+    },
+    {
+      "name": "Queijo Boursan",
+      "qty": 3.0,
+      "unit": "KG",
+      "price_per_unit": 90.0,
+      "total_cost": 270.0,
+      "confidence": "medium",
+      "notes": "boursin ou similar importado"
+    },
+    {
+      "name": "Sorvete de Chocolate",
+      "qty": 10.0,
+      "unit": "KG",
+      "price_per_unit": 25.0,
+      "total_cost": 250.0,
+      "confidence": "medium",
+      "notes": "sorvete balde food service"
+    },
+    {
+      "name": "Queijo Canastra",
+      "qty": 3.0,
+      "unit": "KG",
+      "price_per_unit": 80.0,
+      "total_cost": 240.0,
+      "confidence": "medium",
+      "notes": "canastra artesanal"
+    },
+    {
+      "name": "Carne Seca",
+      "qty": 4.5,
+      "unit": "KG",
+      "price_per_unit": 50.0,
+      "total_cost": 225.0,
+      "confidence": "medium",
+      "notes": "carne seca dessalgada atacado"
+    },
+    {
+      "name": "Leite",
+      "qty": 43.5,
+      "unit": "L",
+      "price_per_unit": 5.0,
+      "total_cost": 217.5,
+      "confidence": "high",
+      "notes": "UHT integral caixa 1L"
+    },
+    {
+      "name": "Queijo Parmesão",
+      "qty": 3.9,
+      "unit": "KG",
+      "price_per_unit": 55.0,
+      "total_cost": 214.5,
+      "confidence": "high",
+      "notes": "parmesão peça atacado"
+    },
+    {
+      "name": "Morango Fresco",
+      "qty": 14.0,
+      "unit": "KG",
+      "price_per_unit": 15.0,
+      "total_cost": 210.0,
+      "confidence": "medium",
+      "notes": "morango bandeja Curitiba/Serra Gaúcha"
+    },
+    {
+      "name": "Acém",
+      "qty": 7.0,
+      "unit": "KG",
+      "price_per_unit": 30.0,
+      "total_cost": 210.0,
+      "confidence": "medium",
+      "notes": "acém bovino peça"
+    },
+    {
+      "name": "Queijo Tulha",
+      "qty": 3.0,
+      "unit": "KG",
+      "price_per_unit": 70.0,
+      "total_cost": 210.0,
+      "confidence": "low",
+      "notes": "queijo artesanal especial"
+    },
+    {
+      "name": "Pão de Hot Dog",
+      "qty": 100.0,
+      "unit": "UN",
+      "price_per_unit": 2.0,
+      "total_cost": 200.0,
+      "confidence": "high",
+      "notes": "pão hot dog pacote"
+    },
+    {
+      "name": "Músculo Bovino",
+      "qty": 6.0,
+      "unit": "KG",
+      "price_per_unit": 32.0,
+      "total_cost": 192.0,
+      "confidence": "medium",
+      "notes": "músculo bovino peça"
+    },
+    {
+      "name": "Burrata",
+      "qty": 2.0,
+      "unit": "KG",
+      "price_per_unit": 90.0,
+      "total_cost": 180.0,
+      "confidence": "medium",
+      "notes": "burrata artesanal 125g ~R$11"
+    },
+    {
+      "name": "Sashimi Atum",
+      "qty": 1.5,
+      "unit": "KG",
+      "price_per_unit": 120.0,
+      "total_cost": 180.0,
+      "confidence": "medium",
+      "notes": "atum grau sashimi"
+    },
+    {
+      "name": "Tahine",
+      "qty": 4.9,
+      "unit": "KG",
+      "price_per_unit": 35.0,
+      "total_cost": 171.5,
+      "confidence": "medium",
+      "notes": "pasta de gergelim importada"
+    },
+    {
+      "name": "Stracciatella",
+      "qty": 2.0,
+      "unit": "KG",
+      "price_per_unit": 85.0,
+      "total_cost": 170.0,
+      "confidence": "medium",
+      "notes": "stracciatella artesanal"
+    },
+    {
+      "name": "Queijo do Reino",
+      "qty": 3.0,
+      "unit": "KG",
+      "price_per_unit": 55.0,
+      "total_cost": 165.0,
+      "confidence": "medium",
+      "notes": "edam/gouda peça"
+    },
+    {
+      "name": "Farinha Panko",
+      "qty": 9.0,
+      "unit": "KG",
+      "price_per_unit": 18.0,
+      "total_cost": 162.0,
+      "confidence": "medium",
+      "notes": "panko importado ou nacional"
+    },
+    {
+      "name": "Iogurte Natural",
+      "qty": 20.0,
+      "unit": "UN",
+      "price_per_unit": 8.0,
+      "total_cost": 160.0,
+      "confidence": "high",
+      "notes": "iogurte natural 500g pote"
+    },
+    {
+      "name": "Nigiri",
+      "qty": 2.0,
+      "unit": "KG",
+      "price_per_unit": 80.0,
+      "total_cost": 160.0,
+      "confidence": "medium",
+      "notes": "nigiri food service"
+    },
+    {
+      "name": "Creme de Leite",
+      "qty": 19.5,
+      "unit": "L",
+      "price_per_unit": 8.0,
+      "total_cost": 156.0,
+      "confidence": "high",
+      "notes": "creme leite UHT 1L"
+    },
+    {
+      "name": "Leite Condensado",
+      "qty": 13.0,
+      "unit": "KG",
+      "price_per_unit": 12.0,
+      "total_cost": 156.0,
+      "confidence": "high",
+      "notes": "lata 395g ~R$4.75 = ~R$12/kg"
+    },
+    {
+      "name": "Sorvete Belga",
+      "qty": 4.0,
+      "unit": "KG",
+      "price_per_unit": 38.0,
+      "total_cost": 152.0,
+      "confidence": "medium",
+      "notes": "sorvete premium balde"
+    },
+    {
+      "name": "Sashimi Salmão",
+      "qty": 1.5,
+      "unit": "KG",
+      "price_per_unit": 100.0,
+      "total_cost": 150.0,
+      "confidence": "medium",
+      "notes": "salmão grau sashimi"
+    },
+    {
+      "name": "Queijo Mozzarella",
+      "qty": 4.0,
+      "unit": "KG",
+      "price_per_unit": 35.0,
+      "total_cost": 140.0,
+      "confidence": "high",
+      "notes": "mozarela peça ou fatiada"
+    },
+    {
+      "name": "Manteiga",
+      "qty": 3.9,
+      "unit": "KG",
+      "price_per_unit": 35.0,
+      "total_cost": 136.5,
+      "confidence": "high",
+      "notes": "manteiga com sal 500g tablete"
+    },
+    {
+      "name": "Tomate Cereja Vermelho",
+      "qty": 7.5,
+      "unit": "KG",
+      "price_per_unit": 18.0,
+      "total_cost": 135.0,
+      "confidence": "medium",
+      "notes": "tomate cereja bandeja"
+    },
+    {
+      "name": "Parma Nacional",
+      "qty": 1.5,
+      "unit": "KG",
+      "price_per_unit": 90.0,
+      "total_cost": 135.0,
+      "confidence": "medium",
+      "notes": "presunto parma nacional"
+    },
+    {
+      "name": "Coppa Artesanal",
+      "qty": 1.5,
+      "unit": "KG",
+      "price_per_unit": 85.0,
+      "total_cost": 127.5,
+      "confidence": "medium",
+      "notes": "coppa artesanal"
+    },
+    {
+      "name": "Brioche Amanteigado",
+      "qty": 4.0,
+      "unit": "KG",
+      "price_per_unit": 30.0,
+      "total_cost": 120.0,
+      "confidence": "medium",
+      "notes": "brioche amanteigado artesanal"
+    },
+    {
+      "name": "Queijo Coalho",
+      "qty": 3.0,
+      "unit": "KG",
+      "price_per_unit": 40.0,
+      "total_cost": 120.0,
+      "confidence": "high",
+      "notes": "queijo coalho nordestino"
+    },
+    {
+      "name": "Queijo Cheddar",
+      "qty": 3.0,
+      "unit": "KG",
+      "price_per_unit": 40.0,
+      "total_cost": 120.0,
+      "confidence": "high",
+      "notes": "cheddar fatiado/peça"
+    },
+    {
+      "name": "Sushi",
+      "qty": 2.0,
+      "unit": "KG",
+      "price_per_unit": 60.0,
+      "total_cost": 120.0,
+      "confidence": "medium",
+      "notes": "rolls prontos food service"
+    },
+    {
+      "name": "Pancetta Defumada",
+      "qty": 1.5,
+      "unit": "KG",
+      "price_per_unit": 80.0,
+      "total_cost": 120.0,
+      "confidence": "medium",
+      "notes": "pancetta defumada artesanal"
+    },
+    {
+      "name": "Sashimi Peixe Branco",
+      "qty": 1.5,
+      "unit": "KG",
+      "price_per_unit": 80.0,
+      "total_cost": 120.0,
+      "confidence": "medium",
+      "notes": "tilápia/namorado/robalo grau sashimi"
+    },
+    {
+      "name": "Mirtilo",
+      "qty": 1.5,
+      "unit": "KG",
+      "price_per_unit": 80.0,
+      "total_cost": 120.0,
+      "confidence": "medium",
+      "notes": "blueberry fresco premium"
+    },
+    {
+      "name": "Lombo Curado",
+      "qty": 1.5,
+      "unit": "KG",
+      "price_per_unit": 75.0,
+      "total_cost": 112.5,
+      "confidence": "medium",
+      "notes": "lombo curado fatiado"
+    },
+    {
+      "name": "Manjericão Fresco",
+      "qty": 2.8,
+      "unit": "KG",
+      "price_per_unit": 40.0,
+      "total_cost": 112.0,
+      "confidence": "medium",
+      "notes": "manjericão maço"
+    },
+    {
+      "name": "Tomate Pelati",
+      "qty": 8.4,
+      "unit": "KG",
+      "price_per_unit": 12.0,
+      "total_cost": 100.8,
+      "confidence": "medium",
+      "notes": "tomate pelado lata 400g"
+    },
+    {
+      "name": "Sorvete Tutti Frutti",
+      "qty": 4.0,
+      "unit": "KG",
+      "price_per_unit": 25.0,
+      "total_cost": 100.0,
+      "confidence": "medium",
+      "notes": "sorvete balde"
+    },
+    {
+      "name": "Focaccia",
+      "qty": 4.0,
+      "unit": "KG",
+      "price_per_unit": 25.0,
+      "total_cost": 100.0,
+      "confidence": "medium",
+      "notes": "focaccia artesanal padaria"
+    },
+    {
+      "name": "Azeite Balsâmico",
+      "qty": 2.0,
+      "unit": "KG",
+      "price_per_unit": 50.0,
+      "total_cost": 100.0,
+      "confidence": "medium",
+      "notes": "vinagre balsâmico qualidade"
+    },
+    {
+      "name": "Salame Milano",
+      "qty": 1.5,
+      "unit": "KG",
+      "price_per_unit": 60.0,
+      "total_cost": 90.0,
+      "confidence": "medium",
+      "notes": "salame milano importado/nacional"
+    },
+    {
+      "name": "Cogumelo Porto Belo",
+      "qty": 2.5,
+      "unit": "KG",
+      "price_per_unit": 35.0,
+      "total_cost": 87.5,
+      "confidence": "medium",
+      "notes": "portobello fresco"
+    },
+    {
+      "name": "Macarrão Yaksoba",
+      "qty": 7.0,
+      "unit": "KG",
+      "price_per_unit": 12.0,
+      "total_cost": 84.0,
+      "confidence": "medium",
+      "notes": "macarrão yakisoba pacote 1kg"
+    },
+    {
+      "name": "Mel",
+      "qty": 2.3,
+      "unit": "KG",
+      "price_per_unit": 35.0,
+      "total_cost": 80.5,
+      "confidence": "medium",
+      "notes": "mel pote 1kg"
+    },
+    {
+      "name": "Ovo",
+      "qty": 67.0,
+      "unit": "UN",
+      "price_per_unit": 1.2,
+      "total_cost": 80.4,
+      "confidence": "high",
+      "notes": "ovo branco tipo A"
+    },
+    {
+      "name": "Framboesa",
+      "qty": 1.0,
+      "unit": "KG",
+      "price_per_unit": 80.0,
+      "total_cost": 80.0,
+      "confidence": "medium",
+      "notes": "framboesa congelada ou fresca"
+    },
+    {
+      "name": "Salsinha",
+      "qty": 5.3,
+      "unit": "KG",
+      "price_per_unit": 15.0,
+      "total_cost": 79.5,
+      "confidence": "medium",
+      "notes": "salsinha maço atacado"
+    },
+    {
+      "name": "Tomate Cereja Amarelo",
+      "qty": 3.5,
+      "unit": "KG",
+      "price_per_unit": 22.0,
+      "total_cost": 77.0,
+      "confidence": "medium",
+      "notes": "cereja amarelo premium"
+    },
+    {
+      "name": "Açém",
+      "qty": 2.4,
+      "unit": "KG",
+      "price_per_unit": 30.0,
+      "total_cost": 72.0,
+      "confidence": "medium",
+      "notes": "mesma que Acém"
+    },
+    {
+      "name": "Nozes",
+      "qty": 1.2,
+      "unit": "KG",
+      "price_per_unit": 60.0,
+      "total_cost": 72.0,
+      "confidence": "medium",
+      "notes": "nozes inteiras"
+    },
+    {
+      "name": "Molho Shou",
+      "qty": 4.6,
+      "unit": "L",
+      "price_per_unit": 15.0,
+      "total_cost": 69.0,
+      "confidence": "medium",
+      "notes": "shoyu kikoman ou similar"
+    },
+    {
+      "name": "Quinoa Vermelha",
+      "qty": 1.5,
+      "unit": "KG",
+      "price_per_unit": 45.0,
+      "total_cost": 67.5,
+      "confidence": "medium",
+      "notes": "quinoa vermelha premium"
+    },
+    {
+      "name": "Pimenta Síria",
+      "qty": 1.3,
+      "unit": "KG",
+      "price_per_unit": 50.0,
+      "total_cost": 65.0,
+      "confidence": "medium",
+      "notes": "pimenta síria blend"
+    },
+    {
+      "name": "Tortelli",
+      "qty": 2.0,
+      "unit": "KG",
+      "price_per_unit": 32.0,
+      "total_cost": 64.0,
+      "confidence": "medium",
+      "notes": "tortelli recheado"
+    },
+    {
+      "name": "Cogumelo Paris",
+      "qty": 2.5,
+      "unit": "KG",
+      "price_per_unit": 25.0,
+      "total_cost": 62.5,
+      "confidence": "medium",
+      "notes": "cogumelo champignon fresco"
+    },
+    {
+      "name": "Massa de Pastel",
+      "qty": 5.0,
+      "unit": "KG",
+      "price_per_unit": 12.0,
+      "total_cost": 60.0,
+      "confidence": "medium",
+      "notes": "massa pastel food service"
+    },
+    {
+      "name": "Calda de Chocolate",
+      "qty": 3.0,
+      "unit": "L",
+      "price_per_unit": 20.0,
+      "total_cost": 60.0,
+      "confidence": "medium",
+      "notes": "calda pronta ou cobertura"
+    },
+    {
+      "name": "Raviolli",
+      "qty": 2.0,
+      "unit": "KG",
+      "price_per_unit": 30.0,
+      "total_cost": 60.0,
+      "confidence": "medium",
+      "notes": "ravióli fresco ou congelado"
+    },
+    {
+      "name": "Balas Fini",
+      "qty": 2.0,
+      "unit": "KG",
+      "price_per_unit": 30.0,
+      "total_cost": 60.0,
+      "confidence": "medium",
+      "notes": "balas fini importadas"
+    },
+    {
+      "name": "Quinoa Branca",
+      "qty": 1.5,
+      "unit": "KG",
+      "price_per_unit": 40.0,
+      "total_cost": 60.0,
+      "confidence": "medium",
+      "notes": "quinoa branca orgânica"
+    },
+    {
+      "name": "Clara Pasteurizada",
+      "qty": 3.8,
+      "unit": "L",
+      "price_per_unit": 15.0,
+      "total_cost": 57.0,
+      "confidence": "medium",
+      "notes": "clara pasteurizada tetrapak"
+    },
+    {
+      "name": "Tomate Italiano",
+      "qty": 7.0,
+      "unit": "KG",
+      "price_per_unit": 8.0,
+      "total_cost": 56.0,
+      "confidence": "high",
+      "notes": "tomate longa vida caixeta"
+    },
+    {
+      "name": "Páprica Defumada",
+      "qty": 1.58,
+      "unit": "KG",
+      "price_per_unit": 35.0,
+      "total_cost": 55.3,
+      "confidence": "medium",
+      "notes": "páprica defumada importada"
+    },
+    {
+      "name": "Grissini",
+      "qty": 2.5,
+      "unit": "KG",
+      "price_per_unit": 22.0,
+      "total_cost": 55.0,
+      "confidence": "medium",
+      "notes": "grissini importado ou artesanal"
+    },
+    {
+      "name": "Peito de Frango",
+      "qty": 3.0,
+      "unit": "KG",
+      "price_per_unit": 18.0,
+      "total_cost": 54.0,
+      "confidence": "high",
+      "notes": "filé peito frango sem osso"
+    },
+    {
+      "name": "Gohan",
+      "qty": 3.0,
+      "unit": "KG",
+      "price_per_unit": 18.0,
+      "total_cost": 54.0,
+      "confidence": "medium",
+      "notes": "arroz japonês koshihikari"
+    },
+    {
+      "name": "Linguiça Blumenal",
+      "qty": 1.5,
+      "unit": "KG",
+      "price_per_unit": 35.0,
+      "total_cost": 52.5,
+      "confidence": "medium",
+      "notes": "linguiça blumenau artesanal"
+    },
+    {
+      "name": "Beterraba",
+      "qty": 10.0,
+      "unit": "KG",
+      "price_per_unit": 5.0,
+      "total_cost": 50.0,
+      "confidence": "high",
+      "notes": "beterraba a granel"
+    },
+    {
+      "name": "Massa Filo",
+      "qty": 2.0,
+      "unit": "KG",
+      "price_per_unit": 25.0,
+      "total_cost": 50.0,
+      "confidence": "medium",
+      "notes": "massa filo congelada"
+    },
+    {
+      "name": "Baunilha Fava",
+      "qty": 1.0,
+      "unit": "UN",
+      "price_per_unit": 50.0,
+      "total_cost": 50.0,
+      "confidence": "low",
+      "notes": "fava baunilha bourbon"
+    },
+    {
+      "name": "Gelatina de Morango",
+      "qty": 12.0,
+      "unit": "UN",
+      "price_per_unit": 4.0,
+      "total_cost": 48.0,
+      "confidence": "high",
+      "notes": "caixa gelatina 85g"
+    },
+    {
+      "name": "Gelatina de Limão",
+      "qty": 12.0,
+      "unit": "UN",
+      "price_per_unit": 4.0,
+      "total_cost": 48.0,
+      "confidence": "high",
+      "notes": "caixa gelatina 85g"
+    },
+    {
+      "name": "Gelatina de Framboesa",
+      "qty": 12.0,
+      "unit": "UN",
+      "price_per_unit": 4.0,
+      "total_cost": 48.0,
+      "confidence": "high",
+      "notes": "caixa gelatina 85g"
+    },
+    {
+      "name": "Gelatina de Uva",
+      "qty": 12.0,
+      "unit": "UN",
+      "price_per_unit": 4.0,
+      "total_cost": 48.0,
+      "confidence": "high",
+      "notes": "caixa gelatina 85g"
+    },
+    {
+      "name": "Gelatina de Abacaxi",
+      "qty": 12.0,
+      "unit": "UN",
+      "price_per_unit": 4.0,
+      "total_cost": 48.0,
+      "confidence": "high",
+      "notes": "caixa gelatina 85g"
+    },
+    {
+      "name": "Manga",
+      "qty": 6.0,
+      "unit": "KG",
+      "price_per_unit": 8.0,
+      "total_cost": 48.0,
+      "confidence": "medium",
+      "notes": "manga tommy temporada"
+    },
+    {
+      "name": "Pimenta do Reino",
+      "qty": 1.29,
+      "unit": "KG",
+      "price_per_unit": 35.0,
+      "total_cost": 45.15,
+      "confidence": "high",
+      "notes": "pimenta do reino moída"
+    },
+    {
+      "name": "Pão Folha",
+      "qty": 3.0,
+      "unit": "KG",
+      "price_per_unit": 15.0,
+      "total_cost": 45.0,
+      "confidence": "medium",
+      "notes": "pão folha tortilha"
+    },
+    {
+      "name": "Jois",
+      "qty": 1.5,
+      "unit": "KG",
+      "price_per_unit": 30.0,
+      "total_cost": 45.0,
+      "confidence": "low",
+      "notes": "Jois - ingrediente específico, estimado"
+    },
+    {
+      "name": "Gelatina em Folha",
+      "qty": 0.3,
+      "unit": "KG",
+      "price_per_unit": 150.0,
+      "total_cost": 45.0,
+      "confidence": "medium",
+      "notes": "gelatina folha importada"
+    },
+    {
+      "name": "Hortelã Fresca",
+      "qty": 1.2,
+      "unit": "KG",
+      "price_per_unit": 35.0,
+      "total_cost": 42.0,
+      "confidence": "medium",
+      "notes": "hortelã maço"
+    },
+    {
+      "name": "Farinha de Trigo",
+      "qty": 9.27,
+      "unit": "KG",
+      "price_per_unit": 4.5,
+      "total_cost": 41.71,
+      "confidence": "high",
+      "notes": "farinha especial 5kg atacado"
+    },
+    {
+      "name": "Alho",
+      "qty": 2.02,
+      "unit": "KG",
+      "price_per_unit": 20.0,
+      "total_cost": 40.4,
+      "confidence": "medium",
+      "notes": "alho descascado atacado"
+    },
+    {
+      "name": "Molho Tarê",
+      "qty": 2.0,
+      "unit": "L",
+      "price_per_unit": 20.0,
+      "total_cost": 40.0,
+      "confidence": "medium",
+      "notes": "molho tarê japonês"
+    },
+    {
+      "name": "Cornichon",
+      "qty": 1.0,
+      "unit": "KG",
+      "price_per_unit": 40.0,
+      "total_cost": 40.0,
+      "confidence": "medium",
+      "notes": "cornichon importado"
+    },
+    {
+      "name": "Torrada",
+      "qty": 2.5,
+      "unit": "KG",
+      "price_per_unit": 15.0,
+      "total_cost": 37.5,
+      "confidence": "high",
+      "notes": "torrada salgada grissini"
+    },
+    {
+      "name": "Grão de Bico",
+      "qty": 4.4,
+      "unit": "KG",
+      "price_per_unit": 8.0,
+      "total_cost": 35.2,
+      "confidence": "high",
+      "notes": "grão de bico seco atacado"
+    },
+    {
+      "name": "Vinho Tinto",
+      "qty": 1.0,
+      "unit": "L",
+      "price_per_unit": 35.0,
+      "total_cost": 35.0,
+      "confidence": "medium",
+      "notes": "vinho tinto seco p/ cozinha"
+    },
+    {
+      "name": "Trigo Sarraceno",
+      "qty": 1.7,
+      "unit": "KG",
+      "price_per_unit": 20.0,
+      "total_cost": 34.0,
+      "confidence": "medium",
+      "notes": "trigo sarraceno orgânico"
+    },
+    {
+      "name": "Vinagre de Maçã",
+      "qty": 3.0,
+      "unit": "KG",
+      "price_per_unit": 10.0,
+      "total_cost": 30.0,
+      "confidence": "high",
+      "notes": "vinagre maçã 750ml"
+    },
+    {
+      "name": "Vinagre de Vinho Branco",
+      "qty": 2.0,
+      "unit": "L",
+      "price_per_unit": 15.0,
+      "total_cost": 30.0,
+      "confidence": "medium",
+      "notes": "vinagre vinho branco"
+    },
+    {
+      "name": "Cenoura",
+      "qty": 6.3,
+      "unit": "KG",
+      "price_per_unit": 4.5,
+      "total_cost": 28.35,
+      "confidence": "high",
+      "notes": "cenoura tipo 1"
+    },
+    {
+      "name": "Cebola Branca",
+      "qty": 7.0,
+      "unit": "KG",
+      "price_per_unit": 4.0,
+      "total_cost": 28.0,
+      "confidence": "high",
+      "notes": "cebola saca atacado"
+    },
+    {
+      "name": "Ervilha",
+      "qty": 3.5,
+      "unit": "KG",
+      "price_per_unit": 8.0,
+      "total_cost": 28.0,
+      "confidence": "high",
+      "notes": "ervilha congelada pacote"
+    },
+    {
+      "name": "Requeijão",
+      "qty": 1.5,
+      "unit": "KG",
+      "price_per_unit": 18.0,
+      "total_cost": 27.0,
+      "confidence": "high",
+      "notes": "requeijão cremoso pote"
+    },
+    {
+      "name": "Limão Tahiti",
+      "qty": 3.215,
+      "unit": "KG",
+      "price_per_unit": 8.0,
+      "total_cost": 25.72,
+      "confidence": "high",
+      "notes": "limão caixa atacado"
+    },
+    {
+      "name": "Brócolis",
+      "qty": 4.0,
+      "unit": "KG",
+      "price_per_unit": 6.0,
+      "total_cost": 24.0,
+      "confidence": "high",
+      "notes": "brócolis americano"
+    },
+    {
+      "name": "Uva Verde",
+      "qty": 2.0,
+      "unit": "KG",
+      "price_per_unit": 12.0,
+      "total_cost": 24.0,
+      "confidence": "medium",
+      "notes": "uva sem semente"
+    },
+    {
+      "name": "Óleo de Gergelim Torrado",
+      "qty": 0.3,
+      "unit": "L",
+      "price_per_unit": 80.0,
+      "total_cost": 24.0,
+      "confidence": "medium",
+      "notes": "óleo gergelim tostado importado"
+    },
+    {
+      "name": "Cominho",
+      "qty": 0.95,
+      "unit": "KG",
+      "price_per_unit": 25.0,
+      "total_cost": 23.75,
+      "confidence": "medium",
+      "notes": "cominho em grãos ou moído"
+    },
+    {
+      "name": "Chocolate em Pó",
+      "qty": 1.1,
+      "unit": "KG",
+      "price_per_unit": 20.0,
+      "total_cost": 22.0,
+      "confidence": "high",
+      "notes": "cacau pó 50%"
+    },
+    {
+      "name": "Acelga",
+      "qty": 3.5,
+      "unit": "KG",
+      "price_per_unit": 6.0,
+      "total_cost": 21.0,
+      "confidence": "high",
+      "notes": "acelga maço"
+    },
+    {
+      "name": "Lentilha",
+      "qty": 2.5,
+      "unit": "KG",
+      "price_per_unit": 8.0,
+      "total_cost": 20.0,
+      "confidence": "high",
+      "notes": "lentilha vermelha ou verde seca"
+    },
+    {
+      "name": "Pêssego",
+      "qty": 2.0,
+      "unit": "KG",
+      "price_per_unit": 10.0,
+      "total_cost": 20.0,
+      "confidence": "medium",
+      "notes": "pêssego temporada"
+    },
+    {
+      "name": "Gema Pasteurizada",
+      "qty": 1.1,
+      "unit": "L",
+      "price_per_unit": 18.0,
+      "total_cost": 19.8,
+      "confidence": "medium",
+      "notes": "gema pasteurizada tetrapak"
+    },
+    {
+      "name": "Melaço de Cana",
+      "qty": 1.5,
+      "unit": "L",
+      "price_per_unit": 12.0,
+      "total_cost": 18.0,
+      "confidence": "medium",
+      "notes": "melaço puro cana"
+    },
+    {
+      "name": "Pasta de Gochujang",
+      "qty": 0.3,
+      "unit": "KG",
+      "price_per_unit": 60.0,
+      "total_cost": 18.0,
+      "confidence": "medium",
+      "notes": "gochujang coreano"
+    },
+    {
+      "name": "Laranja Bahia",
+      "qty": 3.5,
+      "unit": "KG",
+      "price_per_unit": 5.0,
+      "total_cost": 17.5,
+      "confidence": "high",
+      "notes": "laranja bahia caixa"
+    },
+    {
+      "name": "Leite em Pó",
+      "qty": 0.7,
+      "unit": "KG",
+      "price_per_unit": 25.0,
+      "total_cost": 17.5,
+      "confidence": "high",
+      "notes": "leite em pó integral"
+    },
+    {
+      "name": "Vinho Branco",
+      "qty": 0.5,
+      "unit": "L",
+      "price_per_unit": 35.0,
+      "total_cost": 17.5,
+      "confidence": "medium",
+      "notes": "vinho branco seco"
+    },
+    {
+      "name": "Tomate Verde",
+      "qty": 2.0,
+      "unit": "KG",
+      "price_per_unit": 8.0,
+      "total_cost": 16.0,
+      "confidence": "medium",
+      "notes": "tomate verde"
+    },
+    {
+      "name": "Fusilli",
+      "qty": 2.0,
+      "unit": "KG",
+      "price_per_unit": 8.0,
+      "total_cost": 16.0,
+      "confidence": "high",
+      "notes": "massa italiana grano duro"
+    },
+    {
+      "name": "Penne",
+      "qty": 2.0,
+      "unit": "KG",
+      "price_per_unit": 8.0,
+      "total_cost": 16.0,
+      "confidence": "high",
+      "notes": "massa italiana"
+    },
+    {
+      "name": "Açúcar Mascavo",
+      "qty": 1.9,
+      "unit": "KG",
+      "price_per_unit": 8.0,
+      "total_cost": 15.2,
+      "confidence": "high",
+      "notes": "açúcar mascavo orgânico"
+    },
+    {
+      "name": "Abacaxi",
+      "qty": 3.0,
+      "unit": "KG",
+      "price_per_unit": 5.0,
+      "total_cost": 15.0,
+      "confidence": "high",
+      "notes": "abacaxi pérola"
+    },
+    {
+      "name": "Mostarda Amarela",
+      "qty": 1.0,
+      "unit": "KG",
+      "price_per_unit": 15.0,
+      "total_cost": 15.0,
+      "confidence": "high",
+      "notes": "mostarda amarela pote"
+    },
+    {
+      "name": "Goiaba Cascão",
+      "qty": 1.8,
+      "unit": "KG",
+      "price_per_unit": 8.0,
+      "total_cost": 14.4,
+      "confidence": "medium",
+      "notes": "goiaba cascão polpa"
+    },
+    {
+      "name": "Flor de Sal",
+      "qty": 0.18,
+      "unit": "KG",
+      "price_per_unit": 80.0,
+      "total_cost": 14.4,
+      "confidence": "medium",
+      "notes": "flor de sal Ilha do Sal"
+    },
+    {
+      "name": "Wasabi em Pó",
+      "qty": 0.12,
+      "unit": "KG",
+      "price_per_unit": 120.0,
+      "total_cost": 14.4,
+      "confidence": "medium",
+      "notes": "wasabi pó japonês"
+    },
+    {
+      "name": "Abobrinha Italiana",
+      "qty": 2.0,
+      "unit": "KG",
+      "price_per_unit": 6.0,
+      "total_cost": 12.0,
+      "confidence": "high",
+      "notes": "abobrinha italiana"
+    },
+    {
+      "name": "Limão Siciliano",
+      "qty": 1.0,
+      "unit": "KG",
+      "price_per_unit": 12.0,
+      "total_cost": 12.0,
+      "confidence": "medium",
+      "notes": "limão siciliano importado"
+    },
+    {
+      "name": "Cacau em Pó",
+      "qty": 0.4,
+      "unit": "KG",
+      "price_per_unit": 30.0,
+      "total_cost": 12.0,
+      "confidence": "medium",
+      "notes": "cacau alcalizado premium"
+    },
+    {
+      "name": "Pepino",
+      "qty": 2.0,
+      "unit": "KG",
+      "price_per_unit": 5.0,
+      "total_cost": 10.0,
+      "confidence": "high",
+      "notes": "pepino japones"
+    },
+    {
+      "name": "Batata Doce",
+      "qty": 2.0,
+      "unit": "KG",
+      "price_per_unit": 5.0,
+      "total_cost": 10.0,
+      "confidence": "high",
+      "notes": "batata doce"
+    },
+    {
+      "name": "Berinjela",
+      "qty": 2.0,
+      "unit": "KG",
+      "price_per_unit": 5.0,
+      "total_cost": 10.0,
+      "confidence": "high",
+      "notes": "berinjela"
+    },
+    {
+      "name": "Semente de Abóbora",
+      "qty": 0.3,
+      "unit": "KG",
+      "price_per_unit": 30.0,
+      "total_cost": 9.0,
+      "confidence": "medium",
+      "notes": "semente abóbora descascada"
+    },
+    {
+      "name": "Tomilho",
+      "qty": 0.22,
+      "unit": "KG",
+      "price_per_unit": 40.0,
+      "total_cost": 8.8,
+      "confidence": "medium",
+      "notes": "tomilho fresco"
+    },
+    {
+      "name": "Açúcar",
+      "qty": 2.03,
+      "unit": "KG",
+      "price_per_unit": 4.0,
+      "total_cost": 8.12,
+      "confidence": "high",
+      "notes": "açúcar refinado"
+    },
+    {
+      "name": "Semente de Mostarda",
+      "qty": 0.4,
+      "unit": "KG",
+      "price_per_unit": 20.0,
+      "total_cost": 8.0,
+      "confidence": "medium",
+      "notes": "semente mostarda"
+    },
+    {
+      "name": "Ciboulette",
+      "qty": 0.2,
+      "unit": "KG",
+      "price_per_unit": 40.0,
+      "total_cost": 8.0,
+      "confidence": "medium",
+      "notes": "cebolinha francesa"
+    },
+    {
+      "name": "Amido de Milho",
+      "qty": 1.25,
+      "unit": "KG",
+      "price_per_unit": 6.0,
+      "total_cost": 7.5,
+      "confidence": "high",
+      "notes": "amido milho pacote 500g"
+    },
+    {
+      "name": "Madeira Defumação",
+      "qty": 0.3,
+      "unit": "KG",
+      "price_per_unit": 20.0,
+      "total_cost": 6.0,
+      "confidence": "low",
+      "notes": "lascas madeira defumação"
+    },
+    {
+      "name": "Vinagre de Arroz",
+      "qty": 0.3,
+      "unit": "L",
+      "price_per_unit": 20.0,
+      "total_cost": 6.0,
+      "confidence": "medium",
+      "notes": "vinagre arroz japonês"
+    },
+    {
+      "name": "Sal",
+      "qty": 2.255,
+      "unit": "KG",
+      "price_per_unit": 2.0,
+      "total_cost": 4.51,
+      "confidence": "high",
+      "notes": "sal refinado"
+    },
+    {
+      "name": "Pimenta em Grãos",
+      "qty": 0.11,
+      "unit": "KG",
+      "price_per_unit": 40.0,
+      "total_cost": 4.4,
+      "confidence": "medium",
+      "notes": "pimenta preta em grãos"
+    },
+    {
+      "name": "Azedinha Mini Red",
+      "qty": 0.05,
+      "unit": "KG",
+      "price_per_unit": 80.0,
+      "total_cost": 4.0,
+      "confidence": "low",
+      "notes": "microverdes sorrel vermelho"
+    },
+    {
+      "name": "Repolho",
+      "qty": 1.0,
+      "unit": "KG",
+      "price_per_unit": 3.5,
+      "total_cost": 3.5,
+      "confidence": "high",
+      "notes": "repolho verde"
+    },
+    {
+      "name": "Óleo de Gergelim",
+      "qty": 0.03,
+      "unit": "L",
+      "price_per_unit": 70.0,
+      "total_cost": 2.1,
+      "confidence": "medium",
+      "notes": "óleo gergelim"
+    },
+    {
+      "name": "Salsão",
+      "qty": 0.25,
+      "unit": "KG",
+      "price_per_unit": 8.0,
+      "total_cost": 2.0,
+      "confidence": "medium",
+      "notes": "salsão maço"
+    },
+    {
+      "name": "Gelatina em Pó",
+      "qty": 0.04,
+      "unit": "KG",
+      "price_per_unit": 50.0,
+      "total_cost": 2.0,
+      "confidence": "medium",
+      "notes": "gelatina em pó sem sabor"
+    },
+    {
+      "name": "Pimenta Calabresa",
+      "qty": 0.05,
+      "unit": "KG",
+      "price_per_unit": 25.0,
+      "total_cost": 1.25,
+      "confidence": "high",
+      "notes": "pimenta calabresa seca"
+    },
+    {
+      "name": "Pimenta do Reino Branca",
+      "qty": 0.02,
+      "unit": "KG",
+      "price_per_unit": 45.0,
+      "total_cost": 0.9,
+      "confidence": "medium",
+      "notes": "pimenta branca moída"
+    },
+    {
+      "name": "Noz Moscada",
+      "qty": 0.01,
+      "unit": "KG",
+      "price_per_unit": 80.0,
+      "total_cost": 0.8,
+      "confidence": "medium",
+      "notes": "noz moscada moída"
+    },
+    {
+      "name": "Gengibre",
+      "qty": 0.03,
+      "unit": "KG",
+      "price_per_unit": 15.0,
+      "total_cost": 0.45,
+      "confidence": "high",
+      "notes": "gengibre fresco"
+    },
+    {
+      "name": "Fermento Químico",
+      "qty": 0.02,
+      "unit": "KG",
+      "price_per_unit": 15.0,
+      "total_cost": 0.3,
+      "confidence": "high",
+      "notes": "fermento químico pacote"
+    },
+    {
+      "name": "Louro",
+      "qty": 0.01,
+      "unit": "KG",
+      "price_per_unit": 20.0,
+      "total_cost": 0.2,
+      "confidence": "medium",
+      "notes": "louro folha"
+    },
+    {
+      "name": "Bicarbonato de Sódio",
+      "qty": 0.02,
+      "unit": "KG",
+      "price_per_unit": 8.0,
+      "total_cost": 0.16,
+      "confidence": "high",
+      "notes": "bicarbonato sodio"
+    }
+  ]
+}

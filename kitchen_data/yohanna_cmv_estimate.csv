@@ -1,0 +1,162 @@
+Ingrediente,Qtd,Unidade,Preco_unitario,Custo_total,Confianca,Observacao
+Queijo Mozzarella de Búfala,15.0,KG,80.0,1200.0,medium,búfala peça atacado
+Coxinha Cremosa,300.0,UN,3.5,1050.0,medium,"semi-pronto industrial, UN"
+Azeite,21.5,L,45.0,967.5,medium,azeite extravirgem lata 5L atacado
+Água Mineral,225.0,L,2.5,562.5,high,garrafão 20L atacado
+Chocolate Meio Amargo,9.5,KG,45.0,427.5,medium,cobertura callebaut ou similar
+Espeto Coalho,100.0,UN,4.0,400.0,medium,espeto porção unitária
+Mini Donuts,150.0,UN,2.5,375.0,medium,donut individual pré-frito
+Batata Palito Congelada,30.0,KG,12.0,360.0,high,batata congelada food service
+Pão de Brioche Burger,100.0,UN,3.5,350.0,medium,pão artesanal brioche UN
+Óleo,42.0,L,8.0,336.0,high,óleo soja garrafão 5L
+Peito Bovino,8.0,KG,35.0,280.0,medium,peito boi atacado frigorífico
+Água com Gás,79.0,L,3.5,276.5,high,agua mineral com gas 500ml
+Refrigerante,45.0,L,6.0,270.0,high,2L atacado varejo
+Queijo Boursan,3.0,KG,90.0,270.0,medium,boursin ou similar importado
+Sorvete de Chocolate,10.0,KG,25.0,250.0,medium,sorvete balde food service
+Queijo Canastra,3.0,KG,80.0,240.0,medium,canastra artesanal
+Carne Seca,4.5,KG,50.0,225.0,medium,carne seca dessalgada atacado
+Leite,43.5,L,5.0,217.5,high,UHT integral caixa 1L
+Queijo Parmesão,3.9,KG,55.0,214.5,high,parmesão peça atacado
+Morango Fresco,14.0,KG,15.0,210.0,medium,morango bandeja Curitiba/Serra Gaúcha
+Acém,7.0,KG,30.0,210.0,medium,acém bovino peça
+Queijo Tulha,3.0,KG,70.0,210.0,low,queijo artesanal especial
+Pão de Hot Dog,100.0,UN,2.0,200.0,high,pão hot dog pacote
+Músculo Bovino,6.0,KG,32.0,192.0,medium,músculo bovino peça
+Burrata,2.0,KG,90.0,180.0,medium,burrata artesanal 125g ~R$11
+Sashimi Atum,1.5,KG,120.0,180.0,medium,atum grau sashimi
+Tahine,4.9,KG,35.0,171.5,medium,pasta de gergelim importada
+Stracciatella,2.0,KG,85.0,170.0,medium,stracciatella artesanal
+Queijo do Reino,3.0,KG,55.0,165.0,medium,edam/gouda peça
+Farinha Panko,9.0,KG,18.0,162.0,medium,panko importado ou nacional
+Iogurte Natural,20.0,UN,8.0,160.0,high,iogurte natural 500g pote
+Nigiri,2.0,KG,80.0,160.0,medium,nigiri food service
+Creme de Leite,19.5,L,8.0,156.0,high,creme leite UHT 1L
+Leite Condensado,13.0,KG,12.0,156.0,high,lata 395g ~R$4.75 = ~R$12/kg
+Sorvete Belga,4.0,KG,38.0,152.0,medium,sorvete premium balde
+Sashimi Salmão,1.5,KG,100.0,150.0,medium,salmão grau sashimi
+Queijo Mozzarella,4.0,KG,35.0,140.0,high,mozarela peça ou fatiada
+Manteiga,3.9,KG,35.0,136.5,high,manteiga com sal 500g tablete
+Tomate Cereja Vermelho,7.5,KG,18.0,135.0,medium,tomate cereja bandeja
+Parma Nacional,1.5,KG,90.0,135.0,medium,presunto parma nacional
+Coppa Artesanal,1.5,KG,85.0,127.5,medium,coppa artesanal
+Brioche Amanteigado,4.0,KG,30.0,120.0,medium,brioche amanteigado artesanal
+Queijo Coalho,3.0,KG,40.0,120.0,high,queijo coalho nordestino
+Queijo Cheddar,3.0,KG,40.0,120.0,high,cheddar fatiado/peça
+Sushi,2.0,KG,60.0,120.0,medium,rolls prontos food service
+Pancetta Defumada,1.5,KG,80.0,120.0,medium,pancetta defumada artesanal
+Sashimi Peixe Branco,1.5,KG,80.0,120.0,medium,tilápia/namorado/robalo grau sashimi
+Mirtilo,1.5,KG,80.0,120.0,medium,blueberry fresco premium
+Lombo Curado,1.5,KG,75.0,112.5,medium,lombo curado fatiado
+Manjericão Fresco,2.8,KG,40.0,112.0,medium,manjericão maço
+Tomate Pelati,8.4,KG,12.0,100.8,medium,tomate pelado lata 400g
+Sorvete Tutti Frutti,4.0,KG,25.0,100.0,medium,sorvete balde
+Focaccia,4.0,KG,25.0,100.0,medium,focaccia artesanal padaria
+Azeite Balsâmico,2.0,KG,50.0,100.0,medium,vinagre balsâmico qualidade
+Salame Milano,1.5,KG,60.0,90.0,medium,salame milano importado/nacional
+Cogumelo Porto Belo,2.5,KG,35.0,87.5,medium,portobello fresco
+Macarrão Yaksoba,7.0,KG,12.0,84.0,medium,macarrão yakisoba pacote 1kg
+Mel,2.3,KG,35.0,80.5,medium,mel pote 1kg
+Ovo,67.0,UN,1.2,80.4,high,ovo branco tipo A
+Framboesa,1.0,KG,80.0,80.0,medium,framboesa congelada ou fresca
+Salsinha,5.3,KG,15.0,79.5,medium,salsinha maço atacado
+Tomate Cereja Amarelo,3.5,KG,22.0,77.0,medium,cereja amarelo premium
+Açém,2.4,KG,30.0,72.0,medium,mesma que Acém
+Nozes,1.2,KG,60.0,72.0,medium,nozes inteiras
+Molho Shou,4.6,L,15.0,69.0,medium,shoyu kikoman ou similar
+Quinoa Vermelha,1.5,KG,45.0,67.5,medium,quinoa vermelha premium
+Pimenta Síria,1.3,KG,50.0,65.0,medium,pimenta síria blend
+Tortelli,2.0,KG,32.0,64.0,medium,tortelli recheado
+Cogumelo Paris,2.5,KG,25.0,62.5,medium,cogumelo champignon fresco
+Massa de Pastel,5.0,KG,12.0,60.0,medium,massa pastel food service
+Calda de Chocolate,3.0,L,20.0,60.0,medium,calda pronta ou cobertura
+Raviolli,2.0,KG,30.0,60.0,medium,ravióli fresco ou congelado
+Balas Fini,2.0,KG,30.0,60.0,medium,balas fini importadas
+Quinoa Branca,1.5,KG,40.0,60.0,medium,quinoa branca orgânica
+Clara Pasteurizada,3.8,L,15.0,57.0,medium,clara pasteurizada tetrapak
+Tomate Italiano,7.0,KG,8.0,56.0,high,tomate longa vida caixeta
+Páprica Defumada,1.58,KG,35.0,55.3,medium,páprica defumada importada
+Grissini,2.5,KG,22.0,55.0,medium,grissini importado ou artesanal
+Peito de Frango,3.0,KG,18.0,54.0,high,filé peito frango sem osso
+Gohan,3.0,KG,18.0,54.0,medium,arroz japonês koshihikari
+Linguiça Blumenal,1.5,KG,35.0,52.5,medium,linguiça blumenau artesanal
+Beterraba,10.0,KG,5.0,50.0,high,beterraba a granel
+Massa Filo,2.0,KG,25.0,50.0,medium,massa filo congelada
+Baunilha Fava,1.0,UN,50.0,50.0,low,fava baunilha bourbon
+Gelatina de Morango,12.0,UN,4.0,48.0,high,caixa gelatina 85g
+Gelatina de Limão,12.0,UN,4.0,48.0,high,caixa gelatina 85g
+Gelatina de Framboesa,12.0,UN,4.0,48.0,high,caixa gelatina 85g
+Gelatina de Uva,12.0,UN,4.0,48.0,high,caixa gelatina 85g
+Gelatina de Abacaxi,12.0,UN,4.0,48.0,high,caixa gelatina 85g
+Manga,6.0,KG,8.0,48.0,medium,manga tommy temporada
+Pimenta do Reino,1.29,KG,35.0,45.15,high,pimenta do reino moída
+Pão Folha,3.0,KG,15.0,45.0,medium,pão folha tortilha
+Jois,1.5,KG,30.0,45.0,low,"Jois - ingrediente específico, estimado"
+Gelatina em Folha,0.3,KG,150.0,45.0,medium,gelatina folha importada
+Hortelã Fresca,1.2,KG,35.0,42.0,medium,hortelã maço
+Farinha de Trigo,9.27,KG,4.5,41.71,high,farinha especial 5kg atacado
+Alho,2.02,KG,20.0,40.4,medium,alho descascado atacado
+Molho Tarê,2.0,L,20.0,40.0,medium,molho tarê japonês
+Cornichon,1.0,KG,40.0,40.0,medium,cornichon importado
+Torrada,2.5,KG,15.0,37.5,high,torrada salgada grissini
+Grão de Bico,4.4,KG,8.0,35.2,high,grão de bico seco atacado
+Vinho Tinto,1.0,L,35.0,35.0,medium,vinho tinto seco p/ cozinha
+Trigo Sarraceno,1.7,KG,20.0,34.0,medium,trigo sarraceno orgânico
+Vinagre de Maçã,3.0,KG,10.0,30.0,high,vinagre maçã 750ml
+Vinagre de Vinho Branco,2.0,L,15.0,30.0,medium,vinagre vinho branco
+Cenoura,6.3,KG,4.5,28.35,high,cenoura tipo 1
+Cebola Branca,7.0,KG,4.0,28.0,high,cebola saca atacado
+Ervilha,3.5,KG,8.0,28.0,high,ervilha congelada pacote
+Requeijão,1.5,KG,18.0,27.0,high,requeijão cremoso pote
+Limão Tahiti,3.215,KG,8.0,25.72,high,limão caixa atacado
+Brócolis,4.0,KG,6.0,24.0,high,brócolis americano
+Uva Verde,2.0,KG,12.0,24.0,medium,uva sem semente
+Óleo de Gergelim Torrado,0.3,L,80.0,24.0,medium,óleo gergelim tostado importado
+Cominho,0.95,KG,25.0,23.75,medium,cominho em grãos ou moído
+Chocolate em Pó,1.1,KG,20.0,22.0,high,cacau pó 50%
+Acelga,3.5,KG,6.0,21.0,high,acelga maço
+Lentilha,2.5,KG,8.0,20.0,high,lentilha vermelha ou verde seca
+Pêssego,2.0,KG,10.0,20.0,medium,pêssego temporada
+Gema Pasteurizada,1.1,L,18.0,19.8,medium,gema pasteurizada tetrapak
+Melaço de Cana,1.5,L,12.0,18.0,medium,melaço puro cana
+Pasta de Gochujang,0.3,KG,60.0,18.0,medium,gochujang coreano
+Laranja Bahia,3.5,KG,5.0,17.5,high,laranja bahia caixa
+Leite em Pó,0.7,KG,25.0,17.5,high,leite em pó integral
+Vinho Branco,0.5,L,35.0,17.5,medium,vinho branco seco
+Tomate Verde,2.0,KG,8.0,16.0,medium,tomate verde
+Fusilli,2.0,KG,8.0,16.0,high,massa italiana grano duro
+Penne,2.0,KG,8.0,16.0,high,massa italiana
+Açúcar Mascavo,1.9,KG,8.0,15.2,high,açúcar mascavo orgânico
+Abacaxi,3.0,KG,5.0,15.0,high,abacaxi pérola
+Mostarda Amarela,1.0,KG,15.0,15.0,high,mostarda amarela pote
+Goiaba Cascão,1.8,KG,8.0,14.4,medium,goiaba cascão polpa
+Flor de Sal,0.18,KG,80.0,14.4,medium,flor de sal Ilha do Sal
+Wasabi em Pó,0.12,KG,120.0,14.4,medium,wasabi pó japonês
+Abobrinha Italiana,2.0,KG,6.0,12.0,high,abobrinha italiana
+Limão Siciliano,1.0,KG,12.0,12.0,medium,limão siciliano importado
+Cacau em Pó,0.4,KG,30.0,12.0,medium,cacau alcalizado premium
+Pepino,2.0,KG,5.0,10.0,high,pepino japones
+Batata Doce,2.0,KG,5.0,10.0,high,batata doce
+Berinjela,2.0,KG,5.0,10.0,high,berinjela
+Semente de Abóbora,0.3,KG,30.0,9.0,medium,semente abóbora descascada
+Tomilho,0.22,KG,40.0,8.8,medium,tomilho fresco
+Açúcar,2.03,KG,4.0,8.12,high,açúcar refinado
+Semente de Mostarda,0.4,KG,20.0,8.0,medium,semente mostarda
+Ciboulette,0.2,KG,40.0,8.0,medium,cebolinha francesa
+Amido de Milho,1.25,KG,6.0,7.5,high,amido milho pacote 500g
+Madeira Defumação,0.3,KG,20.0,6.0,low,lascas madeira defumação
+Vinagre de Arroz,0.3,L,20.0,6.0,medium,vinagre arroz japonês
+Sal,2.255,KG,2.0,4.51,high,sal refinado
+Pimenta em Grãos,0.11,KG,40.0,4.4,medium,pimenta preta em grãos
+Azedinha Mini Red,0.05,KG,80.0,4.0,low,microverdes sorrel vermelho
+Repolho,1.0,KG,3.5,3.5,high,repolho verde
+Óleo de Gergelim,0.03,L,70.0,2.1,medium,óleo gergelim
+Salsão,0.25,KG,8.0,2.0,medium,salsão maço
+Gelatina em Pó,0.04,KG,50.0,2.0,medium,gelatina em pó sem sabor
+Pimenta Calabresa,0.05,KG,25.0,1.25,high,pimenta calabresa seca
+Pimenta do Reino Branca,0.02,KG,45.0,0.9,medium,pimenta branca moída
+Noz Moscada,0.01,KG,80.0,0.8,medium,noz moscada moída
+Gengibre,0.03,KG,15.0,0.45,high,gengibre fresco
+Fermento Químico,0.02,KG,15.0,0.3,high,fermento químico pacote
+Louro,0.01,KG,20.0,0.2,medium,louro folha
+Bicarbonato de Sódio,0.02,KG,8.0,0.16,high,bicarbonato sodio

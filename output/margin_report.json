@@ -1,0 +1,78 @@
+{
+  "generated_at": "2026-04-15T16:08:46.575764",
+  "thresholds": {
+    "gross_margin_ok": 40.0,
+    "gross_margin_warn": 30.0,
+    "net_margin_ok": 15.0,
+    "net_margin_warn": 5.0
+  },
+  "totals": {
+    "revenue": 70000.0,
+    "cmv": 40057.68,
+    "gross_profit": 29942.32,
+    "gross_margin": 42.77,
+    "fixed_allocated": 31000.01,
+    "net_profit": -1057.69,
+    "net_margin": -1.51
+  },
+  "events": [
+    {
+      "event_id": "EVT001",
+      "revenue": 25000.0,
+      "cmv": 13590.26,
+      "gross_margin_pct": 45.64,
+      "gross_margin_status": "OK",
+      "gross_margin_note": "Margem bruta saudável",
+      "net_margin_pct": 1.35,
+      "net_margin_status": "CRITICAL",
+      "net_margin_note": "Margem líquida abaixo de 5.0% — risco alto",
+      "dre_status": "ok",
+      "overall": "CRITICAL"
+    },
+    {
+      "event_id": "EVT002",
+      "revenue": 18000.0,
+      "cmv": 9966.4,
+      "gross_margin_pct": 44.63,
+      "gross_margin_status": "OK",
+      "gross_margin_note": "Margem bruta saudável",
+      "net_margin_pct": 0.35,
+      "net_margin_status": "CRITICAL",
+      "net_margin_note": "Margem líquida abaixo de 5.0% — risco alto",
+      "dre_status": "ok",
+      "overall": "CRITICAL"
+    },
+    {
+      "event_id": "EVT003",
+      "revenue": 15000.0,
+      "cmv": 9315.41,
+      "gross_margin_pct": 37.9,
+      "gross_margin_status": "WARNING",
+      "gross_margin_note": "Margem bruta abaixo de 40.0%",
+      "net_margin_pct": -6.39,
+      "net_margin_status": "LOSS",
+      "net_margin_note": "Prejuízo líquido — evento destruiu valor",
+      "dre_status": "ok",
+      "overall": "CRITICAL"
+    },
+    {
+      "event_id": "EVT004",
+      "revenue": 12000.0,
+      "cmv": 7185.61,
+      "gross_margin_pct": 40.12,
+      "gross_margin_status": "OK",
+      "gross_margin_note": "Margem bruta saudável",
+      "net_margin_pct": -4.17,
+      "net_margin_status": "LOSS",
+      "net_margin_note": "Prejuízo líquido — evento destruiu valor",
+      "dre_status": "ok",
+      "overall": "CRITICAL"
+    }
+  ],
+  "summary": {
+    "ok": 0,
+    "warning": 0,
+    "critical": 4,
+    "incomplete": 0
+  }
+}
