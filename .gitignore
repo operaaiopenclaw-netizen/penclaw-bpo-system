@@ -79,10 +79,5 @@ temp/
 /kitchen_data/*.json
 /output/*.csv
 
-# Obsidian workspace state (vault content is tracked, but per-user UI state is not)
-vault/.obsidian/workspace*.json
-vault/.obsidian/app.json
-vault/.obsidian/appearance.json
-vault/.obsidian/core-plugins.json
-vault/.obsidian/community-plugins.json
-vault/.obsidian/templates.json
+# Obsidian per-user workspace state (vault markdown content is tracked)
+vault/.obsidian/
