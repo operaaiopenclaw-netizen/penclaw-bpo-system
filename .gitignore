@@ -17,7 +17,7 @@ build/
 # Runtime
 storage/artifacts/
 storage/logs/
-runtime/
+/runtime/
 *.log
 *.pid
 
