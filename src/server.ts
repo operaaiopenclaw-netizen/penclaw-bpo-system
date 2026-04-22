@@ -1,7 +1,9 @@
 import "dotenv/config";
+import path from "node:path";
 import Fastify from "fastify";
 import cors from "@fastify/cors";
 import helmet from "@fastify/helmet";
+import fastifyStatic from "@fastify/static";
 import swagger from "@fastify/swagger";
 import swaggerUi from "@fastify/swagger-ui";
 import { config } from "./config/env";
@@ -37,6 +39,13 @@ async function bootstrap() {
   });
 
   await app.register(swaggerUi, { routePrefix: "/docs" });
+
+  // Static dashboard UI at /ui/* (index.html, login.html, operations.html, users.html)
+  await app.register(fastifyStatic, {
+    root: path.resolve(process.cwd(), "dashboard"),
+    prefix: "/ui/",
+    decorateReply: false,
+  });
 
   // Audit hook (records every mutating request after response)
   registerAuditHook(app);
