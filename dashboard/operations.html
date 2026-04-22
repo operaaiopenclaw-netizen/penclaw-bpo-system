@@ -289,7 +289,7 @@ window.fetch = (input, init = {}) => {
   });
 };
 
-const API = (window.location.origin.replace(/:\d+$/, '')) + ':3010';
+const API = window.location.origin;
 
 function showTab(name) {
   document.querySelectorAll('.tab').forEach((t,i) => t.classList.remove('active'));
