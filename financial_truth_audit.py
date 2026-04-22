@@ -429,7 +429,7 @@ def process_financial_audit() -> List[FinancialAudit]:
     # Carregar dados
     events = load_events_data()
     cmv_data = load_cmv_data()
-    estoque_saida = load_estoque_saida()
+    estoque_saida_dict = load_estoque_saida()   # renamed: dict keyed by event_id
     producao_e_venda = load_producao_e_venda()
     item_perf = load_item_performance()
     
@@ -460,8 +460,8 @@ def process_financial_audit() -> List[FinancialAudit]:
         
         cmv_total = cmv_data.get(event_id, {}).get("cmv_total")
         
-        # Dados operacionais
-        estoque_saida = estoque_saida.get(event_id)
+        # Dados operacionais — use estoque_saida_dict so the outer dict is never clobbered
+        estoque_saida = estoque_saida_dict.get(event_id)
         prod_data = producao_e_venda.get(event_id, {})
         producao_total = prod_data.get("produzido")
         venda_total = prod_data.get("vendido")

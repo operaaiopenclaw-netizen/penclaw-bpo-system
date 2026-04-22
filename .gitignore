@@ -74,3 +74,15 @@ temp/
 /catalog_products.json
 /inventory_batches.json
 /dashboard_data.json
+
+# Runtime outputs from Python engines (DRE, CMV, audit)
+/kitchen_data/*.json
+/output/*.csv
+
+# Obsidian workspace state (vault content is tracked, but per-user UI state is not)
+vault/.obsidian/workspace*.json
+vault/.obsidian/app.json
+vault/.obsidian/appearance.json
+vault/.obsidian/core-plugins.json
+vault/.obsidian/community-plugins.json
+vault/.obsidian/templates.json

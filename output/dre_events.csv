@@ -1,5 +1,0 @@
-event_id,company,date_event,revenue_total,cmv_total,gross_profit,gross_margin,fixed_allocated,net_profit,net_margin,status,errors
-EVT001,opera,2026-04-15,25000.0,,,,,,,error,cmv_total ausente
-EVT002,la_orana,2026-04-20,18000.0,,,,,,,error,cmv_total ausente
-EVT003,opera,2026-04-25,15000.0,,,,,,,error,cmv_total ausente
-EVT004,la_orana,2026-04-28,12000.0,,,,,,,error,cmv_total ausente

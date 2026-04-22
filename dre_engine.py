@@ -233,7 +233,9 @@ def load_fixed_costs() -> Tuple[Optional[float], List[str]]:
     
     for item in fixed:
         try:
-            amount = float(item.get("amount", 0)) if item.get("amount") else 0
+            # Support both "amount" (canonical) and "valor" (legacy CSV field name)
+            raw = item.get("amount") or item.get("valor")
+            amount = float(raw) if raw else 0.0
             total_fixed += amount
             details.append({
                 "cost_type": item.get("cost_type", ""),
