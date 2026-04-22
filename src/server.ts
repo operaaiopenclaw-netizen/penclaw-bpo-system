@@ -13,6 +13,8 @@ import { logger } from "./utils/logger";
 import agentRunWorker, { closeWorker } from "./worker";
 import { bootstrapSeedIfEmpty } from "./services/bootstrap-seed";
 
+const BOOT_AT = new Date().toISOString();
+
 async function bootstrap() {
   const app = Fastify({
     logger: { level: config.LOG_LEVEL },
@@ -60,6 +62,16 @@ async function bootstrap() {
 
   // Liveness — always 200 while process is up.
   app.get("/health", async () => ({ status: "ok", ts: Date.now() }));
+
+  // Version — surfaces the deployed commit. Railway injects RAILWAY_GIT_*
+  // automatically; falls back to "unknown" when running locally without git.
+  app.get("/version", async () => ({
+    sha: process.env.RAILWAY_GIT_COMMIT_SHA ?? process.env.GIT_SHA ?? "unknown",
+    branch: process.env.RAILWAY_GIT_BRANCH ?? "unknown",
+    deploymentId: process.env.RAILWAY_DEPLOYMENT_ID ?? null,
+    environment: process.env.RAILWAY_ENVIRONMENT_NAME ?? process.env.NODE_ENV,
+    bootAt: BOOT_AT,
+  }));
 
   // Readiness — verifies DB + Redis reachable. Returns 503 if any fails.
   app.get("/ready", async (_req, reply) => {
