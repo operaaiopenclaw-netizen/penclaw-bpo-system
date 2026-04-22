@@ -213,11 +213,34 @@ export async function crmRoutes(fastify: FastifyInstance): Promise<void> {
       signedByCompany: z.string().optional(),
       paymentTerms: z.string().optional(),
       cancellationPolicy: z.string().optional(),
-      contractDocumentUrl: z.string().optional()
+      contractDocumentUrl: z.string().optional(),
+      // Atribuição comercial (opcional aqui; obrigatório para ativar
+      // CommissionPlan depois via POST /commercial/contracts/:id/commission-plan)
+      salespersonId: z.string().uuid().optional(),
+      salesManagerId: z.string().uuid().optional(),
+      sdrId: z.string().uuid().optional(),
+      // Margem projetada no momento da assinatura — se ausente, tenta
+      // estimar via soma de ProposalItem.estimatedCost.
+      projectedMargin: z.number().optional()
     }).parse(req.body);
 
-    const proposal = await prisma.proposal.findUnique({ where: { id: body.proposalId } });
+    const proposal = await prisma.proposal.findUnique({
+      where: { id: body.proposalId },
+      include: { items: true }
+    });
     if (!proposal) return reply.status(404).send({ success: false, error: "Proposal not found" });
+
+    // Fallback para projectedMargin: receita − soma de estimatedCost.
+    let projectedMargin = body.projectedMargin;
+    if (projectedMargin === undefined) {
+      const estimatedCost = proposal.items.reduce(
+        (sum, it) => sum + (it.estimatedCost ?? 0) * it.quantity,
+        0
+      );
+      if (estimatedCost > 0) {
+        projectedMargin = proposal.totalAmount - estimatedCost;
+      }
+    }
 
     const count = await prisma.contract.count({ where: { tenantId: body.tenantId } });
     const contractNumber = `CTR-${new Date().getFullYear()}-${String(count + 1).padStart(4, "0")}`;
@@ -227,6 +250,7 @@ export async function crmRoutes(fastify: FastifyInstance): Promise<void> {
         ...body,
         contractNumber,
         totalValue: proposal.totalAmount,
+        projectedMargin,
         signedAt: new Date(body.signedAt)
       }
     });
@@ -234,7 +258,12 @@ export async function crmRoutes(fastify: FastifyInstance): Promise<void> {
     await prisma.proposal.update({ where: { id: body.proposalId }, data: { status: "CONVERTED" } });
     await prisma.lead.update({ where: { id: body.leadId }, data: { status: "WON", convertedAt: new Date() } });
 
-    logger.info("Contract created", { id: contract.id, number: contractNumber, value: contract.totalValue });
+    logger.info("Contract created", {
+      id: contract.id,
+      number: contractNumber,
+      value: contract.totalValue,
+      margin: projectedMargin
+    });
     return reply.status(201).send({ success: true, data: contract });
   });
 
