@@ -62,3 +62,14 @@ pnpm-lock.yaml
 temp/
 .vercel
 .env*.local
+
+# Generated artifacts / staging (duplicates of tracked files)
+/artifacts/
+
+# Runtime data at repo root
+/dre_final.json
+/production_logs.json
+/cmv_by_event.json
+/catalog_products.json
+/inventory_batches.json
+/dashboard_data.json
