@@ -22,8 +22,10 @@ async function bootstrap() {
     logger: { level: config.LOG_LEVEL },
   });
 
-  // Security
-  await app.register(helmet);
+  // Security — disable CSP because the bundled /ui/ dashboard ships inline
+  // <script> blocks; enabling CSP with default rules would silently break them.
+  // We keep all other helmet protections (HSTS, X-Content-Type-Options, etc).
+  await app.register(helmet, { contentSecurityPolicy: false });
   await app.register(cors, { origin: config.corsOrigins });
 
   // API Documentation
