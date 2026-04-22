@@ -57,6 +57,7 @@ pnpm-lock.yaml
 
 # Misc
 *.bak
+*.bak.*
 *.tmp
 .cache/
 temp/
