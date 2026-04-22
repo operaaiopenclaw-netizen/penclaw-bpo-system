@@ -42,6 +42,7 @@ COPY --from=builder --chown=apiuser:nodejs /app/dist ./dist
 COPY --from=builder --chown=apiuser:nodejs /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder --chown=apiuser:nodejs /app/node_modules/@prisma ./node_modules/@prisma
 COPY --from=builder --chown=apiuser:nodejs /app/schema.prisma ./schema.prisma
+COPY --from=builder --chown=apiuser:nodejs /app/prisma ./prisma
 COPY --from=builder --chown=apiuser:nodejs /app/dashboard ./dashboard
 COPY --from=builder --chown=apiuser:nodejs /app/docs ./docs
 
