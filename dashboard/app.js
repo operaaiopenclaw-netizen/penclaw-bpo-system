@@ -47,13 +47,22 @@ window.fmtInt = window.fmtInt || ((n) => n == null ? '—' : Number(n).toLocaleS
 // Role-based navigation. Each entry: { href, label, icon, roles: string[] | '*' }.
 const NAV = [
   { href: 'index.html',             label: 'Financeiro',  icon: '📊', roles: ['admin', 'finance', 'manager'] },
+  { href: 'calendar.html',           label: 'Calendário',  icon: '📅', roles: '*' },
   { href: 'crm.html',                label: 'CRM',         icon: '🤝', roles: ['admin', 'manager', 'finance'] },
   { href: 'events.html',             label: 'Eventos',     icon: '🎉', roles: ['admin', 'manager', 'finance', 'operator'] },
   { href: 'service-orders.html',     label: 'OS',          icon: '📋', roles: ['admin', 'manager', 'operator'] },
   { href: 'production-orders.html',  label: 'Produção',    icon: '🍳', roles: ['admin', 'manager', 'operator', 'kitchen'] },
   { href: 'kitchen.html',            label: 'Cozinha/CMV', icon: '🧂', roles: ['admin', 'manager', 'kitchen', 'finance'] },
   { href: 'execution.html',          label: 'Execução',    icon: '🎬', roles: ['admin', 'manager', 'operator'] },
-  { href: 'commercial.html',         label: 'Comercial',   icon: '💸', roles: ['admin', 'finance', 'manager'] },
+  { href: 'commercial.html',         label: 'Comercial',   icon: '💼', roles: ['admin', 'finance', 'manager'] },
+  { href: 'onboarding.html',         label: 'Onboarding',  icon: '🚀', roles: ['admin', 'finance', 'manager', 'operator'] },
+  { href: 'finance.html',            label: 'Financeiro',  icon: '💸', roles: ['admin', 'finance'] },
+  { href: 'invoices.html',           label: 'Faturamento', icon: '🧾', roles: ['admin', 'finance', 'manager'] },
+  { href: 'whatsapp.html',           label: 'WhatsApp',    icon: '💬', roles: ['admin', 'manager', 'operator'] },
+  { href: 'marketing.html',          label: 'Marketing',   icon: '📣', roles: ['admin', 'manager', 'finance'] },
+  { href: 'ai-chat.html',            label: 'AI Chat',     icon: '🤖', roles: '*' },
+  { href: 'vault.html',              label: 'Documentos',  icon: '📁', roles: ['admin', 'manager'] },
+  { href: 'hr.html',                 label: 'RH',          icon: '🧑‍💼', roles: ['admin', 'manager'] },
   { href: 'approvals.html',          label: 'Aprovações',  icon: '✅', roles: ['admin', 'manager', 'finance'] },
   { href: 'operations.html',         label: 'Operações',   icon: '⚙️', roles: ['admin', 'manager', 'operator'] },
   { href: 'users.html',              label: 'Usuários',    icon: '👤', roles: ['admin'] },
@@ -75,7 +84,32 @@ function renderNav(activeHref) {
   nav.className = 'orkestra-nav';
   nav.innerHTML = `
     <div class="nav-brand">
-      <a href="${visible[0]?.href ?? 'operations.html'}">🎛️ Orkestra</a>
+      <a href="${visible[0]?.href ?? 'operations.html'}" aria-label="Orkestra">
+        <svg class="nav-mark" viewBox="-70 -70 140 140" width="22" height="22" aria-hidden="true">
+          <g fill="currentColor">
+            <path d="M -3 -20 C -10 -28 -13 -44 0 -54 C 13 -44 10 -28 3 -20 C 2 -18 -2 -18 -3 -20 Z" transform="rotate(0)"/>
+            <path d="M -3 -20 C -10 -28 -13 -44 0 -54 C 13 -44 10 -28 3 -20 C 2 -18 -2 -18 -3 -20 Z" transform="rotate(22.5)"/>
+            <path d="M -3 -20 C -10 -28 -13 -44 0 -54 C 13 -44 10 -28 3 -20 C 2 -18 -2 -18 -3 -20 Z" transform="rotate(45)"/>
+            <path d="M -3 -20 C -10 -28 -13 -44 0 -54 C 13 -44 10 -28 3 -20 C 2 -18 -2 -18 -3 -20 Z" transform="rotate(67.5)"/>
+            <path d="M -3 -20 C -10 -28 -13 -44 0 -54 C 13 -44 10 -28 3 -20 C 2 -18 -2 -18 -3 -20 Z" transform="rotate(90)"/>
+            <path d="M -3 -20 C -10 -28 -13 -44 0 -54 C 13 -44 10 -28 3 -20 C 2 -18 -2 -18 -3 -20 Z" transform="rotate(112.5)"/>
+            <path d="M -3 -20 C -10 -28 -13 -44 0 -54 C 13 -44 10 -28 3 -20 C 2 -18 -2 -18 -3 -20 Z" transform="rotate(135)"/>
+            <path d="M -3 -20 C -10 -28 -13 -44 0 -54 C 13 -44 10 -28 3 -20 C 2 -18 -2 -18 -3 -20 Z" transform="rotate(157.5)"/>
+            <path d="M -3 -20 C -10 -28 -13 -44 0 -54 C 13 -44 10 -28 3 -20 C 2 -18 -2 -18 -3 -20 Z" transform="rotate(180)"/>
+            <path d="M -3 -20 C -10 -28 -13 -44 0 -54 C 13 -44 10 -28 3 -20 C 2 -18 -2 -18 -3 -20 Z" transform="rotate(202.5)"/>
+            <path d="M -3 -20 C -10 -28 -13 -44 0 -54 C 13 -44 10 -28 3 -20 C 2 -18 -2 -18 -3 -20 Z" transform="rotate(225)"/>
+            <path d="M -3 -20 C -10 -28 -13 -44 0 -54 C 13 -44 10 -28 3 -20 C 2 -18 -2 -18 -3 -20 Z" transform="rotate(247.5)"/>
+            <path d="M -3 -20 C -10 -28 -13 -44 0 -54 C 13 -44 10 -28 3 -20 C 2 -18 -2 -18 -3 -20 Z" transform="rotate(270)"/>
+            <path d="M -3 -20 C -10 -28 -13 -44 0 -54 C 13 -44 10 -28 3 -20 C 2 -18 -2 -18 -3 -20 Z" transform="rotate(292.5)"/>
+            <path d="M -3 -20 C -10 -28 -13 -44 0 -54 C 13 -44 10 -28 3 -20 C 2 -18 -2 -18 -3 -20 Z" transform="rotate(315)"/>
+            <path d="M -3 -20 C -10 -28 -13 -44 0 -54 C 13 -44 10 -28 3 -20 C 2 -18 -2 -18 -3 -20 Z" transform="rotate(337.5)"/>
+            <circle r="20"/>
+          </g>
+          <circle r="14" fill="#0B0B0C"/>
+          <circle r="8" fill="currentColor"/>
+        </svg>
+        <span>Orkestra</span>
+      </a>
     </div>
     <div class="nav-links">${links}</div>
     <div class="nav-user">
@@ -105,3 +139,39 @@ async function tryAction(fn, successMsg) {
     return false;
   }
 }
+
+// ─── LGPD cookie banner ──────────────────────────────────────────
+// Runs once after DOM is ready. Opt-in: user must explicitly accept.
+(function mountCookieBanner() {
+  const KEY = 'orkestra.lgpd.consent';
+  if (localStorage.getItem(KEY)) return;
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const bar = document.createElement('div');
+    bar.className = 'ork-cookie-bar';
+    bar.innerHTML = `
+      <div class="ork-cookie-text">
+        Usamos cookies e dados pessoais conforme a LGPD (Lei 13.709/18).
+        Ao continuar, você concorda com nossa
+        <a href="privacy.html">Política de Privacidade</a>.
+      </div>
+      <div class="ork-cookie-actions">
+        <button class="ork-btn-ghost" id="ork-cookie-reject">Essenciais</button>
+        <button class="ork-btn-primary" id="ork-cookie-accept">Aceitar todos</button>
+      </div>`;
+    document.body.appendChild(bar);
+
+    const record = async (accepted) => {
+      localStorage.setItem(KEY, JSON.stringify({ accepted, at: new Date().toISOString() }));
+      bar.remove();
+      try {
+        await api('/lgpd/consent', {
+          method: 'POST',
+          body: JSON.stringify({ email: ME?.email, accepted, userAgent: navigator.userAgent }),
+        });
+      } catch { /* best effort */ }
+    };
+    bar.querySelector('#ork-cookie-accept').onclick = () => record(['essential', 'analytics']);
+    bar.querySelector('#ork-cookie-reject').onclick = () => record(['essential']);
+  });
+})();

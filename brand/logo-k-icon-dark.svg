@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-70 -70 140 140" width="256" height="256">
+  <!-- KIKUMON inverso: preto sobre off-white — espelha a referência original,
+       para aplicações em papel, cartão, uniforme claro. -->
+  <rect x="-70" y="-70" width="140" height="140" fill="#F5F3EF"/>
+
+  <g>
+    <g id="petal-d">
+      <path
+        d="M -4 -16 C -10 -22 -13 -38 -7 -50 C -2 -54 2 -54 7 -50 C 13 -38 10 -22 4 -16 C 2 -14 -2 -14 -4 -16 Z"
+        fill="#0B0B0C"/>
+      <line x1="0" y1="-17" x2="0" y2="-52" stroke="#F5F3EF" stroke-width="1.2" stroke-linecap="round"/>
+    </g>
+    <use href="#petal-d" transform="rotate(22.5)"/>
+    <use href="#petal-d" transform="rotate(45)"/>
+    <use href="#petal-d" transform="rotate(67.5)"/>
+    <use href="#petal-d" transform="rotate(90)"/>
+    <use href="#petal-d" transform="rotate(112.5)"/>
+    <use href="#petal-d" transform="rotate(135)"/>
+    <use href="#petal-d" transform="rotate(157.5)"/>
+    <use href="#petal-d" transform="rotate(180)"/>
+    <use href="#petal-d" transform="rotate(202.5)"/>
+    <use href="#petal-d" transform="rotate(225)"/>
+    <use href="#petal-d" transform="rotate(247.5)"/>
+    <use href="#petal-d" transform="rotate(270)"/>
+    <use href="#petal-d" transform="rotate(292.5)"/>
+    <use href="#petal-d" transform="rotate(315)"/>
+    <use href="#petal-d" transform="rotate(337.5)"/>
+  </g>
+
+  <circle r="18" fill="#0B0B0C"/>
+  <circle r="14" fill="#F5F3EF"/>
+  <circle r="9"  fill="#0B0B0C"/>
+  <circle r="3"  fill="#F5F3EF"/>
+</svg>

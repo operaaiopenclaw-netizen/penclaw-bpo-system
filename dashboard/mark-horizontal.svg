@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 180" width="720" height="180">
+  <!-- ORKESTRA · Lockup Horizontal (primary lockup)
+       Símbolo à esquerda (ø 130), wordmark à direita.
+       Espaço de respiro (clear space) = 1 raio da pétala (54u) em todos os lados. -->
+  <rect width="720" height="180" fill="#0B0B0C"/>
+
+  <defs>
+    <g id="petal-h">
+      <path d="M -3 -20 C -10 -28 -13 -44 0 -54 C 13 -44 10 -28 3 -20 C 2 -18 -2 -18 -3 -20 Z" fill="#F5F3EF"/>
+      <line x1="0" y1="-22" x2="0" y2="-52" stroke="#0B0B0C" stroke-width="1" stroke-linecap="round" opacity="0.85"/>
+    </g>
+  </defs>
+
+  <!-- Symbol: centered at x=110, y=90. Overall diameter ~128 (wordmark cap-height aligned). -->
+  <g transform="translate(110,90) scale(1.05)">
+    <use href="#petal-h" transform="rotate(0)"/>
+    <use href="#petal-h" transform="rotate(22.5)"/>
+    <use href="#petal-h" transform="rotate(45)"/>
+    <use href="#petal-h" transform="rotate(67.5)"/>
+    <use href="#petal-h" transform="rotate(90)"/>
+    <use href="#petal-h" transform="rotate(112.5)"/>
+    <use href="#petal-h" transform="rotate(135)"/>
+    <use href="#petal-h" transform="rotate(157.5)"/>
+    <use href="#petal-h" transform="rotate(180)"/>
+    <use href="#petal-h" transform="rotate(202.5)"/>
+    <use href="#petal-h" transform="rotate(225)"/>
+    <use href="#petal-h" transform="rotate(247.5)"/>
+    <use href="#petal-h" transform="rotate(270)"/>
+    <use href="#petal-h" transform="rotate(292.5)"/>
+    <use href="#petal-h" transform="rotate(315)"/>
+    <use href="#petal-h" transform="rotate(337.5)"/>
+    <circle r="22" fill="#F5F3EF"/>
+    <circle r="18" fill="#0B0B0C"/>
+    <circle r="13" fill="#F5F3EF"/>
+    <circle r="5"  fill="#0B0B0C"/>
+  </g>
+
+  <!-- Wordmark: Inter Semibold, letter-spacing 0.18em. -->
+  <text x="220" y="100"
+        font-family="-apple-system, 'Inter', 'Helvetica Neue', sans-serif"
+        font-weight="600" font-size="52" letter-spacing="9"
+        fill="#F5F3EF">ORKESTRA</text>
+
+  <!-- Tagline abaixo, em champagne gold. -->
+  <text x="220" y="128"
+        font-family="-apple-system, 'Inter', sans-serif"
+        font-weight="400" font-size="11" letter-spacing="5"
+        fill="#C9A961">ORCHESTRATED OPERATIONS</text>
+</svg>

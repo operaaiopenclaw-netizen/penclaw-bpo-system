@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 200" width="600" height="200">
+  <rect width="600" height="200" fill="#0B0B0C"/>
+
+  <!-- SYMBOL: manus (hand) gripping a baton, with ecosystem arcs at tip -->
+  <g transform="translate(110,100)">
+
+    <!-- Ecosystem arcs (radiate from the baton tip) -->
+    <g fill="none" stroke="#C9A961" stroke-linecap="round">
+      <path d="M 26 -52 A 14 14 0 1 1 40 -38"  stroke-width="3"   opacity="1.00"/>
+      <path d="M 16 -52 A 24 24 0 1 1 40 -28"  stroke-width="2.5" opacity="0.65"/>
+      <path d="M  4 -52 A 36 36 0 1 1 40 -16"  stroke-width="2.2" opacity="0.38"/>
+      <path d="M -8 -52 A 48 48 0 1 1 40  -4"  stroke-width="2"   opacity="0.20"/>
+    </g>
+
+    <!-- Baton: thick off-white diagonal line, grip point near origin -->
+    <line x1="-12" y1="18" x2="40" y2="-52" stroke="#F5F3EF" stroke-width="8" stroke-linecap="round"/>
+
+    <!-- Gold tip (pulse / command source) -->
+    <circle cx="40" cy="-52" r="7" fill="#C9A961"/>
+    <circle cx="40" cy="-52" r="3" fill="#F5F3EF"/>
+
+    <!-- HAND silhouette (off-white), stylized fist gripping the baton.
+         Built from a single path: palm heel → thumb pocket (where baton
+         emerges) → index knuckle → middle → ring → pinky → back to heel.
+         Geometric curves only — reads as 'hand' without anatomical detail. -->
+    <path d="
+      M -56 40
+      L -56 16
+      Q -56  -2  -40  -4
+      Q -26  -6  -18  -12
+      L -10 -12
+      Q  -2 -12   2  -4
+      Q   0  -2  -6   2
+      L -14  8
+      Q -18 12  -14 16
+      L  -8 18
+      Q  -4 24  -12 28
+      L -16 32
+      Q -18 40 -28 40
+      Z"
+      fill="#F5F3EF"/>
+
+    <!-- Gold cuff band (wristband): human element, distinguishes from abstract shape -->
+    <rect x="-58" y="34" width="34" height="6" rx="3" fill="#C9A961"/>
+
+    <!-- Small thumb highlight (darker offshoot from the palm) -->
+    <path d="M -14 8 Q -8 4 -4 8 Q -8 12 -14 12 Z" fill="#C9A961" opacity="0.9"/>
+  </g>
+
+  <!-- Wordmark -->
+  <text x="230" y="116" font-family="-apple-system, 'Inter', 'Helvetica Neue', sans-serif"
+        font-weight="600" font-size="46" letter-spacing="8" fill="#F5F3EF">ORKESTRA</text>
+  <text x="230" y="140" font-family="-apple-system, 'Inter', sans-serif"
+        font-weight="400" font-size="11" letter-spacing="6" fill="#C9A961">ORCHESTRATED OPERATIONS</text>
+</svg>

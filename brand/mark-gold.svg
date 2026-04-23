@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-80 -80 160 160" width="512" height="512">
+  <!-- Variação ouro champagne (#C9A961) sobre preto.
+       Uso: cerimonial — apresentações premium, eventos institucionais,
+       papelaria especial, hot-stamping em materiais físicos. -->
+  <rect x="-80" y="-80" width="160" height="160" fill="#0B0B0C"/>
+
+  <defs>
+    <g id="petal-g">
+      <path d="M -3 -20 C -10 -28 -13 -44 0 -54 C 13 -44 10 -28 3 -20 C 2 -18 -2 -18 -3 -20 Z" fill="#C9A961"/>
+      <line x1="0" y1="-22" x2="0" y2="-52" stroke="#0B0B0C" stroke-width="1" stroke-linecap="round" opacity="0.6"/>
+    </g>
+  </defs>
+
+  <use href="#petal-g" transform="rotate(0)"/>
+  <use href="#petal-g" transform="rotate(22.5)"/>
+  <use href="#petal-g" transform="rotate(45)"/>
+  <use href="#petal-g" transform="rotate(67.5)"/>
+  <use href="#petal-g" transform="rotate(90)"/>
+  <use href="#petal-g" transform="rotate(112.5)"/>
+  <use href="#petal-g" transform="rotate(135)"/>
+  <use href="#petal-g" transform="rotate(157.5)"/>
+  <use href="#petal-g" transform="rotate(180)"/>
+  <use href="#petal-g" transform="rotate(202.5)"/>
+  <use href="#petal-g" transform="rotate(225)"/>
+  <use href="#petal-g" transform="rotate(247.5)"/>
+  <use href="#petal-g" transform="rotate(270)"/>
+  <use href="#petal-g" transform="rotate(292.5)"/>
+  <use href="#petal-g" transform="rotate(315)"/>
+  <use href="#petal-g" transform="rotate(337.5)"/>
+
+  <circle r="22" fill="#C9A961"/>
+  <circle r="18" fill="#0B0B0C"/>
+  <circle r="13" fill="#C9A961"/>
+  <circle r="5"  fill="#0B0B0C"/>
+</svg>

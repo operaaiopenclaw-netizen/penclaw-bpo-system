@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-80 -80 160 160" width="512" height="512">
+  <!-- ORKESTRA · Mark-Symbol (master geometry)
+       Kikumon de 16 pétalas, construção radial a partir de origem.
+       Raio externo da pétala: 54; base da pétala: y=-20; largura máx: ±13 em y=-40.
+       Disco central em 4 anéis concêntricos (claro-escuro-claro-escuro). -->
+
+  <defs>
+    <!-- Pétala canônica (aponta para cima). Dobra central sutil. -->
+    <g id="orkestra-petal">
+      <path
+        d="M -3 -20 C -10 -28 -13 -44 0 -54 C 13 -44 10 -28 3 -20 C 2 -18 -2 -18 -3 -20 Z"
+        fill="currentColor"/>
+      <line x1="0" y1="-22" x2="0" y2="-52"
+            stroke="var(--fold, #0B0B0C)" stroke-width="1"
+            stroke-linecap="round" opacity="0.85"/>
+    </g>
+  </defs>
+
+  <g color="#F5F3EF" style="--fold: #0B0B0C;">
+    <use href="#orkestra-petal" transform="rotate(0)"/>
+    <use href="#orkestra-petal" transform="rotate(22.5)"/>
+    <use href="#orkestra-petal" transform="rotate(45)"/>
+    <use href="#orkestra-petal" transform="rotate(67.5)"/>
+    <use href="#orkestra-petal" transform="rotate(90)"/>
+    <use href="#orkestra-petal" transform="rotate(112.5)"/>
+    <use href="#orkestra-petal" transform="rotate(135)"/>
+    <use href="#orkestra-petal" transform="rotate(157.5)"/>
+    <use href="#orkestra-petal" transform="rotate(180)"/>
+    <use href="#orkestra-petal" transform="rotate(202.5)"/>
+    <use href="#orkestra-petal" transform="rotate(225)"/>
+    <use href="#orkestra-petal" transform="rotate(247.5)"/>
+    <use href="#orkestra-petal" transform="rotate(270)"/>
+    <use href="#orkestra-petal" transform="rotate(292.5)"/>
+    <use href="#orkestra-petal" transform="rotate(315)"/>
+    <use href="#orkestra-petal" transform="rotate(337.5)"/>
+  </g>
+
+  <!-- Disco central: 4 anéis concêntricos alternando claro/escuro. -->
+  <circle r="22" fill="#F5F3EF"/>
+  <circle r="18" fill="#0B0B0C"/>
+  <circle r="13" fill="#F5F3EF"/>
+  <circle r="5"  fill="#0B0B0C"/>
+</svg>

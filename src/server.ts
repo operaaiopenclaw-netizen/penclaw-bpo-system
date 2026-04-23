@@ -8,7 +8,7 @@ import swagger from "@fastify/swagger";
 import swaggerUi from "@fastify/swagger-ui";
 import { config } from "./config/env";
 import { prisma } from "./db";
-import { agentRunsRoutes, approvalsRoutes, memoryRoutes, artifactsRoutes, dashboardRoutes, metricsRoutes, eventsRoutes, statesRoutes, kitchenRoutes, intelligenceRoutes, crmRoutes, serviceOrdersRoutes, productionOrdersRoutes, executionRoutes, operationsRoutes, authRoutes, usersRoutes, commercialRoutes } from "./routes";
+import { agentRunsRoutes, approvalsRoutes, memoryRoutes, artifactsRoutes, dashboardRoutes, metricsRoutes, eventsRoutes, statesRoutes, kitchenRoutes, intelligenceRoutes, crmRoutes, serviceOrdersRoutes, productionOrdersRoutes, executionRoutes, operationsRoutes, authRoutes, usersRoutes, commercialRoutes, aiChatRoutes, calendarRoutes, vaultRoutes, invoicesRoutes, whatsappRoutes, marketingRoutes, lgpdRoutes, hrRoutes, financeRoutes, onboardingRoutes } from "./routes";
 import { registerAuditHook } from "./middleware/audit";
 import { errorHandler, notFoundHandler } from "./utils/error-handler";
 import { logger } from "./utils/logger";
@@ -80,6 +80,16 @@ async function bootstrap() {
   await app.register(executionRoutes, { prefix: "/execution" });
   await app.register(operationsRoutes, { prefix: "/operations" });
   await app.register(commercialRoutes, { prefix: "/commercial" });
+  await app.register(aiChatRoutes,     { prefix: "/ai-chat" });
+  await app.register(calendarRoutes,   { prefix: "/calendar" });
+  await app.register(vaultRoutes,      { prefix: "/vault" });
+  await app.register(invoicesRoutes,   { prefix: "/invoices" });
+  await app.register(whatsappRoutes,   { prefix: "/whatsapp" });
+  await app.register(marketingRoutes,  { prefix: "/marketing" });
+  await app.register(lgpdRoutes,       { prefix: "/lgpd" });
+  await app.register(hrRoutes,         { prefix: "/hr" });
+  await app.register(financeRoutes,    { prefix: "/finance" });
+  await app.register(onboardingRoutes, { prefix: "/onboarding" });
 
   // Liveness — always 200 while process is up.
   app.get("/health", async () => ({ status: "ok", ts: Date.now() }));

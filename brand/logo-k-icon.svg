@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-70 -70 140 140" width="256" height="256">
+  <!-- KIKUMON · 16 pétalas com dobra central (fold line) — elimina leitura
+       de girassol; cada pétala vira uma pétala real de crisântemo. -->
+  <rect x="-70" y="-70" width="140" height="140" fill="#0B0B0C"/>
+
+  <g>
+    <!-- Uma pétala = forma preenchida + linha de dobra fina no centro. -->
+    <g id="petal">
+      <path
+        d="M -4 -16 C -10 -22 -13 -38 -7 -50 C -2 -54 2 -54 7 -50 C 13 -38 10 -22 4 -16 C 2 -14 -2 -14 -4 -16 Z"
+        fill="#F5F3EF"/>
+      <line x1="0" y1="-17" x2="0" y2="-52" stroke="#0B0B0C" stroke-width="1.2" stroke-linecap="round"/>
+    </g>
+    <use href="#petal" transform="rotate(22.5)"/>
+    <use href="#petal" transform="rotate(45)"/>
+    <use href="#petal" transform="rotate(67.5)"/>
+    <use href="#petal" transform="rotate(90)"/>
+    <use href="#petal" transform="rotate(112.5)"/>
+    <use href="#petal" transform="rotate(135)"/>
+    <use href="#petal" transform="rotate(157.5)"/>
+    <use href="#petal" transform="rotate(180)"/>
+    <use href="#petal" transform="rotate(202.5)"/>
+    <use href="#petal" transform="rotate(225)"/>
+    <use href="#petal" transform="rotate(247.5)"/>
+    <use href="#petal" transform="rotate(270)"/>
+    <use href="#petal" transform="rotate(292.5)"/>
+    <use href="#petal" transform="rotate(315)"/>
+    <use href="#petal" transform="rotate(337.5)"/>
+  </g>
+
+  <!-- Disco central: anel externo + anel interno vazado + ponto central. -->
+  <circle r="18" fill="#F5F3EF"/>
+  <circle r="14" fill="#0B0B0C"/>
+  <circle r="9"  fill="#F5F3EF"/>
+  <circle r="3"  fill="#0B0B0C"/>
+</svg>

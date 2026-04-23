@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 200" width="600" height="200">
+  <rect width="600" height="200" fill="#0B0B0C"/>
+
+  <!-- Símbolo: nó de orquestração (5 nós em estrela conectados) -->
+  <g transform="translate(100,100)">
+    <!-- Arestas -->
+    <g stroke="#C9A961" stroke-width="1.5" opacity="0.45">
+      <line x1="0" y1="-40" x2="38" y2="-12"/>
+      <line x1="38" y1="-12" x2="24" y2="32"/>
+      <line x1="24" y1="32" x2="-24" y2="32"/>
+      <line x1="-24" y1="32" x2="-38" y2="-12"/>
+      <line x1="-38" y1="-12" x2="0" y2="-40"/>
+      <!-- Diagonais internas (orquestração cruzada) -->
+      <line x1="0" y1="-40" x2="24" y2="32" opacity="0.5"/>
+      <line x1="0" y1="-40" x2="-24" y2="32" opacity="0.5"/>
+      <line x1="38" y1="-12" x2="-38" y2="-12" opacity="0.5"/>
+      <line x1="38" y1="-12" x2="-24" y2="32" opacity="0.5"/>
+      <line x1="-38" y1="-12" x2="24" y2="32" opacity="0.5"/>
+    </g>
+    <!-- Nó central (maestro) -->
+    <circle cx="0" cy="0" r="6" fill="#C9A961"/>
+    <circle cx="0" cy="0" r="12" stroke="#C9A961" stroke-width="1" fill="none" opacity="0.4"/>
+    <!-- Nós periféricos -->
+    <circle cx="0"   cy="-40" r="4" fill="#F5F3EF"/>
+    <circle cx="38"  cy="-12" r="4" fill="#F5F3EF"/>
+    <circle cx="24"  cy="32"  r="4" fill="#F5F3EF"/>
+    <circle cx="-24" cy="32"  r="4" fill="#F5F3EF"/>
+    <circle cx="-38" cy="-12" r="4" fill="#F5F3EF"/>
+  </g>
+
+  <!-- Wordmark -->
+  <text x="180" y="118" font-family="-apple-system, 'Inter', 'Helvetica Neue', sans-serif"
+        font-weight="600" font-size="46" letter-spacing="8" fill="#F5F3EF">ORKESTRA</text>
+  <text x="180" y="142" font-family="-apple-system, 'Inter', sans-serif"
+        font-weight="400" font-size="11" letter-spacing="6" fill="#C9A961">ORCHESTRATED OPERATIONS</text>
+</svg>

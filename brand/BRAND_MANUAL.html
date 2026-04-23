@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Orkestra · Brand Manual v1</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', -apple-system, system-ui, sans-serif;
+    background: #0B0B0C; color: #F5F3EF;
+    padding: 0; min-height: 100vh; line-height: 1.6;
+  }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 72px 64px 120px; }
+
+  header.hero {
+    padding: 72px 64px 56px;
+    border-bottom: 1px solid #26262A;
+    background: linear-gradient(180deg, #141416 0%, #0B0B0C 100%);
+  }
+  header.hero .kicker {
+    font-size: 11px; letter-spacing: 4px; color: #C9A961;
+    text-transform: uppercase; margin-bottom: 12px;
+  }
+  header.hero h1 {
+    font-size: 52px; font-weight: 600; letter-spacing: -1px;
+    margin-bottom: 12px;
+  }
+  header.hero p {
+    font-size: 15px; color: #A8A8AF; max-width: 720px;
+  }
+
+  section { padding: 72px 0; border-bottom: 1px solid #1C1C1F; }
+  section:last-child { border-bottom: none; }
+  section > h2 {
+    font-size: 11px; letter-spacing: 4px; color: #C9A961;
+    text-transform: uppercase; margin-bottom: 8px;
+  }
+  section > h3 {
+    font-size: 30px; font-weight: 600; letter-spacing: -0.3px;
+    margin-bottom: 12px;
+  }
+  section > p.lead {
+    font-size: 14.5px; color: #A8A8AF; max-width: 720px;
+    line-height: 1.8; margin-bottom: 40px;
+  }
+  section p.lead strong { color: #F5F3EF; }
+  section p.lead em { color: #C9A961; font-style: normal; font-weight: 600; }
+
+  .frame {
+    background: #0B0B0C; border: 1px solid #26262A;
+    border-radius: 14px; padding: 40px;
+    display: flex; justify-content: center; align-items: center;
+    min-height: 280px; margin-bottom: 16px;
+  }
+  .frame.light { background: #F5F3EF; }
+  .frame.gold  { background: linear-gradient(135deg, #1a1510 0%, #0B0B0C 100%); }
+
+  .caption {
+    font-size: 12px; color: #6B6B73;
+    letter-spacing: 1px; text-transform: uppercase;
+    margin-bottom: 32px;
+  }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+
+  .swatch {
+    border-radius: 10px; overflow: hidden;
+    border: 1px solid #26262A;
+  }
+  .swatch .bar { height: 100px; }
+  .swatch .info { padding: 16px; background: #141416; }
+  .swatch .info .name { font-weight: 600; font-size: 14px; margin-bottom: 6px; }
+  .swatch .info .hex  { font-size: 12px; color: #A8A8AF; font-family: 'JetBrains Mono', monospace; }
+  .swatch .info .role { font-size: 11px; color: #6B6B73; letter-spacing: 1px; text-transform: uppercase; margin-top: 8px; }
+
+  .size-cell {
+    background: #141416; border: 1px solid #26262A;
+    border-radius: 10px; padding: 18px; text-align: center;
+  }
+  .size-cell .stage {
+    background: #0B0B0C; border-radius: 6px;
+    padding: 12px; margin-bottom: 10px;
+    display: flex; justify-content: center; align-items: center; min-height: 90px;
+  }
+  .size-cell .k { font-size: 11px; color: #6B6B73; letter-spacing: 1px; text-transform: uppercase; }
+
+  table.type {
+    width: 100%; border-collapse: collapse;
+  }
+  table.type td {
+    padding: 18px 0; border-bottom: 1px solid #1C1C1F;
+    vertical-align: middle;
+  }
+  table.type td:first-child { width: 220px; color: #6B6B73; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; }
+
+  .misuse {
+    position: relative; padding: 30px;
+    background: #141416; border: 1px solid #26262A; border-radius: 10px;
+    text-align: center;
+  }
+  .misuse.dont::after {
+    content: "✕"; position: absolute; top: 14px; right: 16px;
+    font-size: 16px; color: #E0474C; font-weight: 700;
+  }
+  .misuse.do::after {
+    content: "✓"; position: absolute; top: 14px; right: 16px;
+    font-size: 16px; color: #00B38A; font-weight: 700;
+  }
+  .misuse .label {
+    font-size: 11px; color: #A8A8AF; letter-spacing: 1px;
+    text-transform: uppercase; margin-top: 16px;
+  }
+
+  .story-block {
+    background: linear-gradient(135deg, rgba(201,169,97,0.06), rgba(201,169,97,0));
+    border: 1px solid rgba(201,169,97,0.22);
+    border-radius: 14px; padding: 40px;
+  }
+  .story-block .kanji {
+    font-size: 76px; color: #C9A961;
+    letter-spacing: 14px; margin-bottom: 20px;
+  }
+  .story-block p { color: #A8A8AF; margin-bottom: 16px; max-width: 640px; }
+  .story-block p strong { color: #F5F3EF; }
+
+  .tag-list {
+    display: flex; gap: 10px; flex-wrap: wrap;
+  }
+  .tag-list .t {
+    padding: 6px 12px; border-radius: 20px;
+    border: 1px solid #26262A; font-size: 12px; color: #A8A8AF;
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="kicker">Orkestra · Brand Manual v1</div>
+  <h1>Identidade visual</h1>
+  <p>
+    Sistema de marca construído em torno do <strong style="color:#F5F3EF">kikumon</strong> —
+    o crisântemo de 16 pétalas da tradição japonesa, símbolo de resistência,
+    longevidade e soberania. Aqui ele atende a três funções simultâneas:
+    ponte pessoal com a herança cultural da fundadora, ícone técnico de
+    <em style="color:#C9A961">orquestração radial</em> e selo institucional
+    que sobrevive do favicon 16px ao outdoor.
+  </p>
+</header>
+
+<div class="wrap">
+
+  <section>
+    <h2>01 · Marca principal</h2>
+    <h3>Lockup horizontal</h3>
+    <p class="lead">
+      Aplicação padrão. Símbolo à esquerda, wordmark à direita.
+      Use sempre que houver espaço horizontal confortável — websites, cabeçalhos
+      de documento, assinatura de e-mail, dashboards.
+    </p>
+    <div class="frame"><img src="mark-horizontal.svg" width="640" alt="Lockup horizontal"></div>
+    <div class="caption">mark-horizontal.svg · dark background · padrão</div>
+
+    <div class="frame light"><img src="mark-horizontal.svg" width="640" alt="Lockup horizontal (preview em fundo claro)" style="filter: invert(1) hue-rotate(180deg);"></div>
+    <div class="caption">aplicação preliminar em fundo claro (ver versão print dedicada em §04)</div>
+  </section>
+
+  <section>
+    <h2>02 · Variantes do lockup</h2>
+    <h3>Centralizado e isolado</h3>
+    <p class="lead">
+      Duas variações para contextos específicos: <strong>Stacked</strong> para
+      layouts verticais (posters, capas, slides), <strong>Symbol-only</strong>
+      para situações onde a marca já está contextualizada (app icon, avatar, selo).
+    </p>
+    <div class="grid-2">
+      <div>
+        <div class="frame"><img src="mark-stacked.svg" width="280" alt="Stacked"></div>
+        <div class="caption">mark-stacked.svg · decks, posters, embalagem</div>
+      </div>
+      <div>
+        <div class="frame"><img src="mark-symbol.svg" width="220" alt="Symbol only"></div>
+        <div class="caption">mark-symbol.svg · favicon, avatar, selo</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>03 · Escala do símbolo</h2>
+    <h3>Sobrevive do favicon ao outdoor</h3>
+    <p class="lead">
+      A geometria radial de 16 pétalas mantém a silhueta reconhecível mesmo
+      em <strong>16 × 16 pixels</strong>. Em tamanhos pequenos use a variante
+      <em>favicon</em> (sem fold lines); em tamanhos médios e grandes use o
+      <em>symbol</em> com detalhamento completo.
+    </p>
+    <div class="grid-4">
+      <div class="size-cell">
+        <div class="stage"><img src="mark-favicon.svg" width="16" height="16"></div>
+        <div class="k">16 × 16</div>
+      </div>
+      <div class="size-cell">
+        <div class="stage"><img src="mark-favicon.svg" width="32" height="32"></div>
+        <div class="k">32 × 32</div>
+      </div>
+      <div class="size-cell">
+        <div class="stage"><img src="mark-favicon.svg" width="64" height="64"></div>
+        <div class="k">64 · browser tab</div>
+      </div>
+      <div class="size-cell">
+        <div class="stage"><img src="mark-symbol.svg" width="128" height="128"></div>
+        <div class="k">128 · sidebar</div>
+      </div>
+      <div class="size-cell">
+        <div class="stage" style="min-height:180px;"><img src="mark-symbol.svg" width="220" height="220"></div>
+        <div class="k">256 · app icon</div>
+      </div>
+      <div class="size-cell">
+        <div class="stage" style="min-height:220px;"><img src="mark-symbol.svg" width="280" height="280"></div>
+        <div class="k">512 · brand asset</div>
+      </div>
+      <div class="size-cell" style="grid-column: span 2;">
+        <div class="stage" style="min-height:280px;"><img src="mark-symbol.svg" width="360" height="360"></div>
+        <div class="k">poster · ∞</div>
+      </div>
+    </div>
+    <div class="caption" style="margin-top: 24px;">
+      Tamanho mínimo recomendado do <strong style="color:#F5F3EF">lockup horizontal</strong>: 120px de largura em tela / 34mm em impressão.
+    </div>
+  </section>
+
+  <section>
+    <h2>04 · Variações cromáticas</h2>
+    <h3>Três registros, um sistema</h3>
+    <p class="lead">
+      Off-white para <strong>tela</strong>, preto sobre claro para
+      <strong>impressão</strong>, ouro champagne para <strong>cerimonial</strong>.
+      Nada fora desta tríade sem aprovação — a paleta é o DNA.
+    </p>
+    <div class="grid-3">
+      <div>
+        <div class="frame"><img src="mark-symbol.svg" width="160"></div>
+        <div class="caption">off-white / preto · tela, UI, web</div>
+      </div>
+      <div>
+        <div class="frame light"><img src="mark-print.svg" width="160"></div>
+        <div class="caption">preto / off-white · papel, CMYK, stamp</div>
+      </div>
+      <div>
+        <div class="frame gold"><img src="mark-gold.svg" width="160"></div>
+        <div class="caption">ouro champagne · cerimonial, hot-stamping</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>05 · Paleta</h2>
+    <h3>Quatro valores, zero acidente</h3>
+    <p class="lead">
+      Todas as aplicações da marca vivem dentro destes quatro tons. Nenhuma
+      cor secundária é introduzida sem atualização deste manual.
+    </p>
+    <div class="grid-4">
+      <div class="swatch">
+        <div class="bar" style="background:#0B0B0C;"></div>
+        <div class="info">
+          <div class="name">Ink</div>
+          <div class="hex">#0B0B0C · RGB 11 11 12</div>
+          <div class="role">background · primary</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="bar" style="background:#F5F3EF;"></div>
+        <div class="info">
+          <div class="name">Paper</div>
+          <div class="hex">#F5F3EF · RGB 245 243 239</div>
+          <div class="role">foreground · wordmark</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="bar" style="background:#C9A961;"></div>
+        <div class="info">
+          <div class="name">Champagne</div>
+          <div class="hex">#C9A961 · RGB 201 169 97</div>
+          <div class="role">accent · cerimonial</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="bar" style="background:#00B38A;"></div>
+        <div class="info">
+          <div class="name">Signal</div>
+          <div class="hex">#00B38A · RGB 0 179 138</div>
+          <div class="role">data · performance, live</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>06 · Tipografia</h2>
+    <h3>Inter hoje · Söhne amanhã</h3>
+    <p class="lead">
+      Enquanto o investimento em Söhne (o objetivo) não é feito, usamos
+      <strong>Inter</strong> como placeholder — mesma família geométrica,
+      espaçamento semelhante, gratuita.
+      Sempre <em>semibold 600</em> para wordmark, com tracking aumentado
+      a <em>8–9</em> unidades.
+    </p>
+    <table class="type">
+      <tr>
+        <td>Wordmark</td>
+        <td style="font-weight:600;font-size:48px;letter-spacing:9px;">ORKESTRA</td>
+      </tr>
+      <tr>
+        <td>Tagline</td>
+        <td style="font-weight:400;font-size:13px;letter-spacing:5px;color:#C9A961;">ORCHESTRATED OPERATIONS</td>
+      </tr>
+      <tr>
+        <td>Título / Hero</td>
+        <td style="font-weight:600;font-size:36px;letter-spacing:-0.3px;">A orquestra que rege sua operação</td>
+      </tr>
+      <tr>
+        <td>Subtítulo</td>
+        <td style="font-weight:500;font-size:20px;color:#A8A8AF;">Automação + julgamento humano, em harmonia.</td>
+      </tr>
+      <tr>
+        <td>Corpo</td>
+        <td style="font-weight:400;font-size:15px;color:#A8A8AF;line-height:1.7;">Da primeira mensagem do lead até o pagamento da última parcela, a operação é regida por um maestro invisível.</td>
+      </tr>
+      <tr>
+        <td>Monospace · dados</td>
+        <td style="font-family:'JetBrains Mono',monospace;font-size:14px;color:#A8A8AF;">R$ 142.350,00 · CMV 31.2% · margem 68.8%</td>
+      </tr>
+    </table>
+  </section>
+
+  <section>
+    <h2>07 · Uso correto e incorreto</h2>
+    <h3>Oito regras não-negociáveis</h3>
+    <div class="grid-4">
+      <div class="misuse do">
+        <img src="mark-symbol.svg" width="90">
+        <div class="label">Centralizado em fundo escuro</div>
+      </div>
+      <div class="misuse do">
+        <img src="mark-print.svg" width="90">
+        <div class="label">Preto em papel claro</div>
+      </div>
+      <div class="misuse dont">
+        <img src="mark-symbol.svg" width="90" style="transform: rotate(23deg);">
+        <div class="label">Não rotacione</div>
+      </div>
+      <div class="misuse dont">
+        <img src="mark-symbol.svg" width="90" style="transform: scale(1.4, 0.7);">
+        <div class="label">Não deforme</div>
+      </div>
+      <div class="misuse dont">
+        <img src="mark-symbol.svg" width="90" style="filter: drop-shadow(0 0 20px rgba(255,255,255,0.8));">
+        <div class="label">Sem glow nem sombra</div>
+      </div>
+      <div class="misuse dont">
+        <img src="mark-symbol.svg" width="90" style="filter: hue-rotate(180deg) saturate(2);">
+        <div class="label">Não recolorir fora do sistema</div>
+      </div>
+      <div class="misuse dont" style="background:#E0474C;">
+        <img src="mark-symbol.svg" width="90">
+        <div class="label">Fora da paleta</div>
+      </div>
+      <div class="misuse dont">
+        <img src="mark-symbol.svg" width="50">
+        <div class="label">Menor que 48px (use favicon)</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>08 · Raiz</h2>
+    <h3>O que o kikumon significa aqui</h3>
+    <div class="story-block">
+      <div class="kanji">菊 · 秩序</div>
+      <p>
+        <strong>菊 (kiku)</strong> — crisântemo. Flor do outono, símbolo de
+        <strong>resistência que floresce quando outras murcham</strong>. Na
+        tradição imperial japonesa, a flor que aguenta o frio, a ordem
+        que persiste através das estações.
+      </p>
+      <p>
+        <strong>秩序 (chitsujo)</strong> — ordem, organização, orquestração.
+        Conceito central na filosofia operacional japonesa: <strong>a harmonia
+        vem da disciplina, não do acaso</strong>. É exatamente o que Orkestra
+        entrega aos seus clientes BPO.
+      </p>
+      <p>
+        Juntar os dois — resistência + ordem — no símbolo mais reconhecível
+        da cultura japonesa não é decoração. É um <strong>compromisso</strong>:
+        Orkestra rege a operação como o kiku rege o outono — com precisão,
+        longevidade e soberania discreta.
+      </p>
+      <div class="tag-list" style="margin-top: 24px;">
+        <span class="t">resistência</span>
+        <span class="t">longevidade</span>
+        <span class="t">ordem</span>
+        <span class="t">soberania discreta</span>
+        <span class="t">orquestração radial</span>
+        <span class="t">raiz japonesa</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>09 · Arquivos mestres</h2>
+    <h3>Onde cada peça vive</h3>
+    <table class="type">
+      <tr><td>Lockup horizontal</td><td><code>brand/mark-horizontal.svg</code></td></tr>
+      <tr><td>Lockup stacked</td><td><code>brand/mark-stacked.svg</code></td></tr>
+      <tr><td>Símbolo mestre</td><td><code>brand/mark-symbol.svg</code></td></tr>
+      <tr><td>Favicon otimizado</td><td><code>brand/mark-favicon.svg</code></td></tr>
+      <tr><td>Variante ouro</td><td><code>brand/mark-gold.svg</code></td></tr>
+      <tr><td>Variante impressão</td><td><code>brand/mark-print.svg</code></td></tr>
+    </table>
+  </section>
+
+</div>
+</body>
+</html>

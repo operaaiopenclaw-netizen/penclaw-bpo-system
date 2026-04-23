@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 200" width="600" height="200">
+  <rect width="600" height="200" fill="#0B0B0C"/>
+
+  <!-- Símbolo: batuta + 3 ondas concêntricas -->
+  <g transform="translate(100,100)">
+    <!-- Ondas de propagação -->
+    <path d="M -42 0 Q -42 -30 -12 -30" stroke="#C9A961" stroke-width="2" fill="none" opacity="0.35"/>
+    <path d="M -42 0 Q -42 30 -12 30" stroke="#C9A961" stroke-width="2" fill="none" opacity="0.35"/>
+    <path d="M -30 0 Q -30 -22 -12 -22" stroke="#C9A961" stroke-width="2" fill="none" opacity="0.6"/>
+    <path d="M -30 0 Q -30 22 -12 22" stroke="#C9A961" stroke-width="2" fill="none" opacity="0.6"/>
+    <!-- Haste da batuta (off-white) -->
+    <line x1="-12" y1="0" x2="38" y2="0" stroke="#F5F3EF" stroke-width="3" stroke-linecap="round"/>
+    <!-- Ponta (esfera ouro) -->
+    <circle cx="42" cy="0" r="5" fill="#C9A961"/>
+    <!-- Cabo (cilindro) -->
+    <circle cx="-12" cy="0" r="7" fill="#F5F3EF"/>
+  </g>
+
+  <!-- Wordmark -->
+  <text x="180" y="118" font-family="-apple-system, 'Inter', 'Helvetica Neue', sans-serif"
+        font-weight="600" font-size="46" letter-spacing="8" fill="#F5F3EF">ORKESTRA</text>
+  <text x="180" y="142" font-family="-apple-system, 'Inter', sans-serif"
+        font-weight="400" font-size="11" letter-spacing="6" fill="#C9A961">ORCHESTRATED OPERATIONS</text>
+</svg>

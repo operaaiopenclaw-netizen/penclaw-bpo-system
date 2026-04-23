@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 200" width="600" height="200">
+  <rect width="600" height="200" fill="#0B0B0C"/>
+
+  <!-- Símbolo: Monograma O com corte rítmico (waveform cut) -->
+  <g transform="translate(100,100)">
+    <!-- Anel externo off-white -->
+    <circle cx="0" cy="0" r="44" fill="none" stroke="#F5F3EF" stroke-width="4"/>
+    <!-- Corte rítmico: 4 barras verticais douradas dentro do O -->
+    <g fill="#C9A961">
+      <rect x="-22" y="-10" width="4" height="20"  rx="2"/>
+      <rect x="-10" y="-18" width="4" height="36"  rx="2"/>
+      <rect x="2"   y="-26" width="4" height="52"  rx="2"/>
+      <rect x="14"  y="-14" width="4" height="28"  rx="2"/>
+    </g>
+    <!-- Ponto emerald (pulso/performance) -->
+    <circle cx="32" cy="-32" r="3.5" fill="#00B38A"/>
+  </g>
+
+  <!-- Wordmark -->
+  <text x="180" y="118" font-family="-apple-system, 'Inter', 'Helvetica Neue', sans-serif"
+        font-weight="600" font-size="46" letter-spacing="8" fill="#F5F3EF">ORKESTRA</text>
+  <text x="180" y="142" font-family="-apple-system, 'Inter', sans-serif"
+        font-weight="400" font-size="11" letter-spacing="6" fill="#C9A961">ORCHESTRATED OPERATIONS</text>
+</svg>

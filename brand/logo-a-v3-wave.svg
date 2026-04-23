@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 200" width="600" height="200">
+  <rect width="600" height="200" fill="#0B0B0C"/>
+
+  <!-- A-v3 · WAVE — pulso em forma de onda (barras verticais, tipo Siri) -->
+  <!-- Bars emerge from the tip along a horizontal axis, heights form a wave envelope -->
+  <g transform="translate(110,100)">
+    <!-- Audio-level bars positioned to the right of tip (30,-50), extending right. -->
+    <!-- Heights vary: 6,10,14,16,14,10,6 — symmetric wave envelope. -->
+    <g stroke="#C9A961" stroke-linecap="round">
+      <line x1="42"  y1="-56" x2="42"  y2="-44" stroke-width="3" opacity="1.00"/>   <!-- h=12 -->
+      <line x1="50"  y1="-60" x2="50"  y2="-40" stroke-width="3" opacity="0.92"/>   <!-- h=20 -->
+      <line x1="58"  y1="-64" x2="58"  y2="-36" stroke-width="3" opacity="0.85"/>   <!-- h=28 -->
+      <line x1="66"  y1="-66" x2="66"  y2="-34" stroke-width="3" opacity="0.80"/>   <!-- h=32 (peak) -->
+      <line x1="74"  y1="-64" x2="74"  y2="-36" stroke-width="3" opacity="0.70"/>   <!-- h=28 -->
+      <line x1="82"  y1="-60" x2="82"  y2="-40" stroke-width="3" opacity="0.55"/>   <!-- h=20 -->
+      <line x1="90"  y1="-56" x2="90"  y2="-44" stroke-width="3" opacity="0.40"/>   <!-- h=12 -->
+      <line x1="98"  y1="-53" x2="98"  y2="-47" stroke-width="3" opacity="0.25"/>   <!-- h=6 fade -->
+    </g>
+
+    <line x1="-50" y1="35" x2="30" y2="-50" stroke="#F5F3EF" stroke-width="9" stroke-linecap="round"/>
+    <line x1="-44" y1="28" x2="-28" y2="11" stroke="#C9A961" stroke-width="10" stroke-linecap="round"/>
+    <circle cx="-50" cy="35" r="11" fill="#F5F3EF"/>
+    <circle cx="-50" cy="35" r="5"  fill="#C9A961"/>
+    <circle cx="30" cy="-50" r="7" fill="#C9A961"/>
+    <circle cx="30" cy="-50" r="3" fill="#F5F3EF"/>
+  </g>
+
+  <text x="230" y="116" font-family="-apple-system, 'Inter', sans-serif"
+        font-weight="600" font-size="46" letter-spacing="8" fill="#F5F3EF">ORKESTRA</text>
+  <text x="230" y="140" font-family="-apple-system, 'Inter', sans-serif"
+        font-weight="400" font-size="11" letter-spacing="6" fill="#C9A961">ORCHESTRATED OPERATIONS</text>
+</svg>

@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-80 -80 160 160" width="512" height="512">
+  <!-- Variação para impressão (preto sobre off-white).
+       Espelha a referência original japonesa. CMYK-safe.
+       Uso: cartão de visita, papel timbrado, contratos, envelopes. -->
+  <rect x="-80" y="-80" width="160" height="160" fill="#F5F3EF"/>
+
+  <defs>
+    <g id="petal-p">
+      <path d="M -3 -20 C -10 -28 -13 -44 0 -54 C 13 -44 10 -28 3 -20 C 2 -18 -2 -18 -3 -20 Z" fill="#0B0B0C"/>
+      <line x1="0" y1="-22" x2="0" y2="-52" stroke="#F5F3EF" stroke-width="1" stroke-linecap="round" opacity="0.9"/>
+    </g>
+  </defs>
+
+  <use href="#petal-p" transform="rotate(0)"/>
+  <use href="#petal-p" transform="rotate(22.5)"/>
+  <use href="#petal-p" transform="rotate(45)"/>
+  <use href="#petal-p" transform="rotate(67.5)"/>
+  <use href="#petal-p" transform="rotate(90)"/>
+  <use href="#petal-p" transform="rotate(112.5)"/>
+  <use href="#petal-p" transform="rotate(135)"/>
+  <use href="#petal-p" transform="rotate(157.5)"/>
+  <use href="#petal-p" transform="rotate(180)"/>
+  <use href="#petal-p" transform="rotate(202.5)"/>
+  <use href="#petal-p" transform="rotate(225)"/>
+  <use href="#petal-p" transform="rotate(247.5)"/>
+  <use href="#petal-p" transform="rotate(270)"/>
+  <use href="#petal-p" transform="rotate(292.5)"/>
+  <use href="#petal-p" transform="rotate(315)"/>
+  <use href="#petal-p" transform="rotate(337.5)"/>
+
+  <circle r="22" fill="#0B0B0C"/>
+  <circle r="18" fill="#F5F3EF"/>
+  <circle r="13" fill="#0B0B0C"/>
+  <circle r="5"  fill="#F5F3EF"/>
+</svg>

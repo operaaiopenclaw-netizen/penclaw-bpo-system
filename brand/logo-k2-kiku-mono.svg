@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 220" width="640" height="220">
+  <rect width="640" height="220" fill="#0B0B0C"/>
+
+  <!-- K2 · KIKUMON MONO refinado: 16 pétalas com dobra central + disco em anéis -->
+  <g transform="translate(120,110)">
+    <g id="p2">
+      <path
+        d="M -4 -16 C -10 -22 -13 -38 -7 -50 C -2 -54 2 -54 7 -50 C 13 -38 10 -22 4 -16 C 2 -14 -2 -14 -4 -16 Z"
+        fill="#F5F3EF"/>
+      <line x1="0" y1="-17" x2="0" y2="-52" stroke="#0B0B0C" stroke-width="1.2" stroke-linecap="round"/>
+    </g>
+    <use href="#p2" transform="rotate(22.5)"/>
+    <use href="#p2" transform="rotate(45)"/>
+    <use href="#p2" transform="rotate(67.5)"/>
+    <use href="#p2" transform="rotate(90)"/>
+    <use href="#p2" transform="rotate(112.5)"/>
+    <use href="#p2" transform="rotate(135)"/>
+    <use href="#p2" transform="rotate(157.5)"/>
+    <use href="#p2" transform="rotate(180)"/>
+    <use href="#p2" transform="rotate(202.5)"/>
+    <use href="#p2" transform="rotate(225)"/>
+    <use href="#p2" transform="rotate(247.5)"/>
+    <use href="#p2" transform="rotate(270)"/>
+    <use href="#p2" transform="rotate(292.5)"/>
+    <use href="#p2" transform="rotate(315)"/>
+    <use href="#p2" transform="rotate(337.5)"/>
+
+    <circle r="18" fill="#F5F3EF"/>
+    <circle r="14" fill="#0B0B0C"/>
+    <circle r="9"  fill="#F5F3EF"/>
+    <circle r="3"  fill="#0B0B0C"/>
+  </g>
+
+  <text x="250" y="120" font-family="-apple-system, 'Inter', sans-serif"
+        font-weight="600" font-size="48" letter-spacing="8" fill="#F5F3EF">ORKESTRA</text>
+  <text x="250" y="146" font-family="-apple-system, 'Inter', sans-serif"
+        font-weight="400" font-size="11" letter-spacing="6" fill="#C9A961">ORCHESTRATED OPERATIONS</text>
+</svg>

@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Orkestra · Logo A · Aplicações</title>
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', -apple-system, system-ui, sans-serif;
+    background: #EFECE4; color: #0B0B0C; padding: 40px;
+  }
+  h1 { font-size: 13px; letter-spacing: 3px; text-transform: uppercase; color: #8A7548; margin-bottom: 8px; }
+  p.intro { max-width: 640px; color: #3A3A3F; font-size: 13px; line-height: 1.7; margin-bottom: 40px; }
+  .section { margin-bottom: 40px; }
+  .section h2 { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: #6B6B73; margin-bottom: 16px; border-bottom: 1px solid #C9A961; padding-bottom: 8px; }
+  .grid { display: grid; gap: 20px; }
+  .g2 { grid-template-columns: 1fr 1fr; }
+  .g3 { grid-template-columns: repeat(3, 1fr); }
+  .g4 { grid-template-columns: repeat(4, 1fr); }
+  .tile { border-radius: 12px; padding: 28px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 170px; position: relative; overflow: hidden; }
+  .tile .label { position: absolute; top: 10px; left: 14px; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; opacity: 0.6; }
+  .on-black { background: #0B0B0C; color: #F5F3EF; }
+  .on-white { background: #FFFFFF; color: #0B0B0C; border: 1px solid #E0DDD3; }
+  .on-gold  { background: #C9A961; color: #0B0B0C; }
+  .on-emerald { background: #00B38A; color: #fff; }
+  .on-red   { background: #E0474C; color: #fff; }
+  .tile img { max-width: 100%; height: auto; }
+
+  /* Instagram mockup */
+  .ig-mock { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); padding: 18px; border-radius: 16px; text-align: center; }
+  .ig-mock .pic { width: 84px; height: 84px; border-radius: 50%; background: #0B0B0C; margin: 0 auto; border: 3px solid #fff; overflow: hidden; position: relative; }
+  .ig-mock .pic img { width: 100%; height: 100%; object-fit: cover; }
+  .ig-mock .handle { color: #fff; font-size: 12px; margin-top: 8px; font-weight: 600; }
+  .ig-mock .bio { color: rgba(255,255,255,0.8); font-size: 11px; margin-top: 2px; }
+
+  /* Favicon sizes */
+  .fav-row { display: flex; gap: 32px; align-items: flex-end; background: #fff; padding: 28px; border-radius: 12px; border: 1px solid #E0DDD3; }
+  .fav-row .slot { text-align: center; }
+  .fav-row .slot span { display: block; font-size: 10px; color: #6B6B73; margin-top: 8px; }
+
+  /* Business card */
+  .card-front, .card-back { width: 340px; height: 200px; border-radius: 10px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 24px rgba(0,0,0,0.12); }
+  .card-front { background: #0B0B0C; }
+  .card-back { background: #F5F3EF; border: 1px solid #E0DDD3; flex-direction: column; padding: 24px; align-items: flex-start; justify-content: center; gap: 8px; }
+  .card-back .name { font-size: 15px; font-weight: 600; color: #0B0B0C; }
+  .card-back .role { font-size: 11px; color: #6B6B73; text-transform: uppercase; letter-spacing: 1.5px; }
+  .card-back .contact { font-size: 11px; color: #3A3A3F; margin-top: 8px; line-height: 1.6; }
+  .card-back .accent { width: 30px; height: 2px; background: #C9A961; margin: 8px 0; }
+
+  /* T-shirt mockup (simplified) */
+  .shirt-dark { background: #1C1C1F; height: 220px; border-radius: 12px; display: flex; align-items: center; justify-content: center; position: relative; }
+  .shirt-dark::before { content: ''; position: absolute; top: -8px; left: 50%; transform: translateX(-50%); width: 60px; height: 16px; background: #1C1C1F; border-radius: 0 0 30px 30px; }
+  .shirt-light { background: #F5F3EF; border: 1px solid #E0DDD3; height: 220px; border-radius: 12px; display: flex; align-items: center; justify-content: center; position: relative; }
+  .shirt-light::before { content: ''; position: absolute; top: -8px; left: 50%; transform: translateX(-50%); width: 60px; height: 16px; background: #F5F3EF; border: 1px solid #E0DDD3; border-top: none; border-radius: 0 0 30px 30px; }
+
+  /* Sticker mockup */
+  .sticker { background: repeating-linear-gradient(45deg, #EFECE4, #EFECE4 10px, #E0DDD3 10px, #E0DDD3 20px); padding: 24px; border-radius: 12px; display: flex; align-items: center; justify-content: center; min-height: 180px; }
+  .sticker .die { width: 140px; height: 140px; background: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 16px rgba(0,0,0,0.15); padding: 8px; }
+
+  /* Favicon visual */
+  .fav16 { width: 16px; height: 16px; }
+  .fav32 { width: 32px; height: 32px; }
+  .fav64 { width: 64px; height: 64px; }
+  .fav128 { width: 128px; height: 128px; border-radius: 22px; }
+
+  .note { font-size: 11px; color: #6B6B73; text-align: center; margin-top: 10px; }
+
+  hr { border: none; border-top: 1px solid #C9A961; margin: 48px 0; opacity: 0.5; }
+</style>
+</head>
+<body>
+  <h1>Orkestra · Logo A (v2) · Manual de Aplicação</h1>
+  <p class="intro">
+    Versão refinada da Opção A com feedback aplicado: <strong>batuta mais proeminente</strong>
+    (traço 9px, grip dourado enfatizado, cabo com peso visual), <strong>ondas em 4 níveis</strong>
+    propagando 270° para sugerir ecossistema completo (não pontos isolados), e
+    <strong>6 variações técnicas</strong> para aplicações reais.
+  </p>
+
+  <!-- ==================== LOGO PRINCIPAL ==================== -->
+  <div class="section">
+    <h2>Logo principal (lockup horizontal)</h2>
+    <div class="grid g2">
+      <div class="tile on-black">
+        <span class="label">fundo preto — positivo</span>
+        <img src="logo-a-v2.svg" alt="Orkestra logo v2" style="max-width:440px">
+      </div>
+      <div class="tile on-white">
+        <span class="label">fundo branco — mono negativo</span>
+        <img src="logo-a-mono-dark.svg" alt="Orkestra mono dark" style="max-width:440px">
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== FUNDOS COLORIDOS ==================== -->
+  <div class="section">
+    <h2>Aplicação sobre cores — mono (1 cor)</h2>
+    <div class="grid g3">
+      <div class="tile on-gold">
+        <span class="label">gold</span>
+        <img src="logo-a-mono-dark.svg" alt="" style="max-width:340px">
+      </div>
+      <div class="tile on-emerald">
+        <span class="label">emerald</span>
+        <img src="logo-a-mono-light.svg" alt="" style="max-width:340px">
+      </div>
+      <div class="tile on-red">
+        <span class="label">alerta / cobertura crítica</span>
+        <img src="logo-a-mono-light.svg" alt="" style="max-width:340px">
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== ÍCONE E FAVICON ==================== -->
+  <div class="section">
+    <h2>Ícone (Instagram, app icon, avatar)</h2>
+    <div class="grid g3">
+      <div class="tile on-black">
+        <span class="label">ícone completo — 1:1</span>
+        <img src="logo-a-icon.svg" alt="" style="width:180px;height:180px">
+      </div>
+      <div class="tile" style="background:#F5F3EF;border:1px solid #E0DDD3;">
+        <span class="label">instagram mock</span>
+        <div class="ig-mock">
+          <div class="pic"><img src="logo-a-icon.svg"></div>
+          <div class="handle">@orkestra.ai</div>
+          <div class="bio">Orchestrated Operations</div>
+        </div>
+      </div>
+      <div class="tile on-gold">
+        <span class="label">ícone mono dark sobre gold</span>
+        <img src="logo-a-icon-mono-dark.svg" alt="" style="width:160px;height:160px">
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Favicon — escalas críticas</h2>
+    <p class="note" style="text-align:left;margin-bottom:16px;max-width:600px">
+      O favicon é uma versão <strong>radicalmente simplificada</strong>: remove as 4 ondas
+      (ilegíveis abaixo de 24px) e mantém só batuta + tip gold. Sobrevive a 16×16.
+    </p>
+    <div class="fav-row">
+      <div class="slot">
+        <img class="fav16" src="logo-a-favicon.svg" alt="16">
+        <span>16×16 (tab)</span>
+      </div>
+      <div class="slot">
+        <img class="fav32" src="logo-a-favicon.svg" alt="32">
+        <span>32×32 (bookmark)</span>
+      </div>
+      <div class="slot">
+        <img class="fav64" src="logo-a-favicon.svg" alt="64">
+        <span>64×64 (desktop)</span>
+      </div>
+      <div class="slot">
+        <img class="fav128" src="logo-a-favicon.svg" alt="128">
+        <span>128×128 (app icon)</span>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- ==================== T-SHIRT ==================== -->
+  <div class="section">
+    <h2>Camiseta — silk 1 cor</h2>
+    <div class="grid g2">
+      <div>
+        <div class="shirt-dark">
+          <img src="logo-a-icon-mono-light.svg" alt="" style="width:100px;height:100px">
+        </div>
+        <p class="note">camiseta preta · silk branco 1 cor · sobrevive a lavagem</p>
+      </div>
+      <div>
+        <div class="shirt-light">
+          <img src="logo-a-icon-mono-dark.svg" alt="" style="width:100px;height:100px">
+        </div>
+        <p class="note">camiseta off-white · silk preto 1 cor</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== ADESIVO DE RECORTE ==================== -->
+  <div class="section">
+    <h2>Adesivo de recorte (vinyl cut)</h2>
+    <p class="note" style="text-align:left;margin-bottom:12px;max-width:600px">
+      Recorte em vinil colorido: só silhuetas sólidas (não há como recortar
+      opacidade). <strong>Todas as 4 ondas são preservadas</strong> porque foram desenhadas
+      com stroke mínimo de 2px — a máquina de recorte lê tudo a partir de 2mm.
+    </p>
+    <div class="grid g3">
+      <div class="sticker">
+        <div class="die"><img src="logo-a-icon-mono-dark.svg" style="width:110px;height:110px"></div>
+      </div>
+      <div class="tile on-white">
+        <span class="label">vinil preto</span>
+        <img src="logo-a-icon-mono-dark.svg" alt="" style="width:140px;height:140px">
+      </div>
+      <div class="tile on-black">
+        <span class="label">vinil branco</span>
+        <img src="logo-a-icon-mono-light.svg" alt="" style="width:140px;height:140px">
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== CARTÃO ==================== -->
+  <div class="section">
+    <h2>Papelaria — cartão de visita</h2>
+    <div class="grid g2" style="gap:40px">
+      <div class="tile on-black" style="min-height:240px">
+        <div class="card-front">
+          <img src="logo-a-icon.svg" alt="" style="width:90px;height:90px">
+        </div>
+      </div>
+      <div class="tile on-white" style="min-height:240px">
+        <div class="card-back">
+          <img src="logo-a-icon-mono-dark.svg" alt="" style="width:32px;height:32px">
+          <div class="accent"></div>
+          <div class="name">Nome Sobrenome</div>
+          <div class="role">Role · Orkestra.AI</div>
+          <div class="contact">
+            nome@orkestra.ai<br>
+            +55 11 9 xxxx-xxxx<br>
+            orkestra.ai
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== TAMANHOS MÍNIMOS ==================== -->
+  <div class="section">
+    <h2>Escala — tamanhos mínimos legíveis</h2>
+    <div class="tile on-white" style="flex-direction:row;gap:40px;min-height:auto;padding:40px;justify-content:flex-start;align-items:flex-end">
+      <div style="text-align:center">
+        <img src="logo-a-v2.svg" style="width:60px"><br>
+        <span class="note" style="text-align:center;display:block;margin-top:6px">20mm — quebra</span>
+      </div>
+      <div style="text-align:center">
+        <img src="logo-a-v2.svg" style="width:100px"><br>
+        <span class="note">34mm — mínimo permitido</span>
+      </div>
+      <div style="text-align:center">
+        <img src="logo-a-v2.svg" style="width:160px"><br>
+        <span class="note">54mm — cartão</span>
+      </div>
+      <div style="text-align:center">
+        <img src="logo-a-v2.svg" style="width:280px"><br>
+        <span class="note">95mm — papelaria</span>
+      </div>
+    </div>
+    <p class="note" style="text-align:left;max-width:600px;margin-top:12px">
+      <strong>Regra:</strong> em peças impressas, nunca use lockup abaixo de 34mm de largura.
+      Para menor que isso, use o <strong>ícone isolado</strong> (mínimo 12mm). Abaixo de 16px digital,
+      use o favicon.
+    </p>
+  </div>
+
+</body>
+</html>

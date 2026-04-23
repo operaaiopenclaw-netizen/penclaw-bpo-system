@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Icon mono-light: for instagram-tipo-recorte, white sticker on anything, t-shirt silkscreen -->
+  <g transform="translate(100,100) scale(1.35)" fill="none" stroke="#F5F3EF" stroke-linecap="round">
+    <path d="M 16 -50 A 14 14 0 1 1 30 -36" stroke-width="3.5"/>
+    <path d="M  6 -50 A 24 24 0 1 1 30 -26" stroke-width="3"/>
+    <path d="M -6 -50 A 36 36 0 1 1 30 -14" stroke-width="2.8"/>
+    <line x1="-50" y1="35" x2="30" y2="-50" stroke-width="10"/>
+  </g>
+  <g transform="translate(100,100) scale(1.35)" fill="#F5F3EF">
+    <circle cx="-50" cy="35" r="12"/>
+    <circle cx="30" cy="-50" r="7"/>
+  </g>
+</svg>
