@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Orkestra · CRM</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<script src="app.js"></script>
+
+<main>
+  <div class="page-header">
+    <h1>🤝 CRM · Pipeline comercial</h1>
+    <span class="muted" id="pipeline-summary">…</span>
+  </div>
+
+  <div class="panel">
+    <h2>Visão geral do funil</h2>
+    <div class="kpis" id="kpis"></div>
+  </div>
+
+  <div class="panel">
+    <h2>Criar lead</h2>
+    <form id="leadForm">
+      <div class="form-row">
+        <div><label>Contato*</label><input name="contactName" required></div>
+        <div><label>Empresa</label><input name="companyName"></div>
+        <div><label>Email</label><input name="email" type="email"></div>
+        <div><label>Telefone</label><input name="phone"></div>
+        <div><label>Orçamento (R$)</label><input name="budget" type="number" step="0.01" min="0"></div>
+        <div><label>Origem</label><input name="source" placeholder="instagram, indicação…"></div>
+        <div class="wide"><label>Necessidade</label><input name="need" placeholder="Casamento 150 convidados"></div>
+        <div><label>&nbsp;</label><button class="btn" type="submit">Criar</button></div>
+      </div>
+    </form>
+    <div class="err" id="leadErr"></div>
+  </div>
+
+  <div class="panel">
+    <h2>Leads recentes</h2>
+    <div class="flex" style="margin-bottom:10px">
+      <label style="margin:0">Filtrar por status</label>
+      <select id="leadStatus" style="width:auto">
+        <option value="">(todos)</option>
+        <option>NEW</option><option>CONTACTED</option><option>QUALIFIED</option>
+        <option>PROPOSAL_SENT</option><option>WON</option><option>LOST</option>
+      </select>
+      <button class="secondary" onclick="loadLeads()">Atualizar</button>
+    </div>
+    <table>
+      <thead><tr>
+        <th>Contato</th><th>Empresa</th><th>Status</th>
+        <th class="num">Orçamento</th><th>Origem</th><th>Criado</th><th></th>
+      </tr></thead>
+      <tbody id="leadRows"></tbody>
+    </table>
+  </div>
+
+  <div class="panel">
+    <h2>Propostas</h2>
+    <table>
+      <thead><tr>
+        <th>Nº</th><th>Lead</th><th>Status</th>
+        <th class="num">Total</th><th>Válido até</th><th>Criado</th><th></th>
+      </tr></thead>
+      <tbody id="proposalRows"></tbody>
+    </table>
+  </div>
+
+  <div class="panel">
+    <h2>Contratos</h2>
+    <table>
+      <thead><tr>
+        <th>Nº</th><th>Cliente</th><th>Status</th>
+        <th class="num">Valor</th><th class="num">Margem</th><th>Assinado</th>
+      </tr></thead>
+      <tbody id="contractRows"></tbody>
+    </table>
+  </div>
+</main>
+
+<script>
+renderNav('crm.html');
+
+async function loadPipeline() {
+  try {
+    const { data } = await api('/crm/pipeline');
+    const leadTotal = Object.values(data.leads || {}).reduce((a, b) => a + b, 0);
+    const propTotal = Object.values(data.proposals || {}).reduce((a, p) => a + (p.count || 0), 0);
+    document.getElementById('pipeline-summary').textContent =
+      `${leadTotal} leads · ${propTotal} propostas · ${data.contracts.active ?? 0} contratos ativos`;
+
+    const kpis = [
+      { label: 'Leads totais',       value: leadTotal, sub: `${data.leads?.WON ?? 0} ganhos · ${data.leads?.LOST ?? 0} perdidos` },
+      { label: 'Qualificados',       value: data.leads?.QUALIFIED ?? 0 },
+      { label: 'Propostas enviadas', value: data.proposals?.SENT?.count ?? 0, sub: fmtMoney(data.proposals?.SENT?.totalAmount) },
+      { label: 'Contratos ativos',   value: data.contracts.active ?? 0, sub: fmtMoney(data.contracts.totalValue) },
+    ];
+    document.getElementById('kpis').innerHTML = kpis.map(k => `
+      <div class="kpi">
+        <div class="label">${k.label}</div>
+        <div class="value">${k.value}</div>
+        <div class="sub">${k.sub ?? ''}</div>
+      </div>
+    `).join('');
+  } catch (err) {
+    document.getElementById('pipeline-summary').innerHTML = `<span class="err">${err.message}</span>`;
+  }
+}
+
+async function loadLeads() {
+  const tbody = document.getElementById('leadRows');
+  tbody.innerHTML = '<tr><td colspan="7" class="empty">carregando…</td></tr>';
+  try {
+    const status = document.getElementById('leadStatus').value;
+    const qs = status ? `?status=${status}` : '';
+    const { data } = await api(`/crm/leads${qs}`);
+    if (!data.length) { tbody.innerHTML = '<tr><td colspan="7" class="empty">sem leads</td></tr>'; return; }
+    tbody.innerHTML = data.map(l => `
+      <tr>
+        <td>${l.contactName}</td>
+        <td>${l.companyName ?? '—'}</td>
+        <td><span class="badge ${l.status}">${l.status}</span></td>
+        <td class="num">${l.budget ? fmtMoney(l.budget) : '—'}</td>
+        <td>${l.source ?? '—'}</td>
+        <td>${fmtDate(l.createdAt)}</td>
+        <td>
+          <select data-id="${l.id}" class="advance" style="width:auto">
+            <option value="">avançar…</option>
+            ${['NEW','CONTACTED','QUALIFIED','PROPOSAL_SENT','WON','LOST'].filter(s => s !== l.status).map(s => `<option>${s}</option>`).join('')}
+          </select>
+        </td>
+      </tr>
+    `).join('');
+    tbody.querySelectorAll('.advance').forEach(sel => {
+      sel.onchange = async () => {
+        const to = sel.value; if (!to) return;
+        await tryAction(() => api(`/crm/leads/${sel.dataset.id}/status`, {
+          method: 'PATCH', body: JSON.stringify({ status: to }),
+        }), `Lead → ${to}`);
+        loadLeads(); loadPipeline();
+      };
+    });
+  } catch (err) {
+    tbody.innerHTML = `<tr><td colspan="7" class="err">${err.message}</td></tr>`;
+  }
+}
+
+async function loadProposals() {
+  const tbody = document.getElementById('proposalRows');
+  tbody.innerHTML = '<tr><td colspan="7" class="empty">carregando…</td></tr>';
+  try {
+    const { data } = await api('/crm/proposals');
+    if (!data.length) { tbody.innerHTML = '<tr><td colspan="7" class="empty">sem propostas</td></tr>'; return; }
+    tbody.innerHTML = data.map(p => `
+      <tr>
+        <td>${p.proposalNumber}</td>
+        <td>${p.lead?.contactName ?? p.lead?.companyName ?? '—'}</td>
+        <td><span class="badge ${p.status}">${p.status}</span></td>
+        <td class="num">${fmtMoney(p.totalAmount)}</td>
+        <td>${fmtDay(p.validUntil)}</td>
+        <td>${fmtDate(p.createdAt)}</td>
+        <td class="row-actions">
+          ${p.status === 'DRAFT' ? `<button class="secondary" onclick="sendProposal('${p.id}')">enviar</button>` : ''}
+          ${p.status === 'SENT' ? `<button class="secondary" onclick="approveProposal('${p.id}')">aprovar</button>` : ''}
+        </td>
+      </tr>
+    `).join('');
+  } catch (err) {
+    tbody.innerHTML = `<tr><td colspan="7" class="err">${err.message}</td></tr>`;
+  }
+}
+
+async function sendProposal(id) {
+  await tryAction(() => api(`/crm/proposals/${id}/send`, { method: 'POST' }), 'Proposta enviada');
+  loadProposals();
+}
+async function approveProposal(id) {
+  const name = prompt('Aprovador (nome)?');
+  if (!name) return;
+  await tryAction(() => api(`/crm/proposals/${id}/approve`, {
+    method: 'POST', body: JSON.stringify({ approvedBy: name, rejected: false }),
+  }), 'Proposta aprovada');
+  loadProposals();
+}
+
+async function loadContracts() {
+  const tbody = document.getElementById('contractRows');
+  tbody.innerHTML = '<tr><td colspan="6" class="empty">carregando…</td></tr>';
+  try {
+    const { data } = await api('/crm/contracts');
+    if (!data.length) { tbody.innerHTML = '<tr><td colspan="6" class="empty">sem contratos</td></tr>'; return; }
+    tbody.innerHTML = data.map(c => `
+      <tr>
+        <td>${c.contractNumber}</td>
+        <td>${c.lead?.contactName ?? c.lead?.companyName ?? '—'}</td>
+        <td><span class="badge ${c.status}">${c.status}</span></td>
+        <td class="num">${fmtMoney(c.totalValue)}</td>
+        <td class="num">${fmtMoney(c.projectedMargin)}</td>
+        <td>${fmtDay(c.signedAt)}</td>
+      </tr>
+    `).join('');
+  } catch (err) {
+    tbody.innerHTML = `<tr><td colspan="6" class="err">${err.message}</td></tr>`;
+  }
+}
+
+document.getElementById('leadForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const payload = Object.fromEntries(fd.entries());
+  Object.keys(payload).forEach(k => { if (!payload[k]) delete payload[k]; });
+  if (payload.budget) payload.budget = Number(payload.budget);
+  const ok = await tryAction(() => api('/crm/leads', {
+    method: 'POST', body: JSON.stringify(payload),
+  }), 'Lead criado');
+  if (ok) { e.target.reset(); loadLeads(); loadPipeline(); }
+});
+
+loadPipeline();
+loadLeads();
+loadProposals();
+loadContracts();
+</script>
+</body>
+</html>

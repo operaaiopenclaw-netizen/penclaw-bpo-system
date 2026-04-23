@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Orkestra · Aprovações</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<script src="app.js"></script>
+
+<main>
+  <div class="page-header">
+    <h1>✅ Aprovações pendentes</h1>
+    <span class="muted" id="summary">…</span>
+  </div>
+
+  <div class="panel">
+    <h2>Fila</h2>
+    <table>
+      <thead><tr>
+        <th>Solicitado</th><th>Workflow</th><th>Risk</th>
+        <th>Justificativa</th><th>Empresa</th><th></th>
+      </tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </div>
+</main>
+
+<script>
+renderNav('approvals.html');
+
+async function load() {
+  const tbody = document.getElementById('rows');
+  tbody.innerHTML = '<tr><td colspan="6" class="empty">carregando…</td></tr>';
+  try {
+    const { data, count } = await api('/approvals/pending');
+    document.getElementById('summary').textContent = `${count} pendentes`;
+    if (!data.length) { tbody.innerHTML = '<tr><td colspan="6" class="empty">nenhuma aprovação pendente</td></tr>'; return; }
+    tbody.innerHTML = data.map(a => `
+      <tr>
+        <td>${fmtDate(a.requestedAt)}</td>
+        <td>${a.agentRun?.workflowType ?? '—'}</td>
+        <td><span class="badge ${a.riskLevel?.toUpperCase() ?? ''}">${a.riskLevel ?? '—'}</span></td>
+        <td style="max-width:360px;white-space:normal">${a.justification ?? '—'}</td>
+        <td>${a.agentRun?.companyId ?? '—'}</td>
+        <td class="row-actions">
+          <button class="secondary" onclick="act('${a.id}', true)">aprovar</button>
+          <button class="danger"    onclick="act('${a.id}', false)">rejeitar</button>
+          <button class="secondary" onclick="detail('${a.id}')">ver</button>
+        </td>
+      </tr>
+    `).join('');
+  } catch (err) {
+    tbody.innerHTML = `<tr><td colspan="6" class="err">${err.message}</td></tr>`;
+  }
+}
+
+async function act(id, approved) {
+  const reason = prompt(approved ? 'Motivo/nota (opcional):' : 'Motivo da rejeição:');
+  if (!approved && !reason) return;
+  const endpoint = approved ? 'approve' : 'reject';
+  await tryAction(() => api(`/approvals/${id}/${endpoint}`, {
+    method: 'POST',
+    body: JSON.stringify({ approved, reason: reason || undefined }),
+  }), approved ? 'Aprovado' : 'Rejeitado');
+  load();
+}
+
+async function detail(id) {
+  try {
+    const { data } = await api(`/approvals/${id}`);
+    alert(JSON.stringify(data, null, 2));
+  } catch (err) { toast(err.message, 'err'); }
+}
+
+load();
+</script>
+</body>
+</html>

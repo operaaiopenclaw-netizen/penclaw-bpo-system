@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Orkestra · Ordens de Serviço</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<script src="app.js"></script>
+
+<main>
+  <div class="page-header">
+    <h1>📋 Ordens de Serviço (OS)</h1>
+    <span class="muted" id="summary">…</span>
+  </div>
+
+  <div class="panel">
+    <h2>Gerar OS a partir de contrato</h2>
+    <form id="fromContractForm" class="flex">
+      <input name="contractId" placeholder="ID do contrato (UUID)" required style="flex:1;max-width:480px">
+      <button class="btn" type="submit">Gerar OS automáticas</button>
+      <span class="muted">Divide itens por tipo: CATERING / STRUCTURE / STAFF</span>
+    </form>
+  </div>
+
+  <div class="panel">
+    <h2>Criar OS manual</h2>
+    <form id="osForm">
+      <div class="form-row">
+        <div><label>Evento (ID)*</label><input name="eventId" required></div>
+        <div><label>Tipo*</label>
+          <select name="soType" required>
+            <option>CATERING</option><option>BAR</option><option>STRUCTURE</option><option>STAFF</option>
+          </select>
+        </div>
+        <div><label>Entrega requerida</label><input name="requiredDelivery" type="datetime-local"></div>
+        <div><label>Item*</label><input name="itemName" required placeholder="Buffet 150 pessoas"></div>
+        <div><label>Categoria*</label>
+          <select name="itemCategory" required>
+            <option>MENU</option><option>DRINK</option><option>EQUIPMENT</option><option>SERVICE</option>
+          </select>
+        </div>
+        <div><label>Qtd*</label><input name="quantity" type="number" min="1" value="1" required></div>
+        <div><label>Unidade</label><input name="unit" placeholder="un, kg, h"></div>
+        <div><label>Preço unit* (R$)</label><input name="unitPrice" type="number" step="0.01" min="0" required></div>
+        <div><label>&nbsp;</label><button class="btn" type="submit">Criar</button></div>
+      </div>
+    </form>
+    <div class="muted" style="margin-top:8px">MVP: 1 item por OS. Para múltiplos itens use a API diretamente.</div>
+  </div>
+
+  <div class="panel">
+    <h2>OS cadastradas</h2>
+    <div class="flex" style="margin-bottom:10px">
+      <label style="margin:0">Status</label>
+      <select id="statusFilter" style="width:auto">
+        <option value="">(todos)</option>
+        <option>DRAFT</option><option>PENDING_APPROVAL</option><option>APPROVED</option>
+        <option>IN_PRODUCTION</option><option>COMPLETED</option><option>CANCELLED</option>
+      </select>
+      <button class="secondary" onclick="load()">Atualizar</button>
+    </div>
+    <table>
+      <thead><tr>
+        <th>Nº</th><th>Tipo</th><th>Status</th>
+        <th class="num">Total</th><th>Itens</th><th>OPs</th><th>Entrega</th><th></th>
+      </tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </div>
+</main>
+
+<script>
+renderNav('service-orders.html');
+
+async function load() {
+  const tbody = document.getElementById('rows');
+  tbody.innerHTML = '<tr><td colspan="8" class="empty">carregando…</td></tr>';
+  try {
+    const s = document.getElementById('statusFilter').value;
+    const qs = s ? `?status=${s}` : '';
+    const { data, meta } = await api(`/service-orders${qs}`);
+    document.getElementById('summary').textContent = `${meta.count} OS`;
+    if (!data.length) { tbody.innerHTML = '<tr><td colspan="8" class="empty">sem OS</td></tr>'; return; }
+    tbody.innerHTML = data.map(o => `
+      <tr>
+        <td>${o.soNumber}</td>
+        <td>${o.soType}</td>
+        <td><span class="badge ${o.status}">${o.status}</span></td>
+        <td class="num">${fmtMoney(o.total)}</td>
+        <td>${o.items?.length ?? 0}</td>
+        <td>${o._count?.soToPoMappings ?? 0}</td>
+        <td>${fmtDate(o.requiredDelivery)}</td>
+        <td class="row-actions">
+          ${o.status === 'DRAFT' ? `<button class="secondary" onclick="act('${o.id}','submit')">submeter</button>` : ''}
+          ${o.status === 'PENDING_APPROVAL' ? `<button class="secondary" onclick="act('${o.id}','approve')">aprovar</button>` : ''}
+          ${o.status === 'APPROVED' || o.status === 'IN_PRODUCTION' ? `<button class="secondary" onclick="genOP('${o.id}')">gerar OP</button>` : ''}
+          ${!['COMPLETED','CANCELLED'].includes(o.status) ? `<button class="danger" onclick="act('${o.id}','cancel')">cancelar</button>` : ''}
+        </td>
+      </tr>
+    `).join('');
+  } catch (err) {
+    tbody.innerHTML = `<tr><td colspan="8" class="err">${err.message}</td></tr>`;
+  }
+}
+
+async function act(id, action) {
+  const body = action === 'approve' ? { approvedBy: ME.name } : {};
+  await tryAction(() => api(`/service-orders/${id}/${action}`, {
+    method: 'POST', body: JSON.stringify(body),
+  }), `OS → ${action}`);
+  load();
+}
+
+async function genOP(soId) {
+  const date = prompt('Data da produção (YYYY-MM-DD, opcional):');
+  const body = {};
+  if (date) body.productionDate = date;
+  await tryAction(() => api(`/production-orders/from-service-order/${soId}`, {
+    method: 'POST', body: JSON.stringify(body),
+  }), 'OP gerada');
+  load();
+}
+
+document.getElementById('fromContractForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const id = e.target.contractId.value.trim();
+  const ok = await tryAction(() => api(`/service-orders/from-contract/${id}`, {
+    method: 'POST',
+  }), 'OS geradas do contrato');
+  if (ok) { e.target.reset(); load(); }
+});
+
+document.getElementById('osForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const payload = {
+    eventId: fd.get('eventId'),
+    soType: fd.get('soType'),
+    requiredDelivery: fd.get('requiredDelivery') || undefined,
+    items: [{
+      itemCategory: fd.get('itemCategory'),
+      name: fd.get('itemName'),
+      quantity: Number(fd.get('quantity')),
+      unit: fd.get('unit') || undefined,
+      unitPrice: Number(fd.get('unitPrice')),
+    }],
+  };
+  const ok = await tryAction(() => api('/service-orders', {
+    method: 'POST', body: JSON.stringify(payload),
+  }), 'OS criada');
+  if (ok) { e.target.reset(); load(); }
+});
+
+load();
+</script>
+</body>
+</html>

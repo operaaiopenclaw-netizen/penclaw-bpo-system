@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Orkestra · Execução</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<script src="app.js"></script>
+
+<main>
+  <div class="page-header">
+    <h1>🎬 Execução · Dia do evento</h1>
+    <span class="muted" id="summary">…</span>
+  </div>
+
+  <div class="panel">
+    <h2>Abrir sessão</h2>
+    <form id="openForm" class="flex">
+      <input name="eventId" placeholder="ID do evento" required style="flex:1;max-width:360px">
+      <button class="btn" type="submit">Abrir sessão</button>
+      <span class="muted">Cria 4 checkpoints: SETUP · SERVICE_START · SERVICE_END · TEARDOWN</span>
+    </form>
+  </div>
+
+  <div class="panel">
+    <h2>Sessões</h2>
+    <div class="flex" style="margin-bottom:10px">
+      <label style="margin:0">Status</label>
+      <select id="statusFilter" style="width:auto">
+        <option value="">(todos)</option>
+        <option>ACTIVE</option><option>COMPLETED</option><option>CANCELLED</option>
+      </select>
+      <button class="secondary" onclick="loadSessions()">Atualizar</button>
+    </div>
+    <table>
+      <thead><tr>
+        <th>Evento</th><th>Status</th><th>Aberta</th><th>Fechada</th>
+        <th>Checkpoints</th><th>Ocorrências</th><th></th>
+      </tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </div>
+
+  <div class="panel" id="detailPanel" style="display:none">
+    <h2>Sessão <span id="detailTitle"></span></h2>
+    <div id="detailBody"></div>
+  </div>
+</main>
+
+<script>
+renderNav('execution.html');
+let currentSession = null;
+
+async function loadSessions() {
+  const tbody = document.getElementById('rows');
+  tbody.innerHTML = '<tr><td colspan="7" class="empty">carregando…</td></tr>';
+  try {
+    const s = document.getElementById('statusFilter').value;
+    const qs = s ? `?status=${s}` : '';
+    const { data } = await api(`/execution/sessions${qs}`);
+    document.getElementById('summary').textContent = `${data.length} sessões`;
+    if (!data.length) { tbody.innerHTML = '<tr><td colspan="7" class="empty">sem sessões</td></tr>'; return; }
+    tbody.innerHTML = data.map(s => `
+      <tr>
+        <td>${String(s.eventId).slice(0, 12)}…</td>
+        <td><span class="badge ${s.status}">${s.status}</span></td>
+        <td>${fmtDate(s.openedAt)}</td>
+        <td>${fmtDate(s.closedAt)}</td>
+        <td>${s._count?.checkpoints ?? 0}</td>
+        <td>${s._count?.occurrences ?? 0}</td>
+        <td><button class="secondary" onclick="openDetail('${s.id}')">abrir</button></td>
+      </tr>
+    `).join('');
+  } catch (err) {
+    tbody.innerHTML = `<tr><td colspan="7" class="err">${err.message}</td></tr>`;
+  }
+}
+
+async function openDetail(id) {
+  const panel = document.getElementById('detailPanel');
+  const body = document.getElementById('detailBody');
+  const title = document.getElementById('detailTitle');
+  panel.style.display = 'block';
+  body.innerHTML = '<div class="empty">carregando…</div>';
+  try {
+    const { data: s } = await api(`/execution/sessions/${id}`);
+    currentSession = s;
+    title.innerHTML = `<span class="badge ${s.status}">${s.status}</span> · evento ${String(s.eventId).slice(0, 12)}…`;
+
+    const checkpoints = s.checkpoints.map(c => `
+      <tr>
+        <td>${c.stage}</td>
+        <td><span class="badge ${c.status}">${c.status}</span></td>
+        <td>${c.notes ?? '—'}</td>
+        <td>${fmtDate(c.checkedAt)}</td>
+        <td>
+          <select data-id="${c.id}" class="cpStatus" style="width:auto">
+            <option value="">atualizar…</option>
+            <option>OK</option><option>ISSUE</option><option>BLOCKED</option>
+          </select>
+        </td>
+      </tr>
+    `).join('');
+
+    const occurrences = s.occurrences.length ? s.occurrences.map(o => `
+      <tr>
+        <td><span class="badge ${o.severity}">${o.severity}</span></td>
+        <td>${o.category ?? '—'}</td>
+        <td>${o.description}</td>
+        <td>${fmtDate(o.reportedAt)}</td>
+        <td>${o.resolvedAt ? '<span class="badge OK">resolvida</span>' : `<button class="secondary" onclick="resolveOcc('${o.id}')">resolver</button>`}</td>
+      </tr>
+    `).join('') : '<tr><td colspan="5" class="empty">sem ocorrências</td></tr>';
+
+    body.innerHTML = `
+      <div class="panel" style="margin:0 0 14px">
+        <h2>Checkpoints</h2>
+        <table><thead><tr><th>Stage</th><th>Status</th><th>Notas</th><th>Quando</th><th></th></tr></thead><tbody>${checkpoints}</tbody></table>
+      </div>
+      <div class="panel" style="margin:0 0 14px">
+        <h2>Ocorrências</h2>
+        <form id="occForm" class="form-row">
+          <div><label>Severidade</label>
+            <select name="severity"><option>INFO</option><option>WARNING</option><option>CRITICAL</option></select>
+          </div>
+          <div><label>Categoria</label>
+            <select name="category"><option value="">—</option><option>FOOD</option><option>STAFF</option><option>EQUIPMENT</option><option>CLIENT</option><option>SAFETY</option></select>
+          </div>
+          <div class="wide"><label>Descrição*</label><input name="description" required></div>
+          <div><label>&nbsp;</label><button class="btn" type="submit">Registrar</button></div>
+        </form>
+        <table style="margin-top:12px"><thead><tr><th>Sev</th><th>Cat</th><th>Descrição</th><th>Quando</th><th></th></tr></thead><tbody>${occurrences}</tbody></table>
+      </div>
+      <div class="flex">
+        ${s.status === 'ACTIVE' ? `<button class="btn" onclick="completeSession('${s.id}')">Finalizar sessão</button>` : ''}
+        <button class="secondary" onclick="showSummary('${s.id}')">Ver resumo</button>
+      </div>
+    `;
+
+    document.getElementById('occForm')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fd = new FormData(e.target);
+      const payload = {
+        severity: fd.get('severity'),
+        category: fd.get('category') || undefined,
+        description: fd.get('description'),
+        reportedBy: ME.name,
+      };
+      const ok = await tryAction(() => api(`/execution/sessions/${s.id}/occurrences`, {
+        method: 'POST', body: JSON.stringify(payload),
+      }), 'Ocorrência registrada');
+      if (ok) openDetail(s.id);
+    });
+
+    body.querySelectorAll('.cpStatus').forEach(sel => {
+      sel.onchange = async () => {
+        const status = sel.value; if (!status) return;
+        const notes = prompt('Notas (opcional):') || undefined;
+        await tryAction(() => api(`/execution/sessions/${s.id}/checkpoints/${sel.dataset.id}`, {
+          method: 'PATCH', body: JSON.stringify({ status, notes, checkedBy: ME.name }),
+        }), 'Checkpoint atualizado');
+        openDetail(s.id);
+      };
+    });
+  } catch (err) {
+    body.innerHTML = `<div class="err">${err.message}</div>`;
+  }
+}
+
+async function resolveOcc(occId) {
+  const resolution = prompt('Como foi resolvida?');
+  if (!resolution) return;
+  await tryAction(() => api(`/execution/sessions/${currentSession.id}/occurrences/${occId}/resolve`, {
+    method: 'PATCH', body: JSON.stringify({ resolution, resolvedBy: ME.name }),
+  }), 'Ocorrência resolvida');
+  openDetail(currentSession.id);
+}
+
+async function completeSession(id) {
+  const rating = prompt('Nota geral (1-5)?');
+  const notes = prompt('Notas de fechamento (opcional):') || undefined;
+  await tryAction(() => api(`/execution/sessions/${id}/complete`, {
+    method: 'POST',
+    body: JSON.stringify({
+      overallRating: rating ? Number(rating) : undefined,
+      notes, closedBy: ME.name, clientSignOff: confirm('Cliente assinou off?'),
+    }),
+  }), 'Sessão finalizada');
+  openDetail(id); loadSessions();
+}
+
+async function showSummary(id) {
+  try {
+    const { data } = await api(`/execution/sessions/${id}/summary`);
+    alert(JSON.stringify(data, null, 2));
+  } catch (err) { toast(err.message, 'err'); }
+}
+
+document.getElementById('openForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const payload = { eventId: e.target.eventId.value.trim(), openedBy: ME.name };
+  const ok = await tryAction(() => api('/execution/sessions', {
+    method: 'POST', body: JSON.stringify(payload),
+  }), 'Sessão aberta');
+  if (ok) { e.target.reset(); loadSessions(); }
+});
+
+loadSessions();
+</script>
+</body>
+</html>

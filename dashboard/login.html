@@ -77,7 +77,14 @@ form.addEventListener('submit', async (e) => {
     const { user, token } = await res.json();
     localStorage.setItem('orkestra.token', token);
     localStorage.setItem('orkestra.user', JSON.stringify(user));
-    window.location.href = user.role === 'admin' ? 'users.html' : 'operations.html';
+    const destByRole = {
+      admin:    'users.html',
+      manager:  'crm.html',
+      finance:  'index.html',
+      kitchen:  'kitchen.html',
+      operator: 'operations.html',
+    };
+    window.location.href = destByRole[user.role] || 'operations.html';
   } catch (err) {
     errEl.textContent = err.message || String(err);
     btn.disabled = false; btn.textContent = 'Entrar';

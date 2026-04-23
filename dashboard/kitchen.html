@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Orkestra · Cozinha/CMV</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<script src="app.js"></script>
+
+<main>
+  <div class="page-header">
+    <h1>🧂 Cozinha · CMV & sync</h1>
+    <span class="muted" id="summary">…</span>
+  </div>
+
+  <div class="panel">
+    <h2>Sincronizar pipeline Python → Prisma</h2>
+    <form id="syncForm" class="flex">
+      <input name="eventId" placeholder="Event ID (vazio = todos)" style="flex:1;max-width:360px">
+      <button class="btn" type="submit">Sincronizar</button>
+      <span class="muted">Lê kitchen_data/*.json e injeta Event+DRE no banco</span>
+    </form>
+    <div id="syncOut" class="stack" style="margin-top:14px"></div>
+  </div>
+
+  <div class="panel">
+    <h2>Dashboard operacional</h2>
+    <div class="kpis" id="opsKpis"></div>
+  </div>
+
+  <div class="panel">
+    <h2>Dashboard financeiro</h2>
+    <div class="kpis" id="finKpis"></div>
+    <pre id="finRaw" class="muted" style="max-height:300px;overflow:auto;background:#0f1428;padding:12px;border-radius:6px;margin-top:10px"></pre>
+  </div>
+</main>
+
+<script>
+renderNav('kitchen.html');
+
+async function loadOps() {
+  try {
+    const r = await api('/dashboard/operations');
+    const d = r.data || {};
+    const entries = Object.entries(d).slice(0, 8);
+    document.getElementById('opsKpis').innerHTML = entries.length
+      ? entries.map(([k, v]) => `
+          <div class="kpi">
+            <div class="label">${k}</div>
+            <div class="value">${typeof v === 'number' ? fmtInt(v) : (typeof v === 'object' ? JSON.stringify(v).slice(0,40)+'…' : String(v))}</div>
+          </div>`).join('')
+      : '<div class="empty">sem dados operacionais</div>';
+  } catch (err) {
+    document.getElementById('opsKpis').innerHTML = `<div class="err">${err.message}</div>`;
+  }
+}
+
+async function loadFin() {
+  try {
+    const r = await api('/dashboard/finance');
+    const d = r.data || {};
+    document.getElementById('finRaw').textContent = JSON.stringify(d, null, 2);
+    const kpiMap = [
+      ['Receita total', d.totalRevenue ?? d.revenue],
+      ['CMV total',     d.totalCmv ?? d.cmv],
+      ['Margem bruta',  d.grossMargin ?? d.margin],
+      ['Eventos',       d.totalEvents ?? d.eventCount],
+    ].filter(([, v]) => v != null);
+    document.getElementById('finKpis').innerHTML = kpiMap.length
+      ? kpiMap.map(([label, v]) => `
+          <div class="kpi">
+            <div class="label">${label}</div>
+            <div class="value">${label.includes('Evento') ? fmtInt(v) : fmtMoney(v)}</div>
+          </div>`).join('')
+      : '<div class="empty">sem KPIs financeiros — veja o JSON bruto abaixo</div>';
+  } catch (err) {
+    document.getElementById('finKpis').innerHTML = `<div class="err">${err.message}</div>`;
+  }
+}
+
+document.getElementById('syncForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const eventId = e.target.eventId.value.trim();
+  const qs = eventId ? `?eventId=${encodeURIComponent(eventId)}` : '';
+  const out = document.getElementById('syncOut');
+  out.innerHTML = '<div class="muted">sincronizando…</div>';
+  try {
+    const r = await api(`/kitchen/sync${qs}`, { method: 'POST' });
+    out.innerHTML = `
+      <div class="ok">${r.success ? 'Sync OK' : 'Sync parcial'}</div>
+      <div>Processed: ${r.eventsProcessed} · Created: ${r.eventsCreated} · Updated: ${r.eventsUpdated}</div>
+      <div>States transitioned: ${r.statesTransitioned} · skipped: ${r.statesSkipped}</div>
+      <div>Workflows queued: ${r.workflowsQueued} · failed: ${r.workflowsFailed}</div>
+      ${r.errors?.length ? `<div class="err">Erros:<pre>${r.errors.join('\n')}</pre></div>` : ''}
+    `;
+    loadOps(); loadFin();
+  } catch (err) {
+    out.innerHTML = `<div class="err">${err.message}</div>`;
+  }
+});
+
+loadOps();
+loadFin();
+</script>
+</body>
+</html>

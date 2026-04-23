@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Orkestra · Ordens de Produção</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<script src="app.js"></script>
+
+<main>
+  <div class="page-header">
+    <h1>🍳 Ordens de Produção (OP)</h1>
+    <span class="muted" id="summary">…</span>
+  </div>
+
+  <div class="panel">
+    <h2>Criar OP</h2>
+    <form id="opForm">
+      <div class="form-row">
+        <div><label>Evento (ID)*</label><input name="eventId" required></div>
+        <div><label>Data de produção</label><input name="productionDate" type="date"></div>
+        <div><label>Local de produção</label><input name="productionLocation" placeholder="Cozinha central"></div>
+        <div><label>Pronto em</label><input name="requiredReadyAt" type="datetime-local"></div>
+        <div><label>Item*</label><input name="itemName" required placeholder="Coxinha de frango"></div>
+        <div><label>Qtd planejada*</label><input name="plannedQuantity" type="number" min="1" value="1" required></div>
+        <div><label>Custo estimado (R$)</label><input name="estimatedCost" type="number" step="0.01" min="0"></div>
+        <div><label>&nbsp;</label><button class="btn" type="submit">Criar</button></div>
+      </div>
+    </form>
+    <div class="muted" style="margin-top:8px">MVP: 1 item por OP. Para múltiplos use /production-orders diretamente, ou gere a partir de OS.</div>
+  </div>
+
+  <div class="panel">
+    <h2>OPs</h2>
+    <div class="flex" style="margin-bottom:10px">
+      <label style="margin:0">Status</label>
+      <select id="statusFilter" style="width:auto">
+        <option value="">(todos)</option>
+        <option>DRAFT</option><option>SCHEDULED</option>
+        <option>IN_PRODUCTION</option><option>READY</option>
+        <option>COMPLETED</option><option>CANCELLED</option>
+      </select>
+      <button class="secondary" onclick="load()">Atualizar</button>
+    </div>
+    <table>
+      <thead><tr>
+        <th>Nº</th><th>Status</th><th>Itens</th><th>Lotes</th>
+        <th>Data produção</th><th>Local</th><th>Pronto em</th><th></th>
+      </tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </div>
+</main>
+
+<script>
+renderNav('production-orders.html');
+
+async function load() {
+  const tbody = document.getElementById('rows');
+  tbody.innerHTML = '<tr><td colspan="8" class="empty">carregando…</td></tr>';
+  try {
+    const s = document.getElementById('statusFilter').value;
+    const qs = s ? `?status=${s}` : '';
+    const { data, meta } = await api(`/production-orders${qs}`);
+    document.getElementById('summary').textContent = `${meta.count} OP`;
+    if (!data.length) { tbody.innerHTML = '<tr><td colspan="8" class="empty">sem OP</td></tr>'; return; }
+    tbody.innerHTML = data.map(o => `
+      <tr>
+        <td>${o.poNumber}</td>
+        <td><span class="badge ${o.status}">${o.status}</span></td>
+        <td>${o.items?.length ?? 0}</td>
+        <td>${o.productionBatches?.length ?? 0}</td>
+        <td>${fmtDay(o.productionDate)}</td>
+        <td>${o.productionLocation ?? '—'}</td>
+        <td>${fmtDate(o.requiredReadyAt)}</td>
+        <td class="row-actions">
+          ${o.status === 'DRAFT' || o.status === 'SCHEDULED' ? `<button class="secondary" onclick="act('${o.id}','start')">iniciar</button>` : ''}
+          ${o.status === 'IN_PRODUCTION' ? `<button class="secondary" onclick="act('${o.id}','complete')">finalizar</button>` : ''}
+          ${!['READY','COMPLETED','CANCELLED'].includes(o.status) ? `<button class="danger" onclick="act('${o.id}','cancel')">cancelar</button>` : ''}
+          <button class="secondary" onclick="addBatch('${o.id}')">+ lote</button>
+        </td>
+      </tr>
+    `).join('');
+  } catch (err) {
+    tbody.innerHTML = `<tr><td colspan="8" class="err">${err.message}</td></tr>`;
+  }
+}
+
+async function act(id, action) {
+  await tryAction(() => api(`/production-orders/${id}/${action}`, {
+    method: 'POST', body: '{}',
+  }), `OP → ${action}`);
+  load();
+}
+
+async function addBatch(poId) {
+  const qty = prompt('Qtd planejada do lote?');
+  if (!qty) return;
+  const batchNumber = prompt('Nº do lote (opcional):') || undefined;
+  await tryAction(() => api(`/production-orders/${poId}/batches`, {
+    method: 'POST',
+    body: JSON.stringify({ plannedQuantity: Number(qty), batchNumber, preparedBy: ME.name }),
+  }), 'Lote criado');
+  load();
+}
+
+document.getElementById('opForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const payload = {
+    eventId: fd.get('eventId'),
+    productionDate: fd.get('productionDate') || undefined,
+    productionLocation: fd.get('productionLocation') || undefined,
+    requiredReadyAt: fd.get('requiredReadyAt') || undefined,
+    items: [{
+      itemName: fd.get('itemName'),
+      plannedQuantity: Number(fd.get('plannedQuantity')),
+      estimatedCost: fd.get('estimatedCost') ? Number(fd.get('estimatedCost')) : undefined,
+    }],
+  };
+  const ok = await tryAction(() => api('/production-orders', {
+    method: 'POST', body: JSON.stringify(payload),
+  }), 'OP criada');
+  if (ok) { e.target.reset(); load(); }
+});
+
+load();
+</script>
+</body>
+</html>

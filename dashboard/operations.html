@@ -68,14 +68,18 @@
     .alert-red { background:rgba(239,68,68,.1); border:1px solid rgba(239,68,68,.3); color:var(--red); }
     .alert-green { background:rgba(34,197,94,.1); border:1px solid rgba(34,197,94,.3); color:var(--green); }
   </style>
+  <link rel="stylesheet" href="app.css">
 </head>
 <body>
-
-<nav>
-  <h1>🎛️ Orkestra</h1>
-  <a href="index.html">Finance</a>
-  <a href="operations.html" class="active">Operações</a>
-</nav>
+<script>
+  // Guard: if no token/user, redirect to login before anything else renders.
+  (function () {
+    const t = localStorage.getItem('orkestra.token');
+    const u = localStorage.getItem('orkestra.user');
+    if (!t || !u) window.location.href = 'login.html';
+  })();
+</script>
+<script src="app.js"></script>
 
 <div class="tabs">
   <button class="tab active" onclick="showTab('crm')">🎯 CRM</button>
@@ -273,23 +277,19 @@
 </div>
 
 <script>
-// --- Auth guard + authenticated fetch wrapper ---
-const TOKEN = localStorage.getItem('orkestra.token');
-const ME = JSON.parse(localStorage.getItem('orkestra.user') || 'null');
-if (!TOKEN || !ME) window.location.href = 'login.html';
-const _fetch = window.fetch.bind(window);
-window.fetch = (input, init = {}) => {
-  init.headers = { ...(init.headers || {}), authorization: `Bearer ${TOKEN}` };
-  return _fetch(input, init).then((r) => {
-    if (r.status === 401) {
-      localStorage.clear();
-      window.location.href = 'login.html';
-    }
-    return r;
-  });
-};
-
-const API = window.location.origin;
+// Shared app.js already declared TOKEN/ME/API and installed a redirect on 401.
+// We just install an auth header on the global fetch so the existing code works.
+renderNav('operations.html');
+(function () {
+  const _fetch = window.fetch.bind(window);
+  window.fetch = (input, init = {}) => {
+    init.headers = { ...(init.headers || {}), authorization: `Bearer ${TOKEN}` };
+    return _fetch(input, init).then((r) => {
+      if (r.status === 401) { logout(); }
+      return r;
+    });
+  };
+})();
 
 function showTab(name) {
   document.querySelectorAll('.tab').forEach((t,i) => t.classList.remove('active'));

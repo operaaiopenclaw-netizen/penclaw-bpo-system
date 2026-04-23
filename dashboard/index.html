@@ -379,20 +379,28 @@
             text-transform: uppercase;
         }
     </style>
+    <link rel="stylesheet" href="app.css">
 </head>
 <body>
+<script>
+  (function () {
+    if (!localStorage.getItem('orkestra.token')) window.location.href = 'login.html';
+  })();
+</script>
+<script src="app.js"></script>
+
     <header class="header">
         <div class="logo">
             <div class="logo-icon">🎛️</div>
             <div class="logo-text">
                 <h1>Orkestra Finance Brain</h1>
-                <span>Dashboard v1.0</span>
+                <span>Dashboard v1.0 · <span style="color:#f59e0b">Dados de demonstração</span></span>
             </div>
         </div>
         <div class="header-actions">
             <span style="color: var(--text-secondary); font-size: 0.875rem;">🟢 Online</span>
-            <button class="btn btn-secondary">Exportar</button>
-            <button class="btn btn-primary">Novo Evento</button>
+            <a class="btn btn-secondary" href="kitchen.html">Sincronizar cozinha</a>
+            <a class="btn btn-primary" href="crm.html">CRM</a>
         </div>
     </header>
 
@@ -870,18 +878,14 @@
     </main>
 
     <script>
-        // --- Auth guard + authenticated fetch wrapper ---
+        // app.js already runs the auth guard; render the shared navbar now.
+        renderNav('index.html');
         (function () {
-          const t = localStorage.getItem('orkestra.token');
-          if (!t) { window.location.href = 'login.html'; return; }
           const _fetch = window.fetch.bind(window);
           window.fetch = (input, init = {}) => {
-            init.headers = { ...(init.headers || {}), authorization: `Bearer ${t}` };
+            init.headers = { ...(init.headers || {}), authorization: `Bearer ${TOKEN}` };
             return _fetch(input, init).then((r) => {
-              if (r.status === 401) {
-                localStorage.clear();
-                window.location.href = 'login.html';
-              }
+              if (r.status === 401) { logout(); }
               return r;
             });
           };

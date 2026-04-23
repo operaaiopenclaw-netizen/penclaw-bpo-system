@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Orkestra · Eventos</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<script src="app.js"></script>
+
+<main>
+  <div class="page-header">
+    <h1>🎉 Eventos · Pipeline</h1>
+    <span class="muted" id="pipelineSummary">…</span>
+  </div>
+
+  <div class="panel">
+    <h2>Distribuição por estado</h2>
+    <div class="kpis" id="stateKpis"></div>
+  </div>
+
+  <div class="panel">
+    <h2>Criar evento de teste</h2>
+    <form id="createForm" class="flex">
+      <input name="eventName" placeholder="Nome do evento (teste)" style="max-width:320px">
+      <button class="btn" type="submit">Criar evento teste</button>
+      <span class="muted">Gera eventos no event-store com ciclo inicial LEAD→PLANNED</span>
+    </form>
+  </div>
+
+  <div class="panel">
+    <h2>Últimos eventos (event-store)</h2>
+    <div class="flex" style="margin-bottom:10px">
+      <label style="margin:0">Tipo</label>
+      <select id="eventType" style="width:auto">
+        <option value="">(todos)</option>
+        <option>event.created</option>
+        <option>event.updated</option>
+        <option>event.planning.created</option>
+        <option>event.financials.created</option>
+        <option>event.margin.calculated</option>
+      </select>
+      <button class="secondary" onclick="loadEvents()">Atualizar</button>
+    </div>
+    <table>
+      <thead><tr>
+        <th>Tipo</th><th>Aggregate</th><th>Status</th><th>Quando</th><th></th>
+      </tr></thead>
+      <tbody id="eventRows"></tbody>
+    </table>
+  </div>
+
+  <div class="panel">
+    <h2>Estados ativos (state-machine)</h2>
+    <table>
+      <thead><tr>
+        <th>Entidade</th><th>ID</th><th>Estado</th><th>Desde</th>
+      </tr></thead>
+      <tbody id="stateRows"></tbody>
+    </table>
+  </div>
+</main>
+
+<script>
+renderNav('events.html');
+
+async function loadPipeline() {
+  try {
+    const res = await api('/states/pipeline');
+    const rows = res.data || [];
+    const total = rows.reduce((s, r) => s + (r.count ?? 0), 0);
+    document.getElementById('pipelineSummary').textContent = `${total} eventos no pipeline`;
+    document.getElementById('stateKpis').innerHTML = rows.length
+      ? rows.map(r => `
+          <div class="kpi">
+            <div class="label">${r.currentState}</div>
+            <div class="value">${r.count}</div>
+            <div class="sub">${r.stale ? r.stale + ' travados >7d' : '—'}</div>
+          </div>`).join('')
+      : '<div class="empty">sem eventos no pipeline</div>';
+  } catch (err) {
+    document.getElementById('pipelineSummary').innerHTML = `<span class="err">${err.message}</span>`;
+  }
+}
+
+async function loadEvents() {
+  const tbody = document.getElementById('eventRows');
+  tbody.innerHTML = '<tr><td colspan="5" class="empty">carregando…</td></tr>';
+  try {
+    const t = document.getElementById('eventType').value;
+    const path = t ? `/events/type/${t}` : '/events';
+    const res = await api(path);
+    const data = res.data || [];
+    if (!data.length) { tbody.innerHTML = '<tr><td colspan="5" class="empty">sem eventos</td></tr>'; return; }
+    tbody.innerHTML = data.slice(0, 50).map(e => `
+      <tr>
+        <td>${e.eventType}</td>
+        <td>${e.aggregateType}:${String(e.aggregateId ?? '').slice(0, 8)}…</td>
+        <td><span class="badge ${e.status}">${e.status}</span></td>
+        <td>${fmtDate(e.createdAt)}</td>
+        <td><button class="secondary" onclick='showPayload(${JSON.stringify(e.payload).replace(/'/g, "&#39;")})'>payload</button></td>
+      </tr>
+    `).join('');
+  } catch (err) {
+    tbody.innerHTML = `<tr><td colspan="5" class="err">${err.message}</td></tr>`;
+  }
+}
+
+function showPayload(p) {
+  alert(JSON.stringify(p, null, 2));
+}
+
+async function loadStates() {
+  const tbody = document.getElementById('stateRows');
+  tbody.innerHTML = '<tr><td colspan="4" class="empty">carregando…</td></tr>';
+  try {
+    const res = await api('/states/list?limit=50');
+    const data = res.data || [];
+    if (!data.length) { tbody.innerHTML = '<tr><td colspan="4" class="empty">sem estados</td></tr>'; return; }
+    tbody.innerHTML = data.map(s => `
+      <tr>
+        <td>${s.entityType}</td>
+        <td>${String(s.entityId).slice(0, 12)}…</td>
+        <td><span class="badge">${s.currentState}</span></td>
+        <td>${fmtDate(s.enteredAt)}</td>
+      </tr>
+    `).join('');
+  } catch (err) {
+    tbody.innerHTML = `<tr><td colspan="4" class="err">${err.message}</td></tr>`;
+  }
+}
+
+document.getElementById('createForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const eventName = e.target.eventName.value || 'Evento Teste Orkestra';
+  const ok = await tryAction(() => api('/events/test', {
+    method: 'POST', body: JSON.stringify({ eventName }),
+  }), 'Evento teste criado');
+  if (ok) { e.target.reset(); loadEvents(); loadPipeline(); loadStates(); }
+});
+
+loadPipeline();
+loadEvents();
+loadStates();
+</script>
+</body>
+</html>
