@@ -7,12 +7,15 @@
 
 import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 import { z } from "zod";
+import { promises as fs } from "node:fs";
+import path from "node:path";
 import { prisma } from "../db";
 import { logger } from "../utils/logger";
 import { config } from "../config/env";
 import { analyzeWithClaude, isClaudeAvailable } from "../services/claude-client";
 
 const DEFAULT_TENANT = config.DEFAULT_TENANT_ID;
+const CHAT_STORE = path.resolve(process.cwd(), "vault", "_ai-chat");
 
 type ChatMessage = {
   id: string;
@@ -32,9 +35,36 @@ type Session = {
   updatedAt: string;
 };
 
-// In-memory session store. TODO: replace with Prisma ChatSession/ChatMessage
-// once the schema migration lands. Sessions clear on restart.
-const sessions = new Map<string, Session>();
+// File-backed session store per tenant. Matches the pattern used by
+// vault/marketing/landing-pages so conversations survive process restarts
+// without requiring a Prisma migration.
+async function loadSessions(tenantId: string): Promise<Session[]> {
+  try {
+    return JSON.parse(await fs.readFile(path.join(CHAT_STORE, `${tenantId}.json`), "utf8"));
+  } catch {
+    return [];
+  }
+}
+
+async function saveSessions(tenantId: string, list: Session[]): Promise<void> {
+  await fs.mkdir(CHAT_STORE, { recursive: true });
+  await fs.writeFile(path.join(CHAT_STORE, `${tenantId}.json`), JSON.stringify(list, null, 2));
+}
+
+async function findSessionById(id: string): Promise<{ tenantId: string; session: Session } | null> {
+  try {
+    const files = await fs.readdir(CHAT_STORE);
+    for (const f of files.filter((x) => x.endsWith(".json"))) {
+      const tenantId = f.replace(/\.json$/, "");
+      const list = await loadSessions(tenantId);
+      const session = list.find((s) => s.id === id);
+      if (session) return { tenantId, session };
+    }
+  } catch {
+    /* store missing */
+  }
+  return null;
+}
 
 function newId() {
   return `chat_${Math.random().toString(36).slice(2, 10)}`;
@@ -144,8 +174,7 @@ async function respond(agent: string, userMsg: string, tenantId: string): Promis
 export async function aiChatRoutes(fastify: FastifyInstance): Promise<void> {
   fastify.get("/sessions", async (req: FastifyRequest<{ Querystring: unknown }>, reply: FastifyReply) => {
     const q = z.object({ tenantId: z.string().default(DEFAULT_TENANT) }).parse(req.query);
-    const list = [...sessions.values()]
-      .filter((s) => s.tenantId === q.tenantId)
+    const list = (await loadSessions(q.tenantId))
       .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
       .map((s) => ({
         id: s.id,
@@ -157,9 +186,9 @@ export async function aiChatRoutes(fastify: FastifyInstance): Promise<void> {
   });
 
   fastify.get("/sessions/:id", async (req: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
-    const s = sessions.get(req.params.id);
-    if (!s) return reply.status(404).send({ success: false, error: "Session not found" });
-    return reply.send({ success: true, data: s });
+    const found = await findSessionById(req.params.id);
+    if (!found) return reply.status(404).send({ success: false, error: "Session not found" });
+    return reply.send({ success: true, data: found.session });
   });
 
   fastify.post("/sessions", async (req: FastifyRequest<{ Body: unknown }>, reply: FastifyReply) => {
@@ -180,7 +209,9 @@ export async function aiChatRoutes(fastify: FastifyInstance): Promise<void> {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
-    sessions.set(session.id, session);
+    const list = await loadSessions(body.tenantId);
+    list.push(session);
+    await saveSessions(body.tenantId, list);
     return reply.status(201).send({ success: true, data: session });
   });
 
@@ -189,9 +220,10 @@ export async function aiChatRoutes(fastify: FastifyInstance): Promise<void> {
     reply: FastifyReply,
   ) => {
     const body = z.object({ content: z.string().min(1).max(4000) }).parse(req.body);
-    const s = sessions.get(req.params.id);
-    if (!s) return reply.status(404).send({ success: false, error: "Session not found" });
+    const found = await findSessionById(req.params.id);
+    if (!found) return reply.status(404).send({ success: false, error: "Session not found" });
 
+    const { tenantId, session: s } = found;
     const userMsg = newMsg("user", body.content);
     s.messages.push(userMsg);
 
@@ -203,12 +235,21 @@ export async function aiChatRoutes(fastify: FastifyInstance): Promise<void> {
     s.updatedAt = new Date().toISOString();
     if (s.title === "Nova conversa") s.title = body.content.slice(0, 40);
 
+    const list = await loadSessions(tenantId);
+    const ix = list.findIndex((x) => x.id === s.id);
+    if (ix >= 0) list[ix] = s;
+    else list.push(s);
+    await saveSessions(tenantId, list);
+
     logger.info({ sessionId: s.id, agent }, "ai-chat: message processed");
     return reply.send({ success: true, data: { userMsg, botMsg, agent } });
   });
 
   fastify.delete("/sessions/:id", async (req: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
-    sessions.delete(req.params.id);
+    const found = await findSessionById(req.params.id);
+    if (!found) return reply.status(204).send();
+    const list = await loadSessions(found.tenantId);
+    await saveSessions(found.tenantId, list.filter((s) => s.id !== req.params.id));
     return reply.status(204).send();
   });
 }

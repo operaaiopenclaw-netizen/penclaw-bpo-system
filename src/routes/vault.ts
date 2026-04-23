@@ -16,6 +16,7 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import { config } from "../config/env";
 import { logger } from "../utils/logger";
+import { analyzeWithClaude, isClaudeAvailable } from "../services/claude-client";
 
 const DEFAULT_TENANT = config.DEFAULT_TENANT_ID;
 const ROOT = path.resolve(process.cwd(), "vault");
@@ -157,21 +158,66 @@ export async function vaultRoutes(fastify: FastifyInstance): Promise<void> {
     return reply.send(buf);
   });
 
-  // AI-assisted draft generator stub
+  // AI-assisted draft generator. Uses Claude when ANTHROPIC_API_KEY is set;
+  // falls back to deterministic templates otherwise so the endpoint always
+  // works even without credentials (e.g. in CI or during local bring-up).
   fastify.post("/generate", async (req: FastifyRequest<{ Body: unknown }>, reply: FastifyReply) => {
     const body = z
       .object({
         kind: z.enum(["proposta", "contrato", "apresentacao-comercial", "brand-kit"]),
-        context: z.string().max(2000).optional(),
+        context: z.string().max(4000).optional(),
       })
       .parse(req.body);
-    // TODO: wire to generative model when credentials available.
-    const template = {
-      proposta: "# Proposta Comercial\n\n**Cliente:** {{cliente}}\n**Escopo:** {{escopo}}\n**Investimento:** {{valor}}\n\n---\n\n_Rascunho gerado automaticamente. Revise antes de enviar._",
-      contrato: "# Contrato de Prestação de Serviços\n\n**CONTRATANTE:** {{contratante}}\n**CONTRATADA:** Orkestra.AI\n**Objeto:** {{objeto}}\n**Vigência:** {{vigencia}}\n\n---\n\n_Minuta padrão — não é aconselhamento jurídico._",
-      "apresentacao-comercial": "# Apresentação Comercial\n\n1. Problema do cliente\n2. Solução Orkestra\n3. Resultados esperados\n4. Investimento e prazos\n5. Próximos passos",
-      "brand-kit": "# Brand Kit básico\n\n- Paleta: preto + off-white + gold + emerald\n- Tipografia: Inter\n- Tom: técnico, direto, confiante\n- Logo: ver /vault/brand-kit/",
-    }[body.kind];
-    return reply.send({ success: true, data: { draft: template, context: body.context ?? null } });
+
+    const templates: Record<typeof body.kind, string> = {
+      proposta:
+        "# Proposta Comercial\n\n**Cliente:** {{cliente}}\n**Escopo:** {{escopo}}\n**Investimento:** {{valor}}\n\n---\n\n_Rascunho — revise antes de enviar._",
+      contrato:
+        "# Contrato de Prestação de Serviços\n\n**CONTRATANTE:** {{contratante}}\n**CONTRATADA:** Orkestra.AI\n**Objeto:** {{objeto}}\n**Vigência:** {{vigencia}}\n\n---\n\n_Minuta padrão — não é aconselhamento jurídico._",
+      "apresentacao-comercial":
+        "# Apresentação Comercial\n\n1. Problema do cliente\n2. Solução Orkestra\n3. Resultados esperados\n4. Investimento e prazos\n5. Próximos passos",
+      "brand-kit":
+        "# Brand Kit básico\n\n- Paleta: preto + off-white + gold + emerald\n- Tipografia: Inter\n- Tom: técnico, direto, confiante\n- Logo: ver /vault/brand-kit/",
+    };
+
+    if (!isClaudeAvailable()) {
+      return reply.send({ success: true, data: { draft: templates[body.kind], provider: "template" } });
+    }
+
+    const systemByKind: Record<typeof body.kind, string> = {
+      proposta: `Você é consultor comercial sênior da Orkestra.AI, BPO para eventos e agências no Brasil. Escreva uma proposta comercial em Markdown, em português, objetiva, sem exageros. Seções: Contexto do cliente, Escopo proposto, Cronograma, Investimento (estimativa em faixas R$), Próximos passos. Tom técnico e direto. Nunca use emojis. Nunca prometa resultado numérico garantido.`,
+      contrato: `Você é redator contratual da Orkestra.AI. Produza uma minuta de contrato de prestação de serviços em Markdown, em português, clara e objetiva, com cláusulas: Objeto, Obrigações da contratada, Obrigações da contratante, Remuneração, Vigência, Rescisão, Confidencialidade, LGPD, Foro. Use placeholders {{nome}}, {{CNPJ}}, {{valor}}, {{vigencia}} onde os dados não vierem do contexto. Sempre termine com: "_Minuta padrão — não substitui validação jurídica._"`,
+      "apresentacao-comercial": `Você é copywriter sênior da Orkestra.AI. Gere um roteiro de apresentação comercial em Markdown, em português, com 5 a 7 seções numeradas, cada uma com título curto e 2-4 bullets. Tom técnico e confiante. Nunca use emojis. Foque no problema do cliente e nos ganhos mensuráveis.`,
+      "brand-kit": `Você é brand strategist. Gere um brand-kit resumido em Markdown, em português: Paleta (com hex), Tipografia, Tom de voz (3-5 adjetivos), Do's e Don'ts (3 cada), Aplicações mínimas. Use o tom Orkestra como referência se não houver contexto específico: preto + off-white + gold (#C9A961) + emerald (#00B38A), Inter, tom técnico-direto. Nunca use emojis.`,
+    };
+
+    const userContent = body.context?.trim()
+      ? `Contexto fornecido pelo usuário:\n${body.context}\n\nGere o documento agora.`
+      : `Sem contexto adicional — gere um template reutilizável com placeholders {{campo}} onde dados específicos do cliente seriam inseridos.`;
+
+    try {
+      const res = await analyzeWithClaude({
+        systemPrompt: systemByKind[body.kind],
+        userContent,
+        maxTokens: 2000,
+      });
+      return reply.send({
+        success: true,
+        data: {
+          draft: res.text,
+          provider: "claude",
+          tokens: { input: res.inputTokens, output: res.outputTokens, cached: res.cached ?? false },
+        },
+      });
+    } catch (err) {
+      logger.warn(
+        { err: err instanceof Error ? err.message : String(err), kind: body.kind },
+        "vault/generate: Claude call failed, returning template fallback",
+      );
+      return reply.send({
+        success: true,
+        data: { draft: templates[body.kind], provider: "template-fallback" },
+      });
+    }
   });
 }
