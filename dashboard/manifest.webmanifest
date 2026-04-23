@@ -1,0 +1,24 @@
+{
+  "name": "Orkestra",
+  "short_name": "Orkestra",
+  "description": "Plataforma de BPO orquestrada por IA. Do pedido ao fechamento, numa linha só.",
+  "start_url": "/ui/landing.html",
+  "display": "standalone",
+  "background_color": "#0B0B0C",
+  "theme_color": "#0B0B0C",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/ui/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/ui/og-image.png",
+      "sizes": "1200x630",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
