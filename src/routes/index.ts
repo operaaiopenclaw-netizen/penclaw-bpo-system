@@ -27,3 +27,4 @@ export { hrRoutes } from "./hr";
 export { financeRoutes } from "./finance";
 export { onboardingRoutes } from "./onboarding";
 export { checklistsRoutes } from "./checklists";
+export { integrationsRoutes } from "./integrations";

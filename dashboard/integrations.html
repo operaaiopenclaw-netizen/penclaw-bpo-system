@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<title>Orkestra · Integrações</title>
+<link rel="stylesheet" href="app.css">
+<style>
+  .sub-title { color: var(--gold); font-size: 11px; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 4px; }
+  h1 { font-size: 22px; letter-spacing: 1px; margin-bottom: 20px; }
+
+  .health-banner {
+    display: flex; align-items: center; gap: 16px;
+    padding: 16px 22px; border-radius: 12px; margin-bottom: 22px;
+    border: 1px solid var(--border); background: var(--surface);
+  }
+  .health-banner.ok       { border-left: 4px solid var(--emerald); }
+  .health-banner.degraded { border-left: 4px solid var(--warn); }
+  .health-banner.down     { border-left: 4px solid var(--danger); }
+
+  .health-label { font-size: 20px; font-weight: 600; letter-spacing: -0.5px; flex: 1; }
+  .health-stats { display: flex; gap: 18px; font-size: 11px; color: var(--text-2); letter-spacing: 1px; text-transform: uppercase; }
+  .health-stats strong { color: var(--text); font-weight: 600; font-size: 14px; }
+
+  .cat-title {
+    color: var(--gold); font-size: 11px; letter-spacing: 5px;
+    text-transform: uppercase; margin: 22px 0 12px 0;
+  }
+
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+
+  .int-card {
+    position: relative;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px 18px;
+    transition: border-color 0.15s, transform 0.15s;
+  }
+  .int-card:hover { border-color: var(--gold); transform: translateY(-1px); }
+
+  .status-dot {
+    position: absolute; top: 14px; right: 14px;
+    width: 10px; height: 10px; border-radius: 50%;
+    box-shadow: 0 0 0 3px rgba(0,0,0,0.3);
+  }
+  .status-dot.wired   { background: var(--emerald); box-shadow: 0 0 0 3px rgba(0,179,138,0.2), 0 0 10px rgba(0,179,138,0.5); }
+  .status-dot.mock    { background: var(--text-2); }
+  .status-dot.missing { background: var(--warn); }
+  .status-dot.error   { background: var(--danger); animation: blink 1.2s ease-in-out infinite; }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .int-name { font-size: 15px; font-weight: 600; margin-bottom: 6px; padding-right: 24px; }
+  .int-detail { font-size: 12px; color: var(--text-2); margin-bottom: 10px; line-height: 1.4; }
+  .int-status {
+    display: inline-block; font-size: 9px; letter-spacing: 2px;
+    text-transform: uppercase; padding: 3px 8px; border-radius: 4px;
+    margin-bottom: 8px;
+  }
+  .int-status.wired   { background: rgba(0,179,138,0.12); color: var(--emerald); }
+  .int-status.mock    { background: rgba(168,168,175,0.08); color: var(--text-2); border: 1px solid var(--border); }
+  .int-status.missing { background: rgba(255,138,59,0.12); color: var(--warn); }
+  .int-status.error   { background: rgba(234,90,74,0.15); color: var(--danger); }
+
+  .env-list { font-family: ui-monospace, monospace; font-size: 10px; color: var(--text-2); line-height: 1.6; }
+  .env-list .missing { color: var(--warn); }
+  .env-list .set     { color: var(--emerald); }
+</style>
+</head>
+<body>
+<script src="app.js"></script>
+
+<main>
+  <div class="sub-title">Operações · topologia do stack</div>
+  <h1>Integrações</h1>
+
+  <div id="health-banner" class="health-banner">
+    <div class="health-label" id="health-label">carregando…</div>
+    <div class="health-stats" id="health-stats"></div>
+  </div>
+
+  <div id="categories"></div>
+</main>
+
+<script>
+renderNav('integrations.html');
+
+const CAT_LABELS = {
+  ai: 'Inteligência artificial',
+  ads: 'Publicidade paga',
+  messaging: 'Mensageria',
+  billing: 'Faturamento',
+  banking: 'Open Finance / bancário',
+  infra: 'Infraestrutura',
+  calendar: 'Calendário',
+  notify: 'Notificações',
+};
+const CAT_ORDER = ['infra','ai','messaging','ads','billing','banking','calendar','notify'];
+
+const HEALTH_LABELS = {
+  ok: 'Operação saudável',
+  degraded: 'Operação degradada',
+  down: 'Falha em integração',
+};
+
+(async function () {
+  try {
+    const { data } = await api('/integrations');
+
+    const banner = document.getElementById('health-banner');
+    banner.className = `health-banner ${data.health}`;
+    document.getElementById('health-label').textContent = HEALTH_LABELS[data.health];
+    document.getElementById('health-stats').innerHTML = `
+      <div><strong>${data.totals.wired}</strong> ligadas</div>
+      <div><strong>${data.totals.mock}</strong> em mock</div>
+      <div><strong>${data.totals.missing}</strong> faltando</div>
+      ${data.totals.error ? `<div><strong style="color:var(--danger)">${data.totals.error}</strong> com erro</div>` : ''}
+      <div><strong>${data.totals.total}</strong> total</div>
+    `;
+
+    const byCat = data.integrations.reduce((acc, i) => {
+      (acc[i.category] = acc[i.category] || []).push(i);
+      return acc;
+    }, {});
+
+    const out = CAT_ORDER.filter(c => byCat[c]).map(cat => `
+      <div class="cat-title">${CAT_LABELS[cat]}</div>
+      <div class="cards">
+        ${byCat[cat].map(renderCard).join('')}
+      </div>
+    `).join('');
+    document.getElementById('categories').innerHTML = out;
+  } catch (err) {
+    document.getElementById('health-label').innerHTML = `<span class="err">${err.message}</span>`;
+  }
+})();
+
+function renderCard(i) {
+  const envs = i.envVars.map(v => {
+    const isSet = i.status === 'wired' || (i.status === 'mock' && v === i.envVars[0]);
+    return `<div class="${isSet ? 'set' : 'missing'}">${isSet ? '●' : '○'} ${v}</div>`;
+  }).join('');
+
+  return `
+    <div class="int-card">
+      <div class="status-dot ${i.status}"></div>
+      <div class="int-name">${i.name}</div>
+      <div class="int-status ${i.status}">${i.status}</div>
+      <div class="int-detail">${i.detail}</div>
+      <div class="env-list">${envs}</div>
+    </div>
+  `;
+}
+</script>
+</body>
+</html>

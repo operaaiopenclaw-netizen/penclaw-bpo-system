@@ -9,7 +9,7 @@ import swagger from "@fastify/swagger";
 import swaggerUi from "@fastify/swagger-ui";
 import { config } from "./config/env";
 import { prisma } from "./db";
-import { agentRunsRoutes, approvalsRoutes, memoryRoutes, artifactsRoutes, dashboardRoutes, metricsRoutes, eventsRoutes, statesRoutes, kitchenRoutes, intelligenceRoutes, crmRoutes, serviceOrdersRoutes, productionOrdersRoutes, executionRoutes, operationsRoutes, authRoutes, usersRoutes, commercialRoutes, aiChatRoutes, calendarRoutes, vaultRoutes, invoicesRoutes, whatsappRoutes, marketingRoutes, lgpdRoutes, hrRoutes, financeRoutes, onboardingRoutes, checklistsRoutes } from "./routes";
+import { agentRunsRoutes, approvalsRoutes, memoryRoutes, artifactsRoutes, dashboardRoutes, metricsRoutes, eventsRoutes, statesRoutes, kitchenRoutes, intelligenceRoutes, crmRoutes, serviceOrdersRoutes, productionOrdersRoutes, executionRoutes, operationsRoutes, authRoutes, usersRoutes, commercialRoutes, aiChatRoutes, calendarRoutes, vaultRoutes, invoicesRoutes, whatsappRoutes, marketingRoutes, lgpdRoutes, hrRoutes, financeRoutes, onboardingRoutes, checklistsRoutes, integrationsRoutes } from "./routes";
 import { findPublishedLP, incrementLPView } from "./routes/marketing";
 import { registerAuditHook } from "./middleware/audit";
 import { errorHandler, notFoundHandler } from "./utils/error-handler";
@@ -119,6 +119,7 @@ export async function bootstrap() {
   await app.register(financeRoutes,    { prefix: "/finance" });
   await app.register(onboardingRoutes, { prefix: "/onboarding" });
   await app.register(checklistsRoutes, { prefix: "/checklists" });
+  await app.register(integrationsRoutes, { prefix: "/integrations" });
 
   // Liveness — always 200 while process is up.
   app.get("/health", async () => ({ status: "ok", ts: Date.now() }));

@@ -67,6 +67,7 @@ const NAV = [
   { href: 'hr.html',                 label: 'RH',          icon: '🧑‍💼', roles: ['admin', 'manager'] },
   { href: 'approvals.html',          label: 'Aprovações',  icon: '✅', roles: ['admin', 'manager', 'finance'] },
   { href: 'operations.html',         label: 'Operações',   icon: '⚙️', roles: ['admin', 'manager', 'operator'] },
+  { href: 'integrations.html',       label: 'Integrações', icon: '🔌', roles: ['admin'] },
   { href: 'users.html',              label: 'Usuários',    icon: '👤', roles: ['admin'] },
 ];
 
