@@ -18,7 +18,7 @@ import { bootstrapSeedIfEmpty } from "./services/bootstrap-seed";
 
 const BOOT_AT = new Date().toISOString();
 
-async function bootstrap() {
+export async function bootstrap() {
   const app = Fastify({
     logger: { level: config.LOG_LEVEL },
   });
@@ -168,13 +168,20 @@ async function bootstrap() {
     process.exit(0);
   });
 
-  await app.listen({ port: config.PORT, host: "0.0.0.0" });
-
-  app.log.info(`🚀 Server running at http://localhost:${config.PORT}`);
-  app.log.info(`📚 Swagger UI: http://localhost:${config.PORT}/docs`);
+  // Tests call bootstrap() and use app.inject() — they don't need a bound port.
+  // Production enters via the `if (require.main === module)` block below.
+  return app;
 }
 
-bootstrap().catch((err) => {
-  console.error("Fatal error:", err);
-  process.exit(1);
-});
+if (require.main === module) {
+  bootstrap()
+    .then(async (app) => {
+      await app.listen({ port: config.PORT, host: "0.0.0.0" });
+      app.log.info(`🚀 Server running at http://localhost:${config.PORT}`);
+      app.log.info(`📚 Swagger UI: http://localhost:${config.PORT}/docs`);
+    })
+    .catch((err) => {
+      console.error("Fatal error:", err);
+      process.exit(1);
+    });
+}
