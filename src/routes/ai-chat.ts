@@ -10,6 +10,7 @@ import { z } from "zod";
 import { prisma } from "../db";
 import { logger } from "../utils/logger";
 import { config } from "../config/env";
+import { analyzeWithClaude, isClaudeAvailable } from "../services/claude-client";
 
 const DEFAULT_TENANT = config.DEFAULT_TENANT_ID;
 
@@ -86,19 +87,56 @@ async function summariseContext(tenantId: string, agent: string) {
   }
 }
 
-async function respond(agent: string, userMsg: string, tenantId: string) {
+const SYSTEM_PROMPTS: Record<string, string> = {
+  kitchen:
+    "Você é o agente de Cozinha/CMV da Orkestra, plataforma de BPO orquestrada por IA para eventos. Responda em português, objetivo, com foco em custos de ingredientes, receitas, CMV e produção. Use o contexto fornecido quando disponível.",
+  crm:
+    "Você é o agente de CRM da Orkestra. Ajude com leads, propostas, pipeline e relacionamento. Português, direto, orientado a ação.",
+  commercial:
+    "Você é o agente Comercial da Orkestra (pipeline até assinatura de contrato). Foco em leads, propostas, qualificação. Português, direto.",
+  ops:
+    "Você é o agente de Operações da Orkestra. Foco em ordens de serviço, produção e execução de eventos. Português, direto.",
+  events:
+    "Você é o agente de Eventos da Orkestra. Foco em planejamento, checklist e execução no dia. Português, direto.",
+  finance:
+    "Você é o agente Financeiro da Orkestra. Foco em comissões, DRE, margem, provisões e fechamento. Português, direto.",
+  orkestra:
+    "Você é Orkestra, o agente coordenador. Faça o roteamento mental do pedido do usuário e responda com a melhor síntese entre os módulos. Português, direto.",
+};
+
+async function respond(agent: string, userMsg: string, tenantId: string): Promise<string> {
   const ctx = await summariseContext(tenantId, agent);
+  const system = SYSTEM_PROMPTS[agent] ?? SYSTEM_PROMPTS.orkestra;
+
+  if (isClaudeAvailable()) {
+    try {
+      const ctxLine = ctx ? `\n\nContexto atual do tenant: ${ctx}` : "";
+      const result = await analyzeWithClaude({
+        systemPrompt: `${system}${ctxLine}`,
+        userContent: userMsg,
+        maxTokens: 800,
+      });
+      return result.text || "(sem resposta)";
+    } catch (err) {
+      logger.warn(
+        { err: err instanceof Error ? err.message : String(err), agent },
+        "ai-chat: Claude call failed, falling back to canned reply",
+      );
+    }
+  }
+
+  // Fallback when key is missing or call fails — deterministic, contextual.
   const greet: Record<string, string> = {
-    kitchen: "🧂 Olá, sou o agente de Cozinha.",
-    crm: "🤝 CRM agent aqui.",
-    commercial: "💸 Comercial aqui.",
-    ops: "⚙️ Operações aqui.",
-    events: "🎉 Eventos aqui.",
-    finance: "📊 Financeiro aqui.",
+    kitchen: "🧂 Agente de Cozinha.",
+    crm: "🤝 Agente de CRM.",
+    commercial: "💸 Agente Comercial.",
+    ops: "⚙️ Agente de Operações.",
+    events: "🎉 Agente de Eventos.",
+    finance: "📊 Agente Financeiro.",
     orkestra: "🎛️ Orkestra.",
   };
   const tail = ctx ? `\n\n**Contexto:** ${ctx}` : "";
-  return `${greet[agent] ?? greet.orkestra} Recebi: "${userMsg.slice(0, 160)}"${tail}\n\n_Integração com modelo generativo pendente — resposta contextual baseada em dados reais._`;
+  return `${greet[agent] ?? greet.orkestra} Recebi: "${userMsg.slice(0, 160)}"${tail}\n\n_Modelo generativo offline — configure ANTHROPIC_API_KEY para respostas geradas._`;
 }
 
 // ---- routes -----------------------------------------------------------
