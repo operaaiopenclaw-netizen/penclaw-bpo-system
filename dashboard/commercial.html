@@ -3,216 +3,184 @@
 <head>
 <meta charset="UTF-8">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
-<title>Orkestra · Comercial/Comissões</title>
+<title>Orkestra · Comercial</title>
 <link rel="stylesheet" href="app.css">
+<style>
+  .kpi-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 16px; margin-bottom: 24px;
+  }
+  .kpi {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px;
+    border-top: 3px solid var(--border);
+  }
+  .kpi.active { border-top-color: var(--gold); }
+  .kpi.margin { border-top-color: var(--emerald); }
+  .kpi.won    { border-top-color: var(--emerald); }
+  .kpi.lost   { border-top-color: var(--danger); }
+  .kpi-label {
+    font-size: 10px; color: var(--text-2);
+    letter-spacing: 1.5px; text-transform: uppercase;
+  }
+  .kpi-value {
+    font-size: 26px; font-weight: 600; margin: 8px 0 4px;
+    font-variant-numeric: tabular-nums;
+  }
+  .kpi-meta { font-size: 11px; color: var(--text-2); }
+  @media (max-width: 1000px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+
+  .handoff {
+    background: linear-gradient(135deg, rgba(201,169,97,0.08), rgba(0,179,138,0.04));
+    border: 1px solid var(--border); border-left: 3px solid var(--gold);
+    border-radius: 10px; padding: 16px 20px; margin-bottom: 20px;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 12px;
+  }
+  .handoff strong { color: var(--text); }
+  .handoff .muted { font-size: 12px; }
+  .handoff a {
+    padding: 8px 16px; border-radius: 6px;
+    background: var(--gold); color: #0B0B0C;
+    font-size: 12px; font-weight: 600; letter-spacing: 1px;
+    text-transform: uppercase; text-decoration: none;
+  }
+  .handoff a:hover { background: var(--gold-hi); }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; }
+</style>
 </head>
 <body>
 <script src="app.js"></script>
 
 <main>
   <div class="page-header">
-    <h1>💸 Comercial · Comissões & bônus</h1>
+    <h1>Comercial · Pipeline</h1>
     <span class="muted" id="summary">…</span>
   </div>
 
-  <div class="panel">
-    <h2>Dashboard comercial</h2>
-    <div class="kpis" id="kpis"></div>
-    <table style="margin-top:14px">
-      <thead><tr><th>Top contratos por margem</th><th class="num">Valor</th><th class="num">Margem projetada</th><th>Assinado</th></tr></thead>
+  <div class="handoff">
+    <div>
+      <strong>Jornada até o contrato.</strong>
+      <span class="muted">Comissões, bônus e pagamentos foram movidos para o módulo Financeiro.</span>
+    </div>
+    <a href="finance.html">Ver Financeiro →</a>
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi active">
+      <div class="kpi-label">Pipeline ativo</div>
+      <div class="kpi-value" id="kpiActive">—</div>
+      <div class="kpi-meta" id="kpiActiveMeta">—</div>
+    </div>
+    <div class="kpi margin">
+      <div class="kpi-label">Margem projetada</div>
+      <div class="kpi-value" id="kpiMargin">—</div>
+      <div class="kpi-meta">total do pipeline ativo</div>
+    </div>
+    <div class="kpi won">
+      <div class="kpi-label">Contratos ativos</div>
+      <div class="kpi-value" id="kpiWon">—</div>
+      <div class="kpi-meta">assinados e em execução</div>
+    </div>
+    <div class="kpi lost">
+      <div class="kpi-label">Cancelados</div>
+      <div class="kpi-value" id="kpiLost">—</div>
+      <div class="kpi-meta">contratos perdidos</div>
+    </div>
+  </div>
+
+  <section class="panel">
+    <h2>Top contratos por margem</h2>
+    <table>
+      <thead><tr>
+        <th>Nº</th><th>Cliente</th>
+        <th>Assinado</th>
+        <th class="num">Valor</th>
+        <th class="num">Margem projetada</th>
+      </tr></thead>
       <tbody id="topContracts"></tbody>
     </table>
-  </div>
+  </section>
 
-  <div class="panel">
-    <h2>Plano de comissão por contrato</h2>
-    <form id="planForm">
-      <div class="form-row">
-        <div><label>Contract ID*</label><input name="contractId" required></div>
-        <div><label>Comissão % (0-1)*</label><input name="commissionPct" type="number" step="0.001" min="0" max="1" value="0.05" required></div>
-        <div><label>Base</label><select name="baseType"><option>MARGIN</option><option>REVENUE</option></select></div>
-        <div><label>% Assinatura</label><input name="signingPct" type="number" step="0.01" min="0" max="1" value="0.4"></div>
-        <div><label>% Parcelas</label><input name="installmentPct" type="number" step="0.01" min="0" max="1" value="0.6"></div>
-        <div><label>Carência (dias)</label><input name="carencyDays" type="number" min="0" value="0"></div>
-        <div><label>Override gerente %</label><input name="managerOverridePct" type="number" step="0.01" min="0" max="1" value="0"></div>
-        <div><label>Split SDR %</label><input name="sdrSplitPct" type="number" step="0.01" min="0" max="1" value="0"></div>
-        <div><label>&nbsp;</label><button class="btn" type="submit">Criar plano</button></div>
-      </div>
-    </form>
-  </div>
-
-  <div class="panel">
-    <h2>Lançar pagamento</h2>
-    <form id="payForm">
-      <div class="form-row">
-        <div><label>Contract ID*</label><input name="contractId" required></div>
-        <div><label>Installment ID</label><input name="installmentId"></div>
-        <div><label>Valor (R$)*</label><input name="amount" type="number" step="0.01" min="0.01" required></div>
-        <div><label>Data*</label><input name="paidAt" type="datetime-local" required></div>
-        <div><label>Método*</label>
-          <select name="method" required><option>PIX</option><option>BOLETO</option><option>CARD</option><option>TRANSFER</option><option>CHECK</option><option>OTHER</option></select>
-        </div>
-        <div><label>Ref externa</label><input name="externalRef"></div>
-        <div><label>&nbsp;</label><button class="btn" type="submit">Registrar</button></div>
-      </div>
-    </form>
-  </div>
-
-  <div class="panel">
-    <h2>Commission entries</h2>
-    <div class="flex" style="margin-bottom:10px">
-      <label style="margin:0">Status</label>
-      <select id="entryStatus" style="width:auto">
-        <option value="">(todos)</option>
-        <option>FORECAST</option><option>LOCKED</option><option>RELEASED</option><option>PAID</option><option>CANCELLED</option>
-      </select>
-      <button class="secondary" onclick="loadEntries()">Atualizar</button>
-      <button class="secondary" onclick="tick()">Tick (liberar LOCKED vencidos)</button>
+  <section class="panel" style="margin-top:20px">
+    <h2>Parcelas por contrato</h2>
+    <div class="flex" style="margin-bottom:10px; gap:10px">
+      <input id="lookupContract" placeholder="Contract ID…" style="flex:1; max-width:420px">
+      <button class="secondary" onclick="loadInstallments()">Consultar</button>
     </div>
     <table>
-      <thead><tr><th>Contrato</th><th>Usuário</th><th>Kind</th><th>Status</th><th class="num">Valor</th><th>Agendado</th><th>Pago</th><th></th></tr></thead>
-      <tbody id="entries"></tbody>
+      <thead><tr>
+        <th>#</th><th>Vence</th>
+        <th class="num">Valor</th>
+        <th>Status</th><th>Pago em</th>
+      </tr></thead>
+      <tbody id="installments">
+        <tr><td colspan="5" class="empty">informe um contract ID</td></tr>
+      </tbody>
     </table>
-  </div>
-
-  <div class="panel">
-    <h2>Pagamentos recentes</h2>
-    <table>
-      <thead><tr><th>Data</th><th>Contrato</th><th class="num">Valor</th><th>Método</th><th>Ref</th><th>Status</th></tr></thead>
-      <tbody id="payments"></tbody>
-    </table>
-  </div>
+  </section>
 </main>
 
 <script>
 renderNav('commercial.html');
 
 async function loadDashboard() {
+  const summary = document.getElementById('summary');
+  summary.textContent = 'carregando…';
   try {
     const d = await api('/commercial/dashboard');
-    const kpis = [
-      { label: 'Pipeline ativo',        value: d.pipeline.active.count, sub: fmtMoney(d.pipeline.active.totalValue) },
-      { label: 'Margem projetada',      value: fmtMoney(d.pipeline.active.totalMargin) },
-      { label: 'Comissão forecast',     value: d.commission.forecast.count, sub: fmtMoney(d.commission.forecast.amount) },
-      { label: 'Comissão released',     value: d.commission.released.count, sub: fmtMoney(d.commission.released.amount) },
-      { label: 'Comissão paga',         value: d.commission.paid.count,     sub: fmtMoney(d.commission.paid.amount) },
-      { label: 'Bônus apurados (mês)',  value: d.bonus.current.length },
-    ];
-    document.getElementById('kpis').innerHTML = kpis.map(k => `
-      <div class="kpi"><div class="label">${k.label}</div><div class="value">${k.value}</div><div class="sub">${k.sub ?? ''}</div></div>
-    `).join('');
+    document.getElementById('kpiActive').textContent = fmtInt(d.pipeline.active.count);
+    document.getElementById('kpiActiveMeta').textContent = fmtMoney(d.pipeline.active.totalValue);
+    document.getElementById('kpiMargin').textContent = fmtMoney(d.pipeline.active.totalMargin);
+    document.getElementById('kpiWon').textContent = fmtInt(d.pipeline.won);
+    document.getElementById('kpiLost').textContent = fmtInt(d.pipeline.lost);
+
     const tbody = document.getElementById('topContracts');
     tbody.innerHTML = d.topContracts.length
       ? d.topContracts.map(c => `
-          <tr><td>${c.contractNumber} · ${c.lead?.companyName ?? '—'}</td>
-              <td class="num">${fmtMoney(c.totalValue)}</td>
-              <td class="num">${fmtMoney(c.projectedMargin)}</td>
-              <td>${fmtDay(c.signedAt)}</td></tr>`).join('')
-      : '<tr><td colspan="4" class="empty">sem contratos ativos</td></tr>';
-    document.getElementById('summary').textContent = `${d.pipeline.won} ganhos · ${d.pipeline.lost} cancelados`;
+          <tr>
+            <td><span class="mono">${c.contractNumber ?? c.id.slice(0,8)}</span></td>
+            <td>${c.lead?.companyName ?? '—'}</td>
+            <td>${fmtDay(c.signedAt)}</td>
+            <td class="num">${fmtMoney(c.totalValue)}</td>
+            <td class="num">${fmtMoney(c.projectedMargin)}</td>
+          </tr>`).join('')
+      : '<tr><td colspan="5" class="empty">sem contratos ativos</td></tr>';
+    summary.textContent = `${d.pipeline.won} ativos · ${d.pipeline.lost} cancelados`;
   } catch (err) {
-    document.getElementById('summary').innerHTML = `<span class="err">${err.message}</span>`;
+    summary.innerHTML = `<span class="err">${err.message}</span>`;
   }
 }
 
-async function loadEntries() {
-  const tbody = document.getElementById('entries');
-  tbody.innerHTML = '<tr><td colspan="8" class="empty">carregando…</td></tr>';
+async function loadInstallments() {
+  const contractId = document.getElementById('lookupContract').value.trim();
+  const tbody = document.getElementById('installments');
+  if (!contractId) {
+    tbody.innerHTML = '<tr><td colspan="5" class="empty">informe um contract ID</td></tr>';
+    return;
+  }
+  tbody.innerHTML = '<tr><td colspan="5" class="empty">carregando…</td></tr>';
   try {
-    const s = document.getElementById('entryStatus').value;
-    const qs = s ? `?status=${s}` : '';
-    const { entries } = await api(`/commercial/commission-entries${qs}`);
-    if (!entries.length) { tbody.innerHTML = '<tr><td colspan="8" class="empty">sem entries</td></tr>'; return; }
-    tbody.innerHTML = entries.map(e => `
+    const { installments } = await api(`/commercial/contracts/${contractId}/installments`);
+    if (!installments.length) {
+      tbody.innerHTML = '<tr><td colspan="5" class="empty">sem parcelas</td></tr>';
+      return;
+    }
+    tbody.innerHTML = installments.map((i, idx) => `
       <tr>
-        <td>${String(e.contractId).slice(0,8)}…</td>
-        <td>${String(e.userId).slice(0,8)}…</td>
-        <td>${e.kind ?? '—'}</td>
-        <td><span class="badge ${e.status}">${e.status}</span></td>
-        <td class="num">${fmtMoney(e.amount)}</td>
-        <td>${fmtDay(e.scheduledFor)}</td>
-        <td>${fmtDay(e.paidAt)}</td>
-        <td>${e.status === 'RELEASED' ? `<button class="secondary" onclick="payEntry('${e.id}')">marcar pago</button>` : ''}</td>
+        <td>${idx + 1}</td>
+        <td>${fmtDay(i.dueDate)}</td>
+        <td class="num">${fmtMoney(i.amount)}</td>
+        <td><span class="badge ${i.status}">${i.status}</span></td>
+        <td>${fmtDay(i.paidAt)}</td>
       </tr>
     `).join('');
   } catch (err) {
-    tbody.innerHTML = `<tr><td colspan="8" class="err">${err.message}</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="5" class="err">${err.message}</td></tr>`;
   }
 }
-
-async function payEntry(id) {
-  const payrollId = prompt('Payroll ID (opcional):') || undefined;
-  await tryAction(() => api(`/commercial/commission-entries/${id}/pay`, {
-    method: 'POST', body: JSON.stringify({ payrollId, note: 'UI' }),
-  }), 'Pago');
-  loadEntries();
-}
-
-async function tick() {
-  await tryAction(() => api('/commercial/commission-entries/tick', { method: 'POST' }), 'Locks liberados');
-  loadEntries();
-}
-
-async function loadPayments() {
-  const tbody = document.getElementById('payments');
-  tbody.innerHTML = '<tr><td colspan="6" class="empty">carregando…</td></tr>';
-  try {
-    const { payments } = await api('/commercial/payments');
-    if (!payments.length) { tbody.innerHTML = '<tr><td colspan="6" class="empty">sem pagamentos</td></tr>'; return; }
-    tbody.innerHTML = payments.map(p => `
-      <tr>
-        <td>${fmtDay(p.paidAt)}</td>
-        <td>${String(p.contractId).slice(0,8)}…</td>
-        <td class="num">${fmtMoney(p.amount)}</td>
-        <td>${p.method}</td>
-        <td>${p.externalRef ?? '—'}</td>
-        <td><span class="badge ${p.status}">${p.status}</span></td>
-      </tr>
-    `).join('');
-  } catch (err) {
-    tbody.innerHTML = `<tr><td colspan="6" class="err">${err.message}</td></tr>`;
-  }
-}
-
-document.getElementById('planForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const fd = new FormData(e.target);
-  const contractId = fd.get('contractId');
-  const payload = {
-    commissionPct:       Number(fd.get('commissionPct')),
-    baseType:            fd.get('baseType'),
-    signingPct:          Number(fd.get('signingPct')),
-    installmentPct:      Number(fd.get('installmentPct')),
-    carencyDays:         Number(fd.get('carencyDays')),
-    managerOverridePct:  Number(fd.get('managerOverridePct')),
-    sdrSplitPct:         Number(fd.get('sdrSplitPct')),
-  };
-  const ok = await tryAction(() => api(`/commercial/contracts/${contractId}/commission-plan`, {
-    method: 'POST', body: JSON.stringify(payload),
-  }), 'Plano criado + entries forecast');
-  if (ok) { e.target.reset(); loadEntries(); loadDashboard(); }
-});
-
-document.getElementById('payForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const fd = new FormData(e.target);
-  const payload = {
-    contractId:    fd.get('contractId'),
-    installmentId: fd.get('installmentId') || undefined,
-    amount:        Number(fd.get('amount')),
-    paidAt:        new Date(fd.get('paidAt')).toISOString(),
-    method:        fd.get('method'),
-    externalRef:   fd.get('externalRef') || undefined,
-  };
-  const ok = await tryAction(() => api('/commercial/payments', {
-    method: 'POST', body: JSON.stringify(payload),
-  }), 'Pagamento registrado');
-  if (ok) { e.target.reset(); loadPayments(); loadEntries(); loadDashboard(); }
-});
 
 loadDashboard();
-loadEntries();
-loadPayments();
 </script>
 </body>
 </html>

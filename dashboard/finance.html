@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<title>Orkestra · Financeiro</title>
+<link rel="stylesheet" href="app.css">
+<style>
+  .filters {
+    display: flex; gap: 12px; flex-wrap: wrap; align-items: center;
+    margin-bottom: 18px;
+  }
+  .filters button {
+    padding: 8px 16px; border-radius: 6px;
+    border: 1px solid var(--border); background: transparent;
+    color: var(--text-2); cursor: pointer;
+    font-size: 12px; letter-spacing: 1px; text-transform: uppercase;
+    transition: all 0.15s;
+  }
+  .filters button:hover { border-color: var(--gold); color: var(--text); }
+  .filters button.active {
+    background: var(--gold); border-color: var(--gold); color: #0B0B0C;
+    font-weight: 600;
+  }
+  .period-label {
+    color: var(--text-2); font-size: 11px;
+    letter-spacing: 1px; text-transform: uppercase;
+    margin-left: auto;
+  }
+  .kpi-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 16px; margin-bottom: 24px;
+  }
+  .kpi {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px;
+    border-top: 3px solid var(--border);
+  }
+  .kpi.forecast  { border-top-color: #6B6B73; }
+  .kpi.released  { border-top-color: var(--warn); }
+  .kpi.paid      { border-top-color: var(--emerald); }
+  .kpi.incoming  { border-top-color: var(--gold); }
+  .kpi-label {
+    font-size: 10px; color: var(--text-2);
+    letter-spacing: 1.5px; text-transform: uppercase;
+  }
+  .kpi-value {
+    font-size: 26px; font-weight: 600; margin: 8px 0 4px;
+    font-variant-numeric: tabular-nums;
+  }
+  .kpi-meta { font-size: 11px; color: var(--text-2); }
+  .split { display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px; }
+  @media (max-width: 1000px) {
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .split { grid-template-columns: 1fr; }
+  }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body>
+<script src="app.js"></script>
+
+<main>
+  <div class="page-header">
+    <h1>Financeiro</h1>
+    <span class="muted" id="summary">…</span>
+  </div>
+
+  <div class="filters">
+    <button data-period="month"    class="active">Mês</button>
+    <button data-period="year">Ano</button>
+    <button data-period="lifetime">Vitalício</button>
+    <span class="period-label" id="periodLabel">—</span>
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi forecast">
+      <div class="kpi-label">Comissões previstas</div>
+      <div class="kpi-value" id="kpiForecast">—</div>
+      <div class="kpi-meta" id="kpiForecastMeta">—</div>
+    </div>
+    <div class="kpi released">
+      <div class="kpi-label">A pagar (released)</div>
+      <div class="kpi-value" id="kpiReleased">—</div>
+      <div class="kpi-meta" id="kpiReleasedMeta">—</div>
+    </div>
+    <div class="kpi paid">
+      <div class="kpi-label">Comissões pagas</div>
+      <div class="kpi-value" id="kpiPaid">—</div>
+      <div class="kpi-meta" id="kpiPaidMeta">—</div>
+    </div>
+    <div class="kpi incoming">
+      <div class="kpi-label">Receita confirmada</div>
+      <div class="kpi-value" id="kpiIncoming">—</div>
+      <div class="kpi-meta" id="kpiIncomingMeta">—</div>
+    </div>
+  </div>
+
+  <div class="split">
+    <section class="panel">
+      <h2>Comissões a pagar</h2>
+      <table>
+        <thead><tr>
+          <th>Agendado</th><th>Vendedor</th><th>Contrato</th>
+          <th>Status</th><th class="num">Valor</th><th></th>
+        </tr></thead>
+        <tbody id="commissionRows"></tbody>
+      </table>
+    </section>
+
+    <section class="panel">
+      <h2>Top contratos ativos</h2>
+      <table>
+        <thead><tr>
+          <th>Nº</th><th>Cliente</th>
+          <th class="num">Valor</th><th class="num">Margem</th>
+        </tr></thead>
+        <tbody id="contractRows"></tbody>
+      </table>
+    </section>
+  </div>
+
+  <section class="panel" style="margin-top:20px">
+    <h2>Comissões por vendedor</h2>
+    <table>
+      <thead><tr>
+        <th>Vendedor</th>
+        <th class="num">Entradas</th>
+        <th class="num">Total</th>
+      </tr></thead>
+      <tbody id="byUserRows"></tbody>
+    </table>
+  </section>
+</main>
+
+<script>
+renderNav('finance.html');
+
+let currentPeriod = 'month';
+const usersById = {};
+
+async function loadUsers() {
+  try {
+    const r = await api('/users');
+    (r.data || r).forEach(u => { usersById[u.id] = u; });
+  } catch { /* silent — not fatal */ }
+}
+
+function fmtPeriod(p) {
+  if (!p) return 'vitalício';
+  if (p.label === 'month') {
+    const d = new Date(p.from);
+    return d.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+  }
+  if (p.label === 'year') return `${new Date(p.from).getFullYear()}`;
+  if (p.label === 'lifetime') return 'vitalício';
+  return `${fmtDay(p.from)} → ${fmtDay(p.to)}`;
+}
+
+async function loadDashboard() {
+  const summary = document.getElementById('summary');
+  summary.textContent = 'carregando…';
+  try {
+    const d = await api(`/finance/dashboard?period=${currentPeriod}`);
+    document.getElementById('periodLabel').textContent = fmtPeriod(d.period);
+
+    const f = d.commissions.forecast;
+    const r = d.commissions.released;
+    const p = d.commissions.paid;
+    const inc = d.payments.received;
+
+    document.getElementById('kpiForecast').textContent = fmtMoney(f.amount);
+    document.getElementById('kpiForecastMeta').textContent = `${f.count} entradas`;
+    document.getElementById('kpiReleased').textContent = fmtMoney(r.amount);
+    document.getElementById('kpiReleasedMeta').textContent = `${r.count} entradas`;
+    document.getElementById('kpiPaid').textContent = fmtMoney(p.amount);
+    document.getElementById('kpiPaidMeta').textContent = `${p.count} entradas`;
+    document.getElementById('kpiIncoming').textContent = fmtMoney(inc.amount);
+    document.getElementById('kpiIncomingMeta').textContent = `${inc.count} pagamentos`;
+
+    // Top contracts
+    const ctbody = document.getElementById('contractRows');
+    if (!d.topContracts.length) {
+      ctbody.innerHTML = '<tr><td colspan="4" class="empty">nenhum contrato ativo</td></tr>';
+    } else {
+      ctbody.innerHTML = d.topContracts.map(c => `
+        <tr>
+          <td><span class="mono">${c.contractNumber ?? c.id.slice(0,8)}</span></td>
+          <td>${c.lead?.companyName ?? '—'}</td>
+          <td class="num">${fmtMoney(c.totalValue)}</td>
+          <td class="num">${c.projectedMargin != null ? (c.projectedMargin * 100).toFixed(1) + '%' : '—'}</td>
+        </tr>
+      `).join('');
+    }
+
+    // By user
+    const btbody = document.getElementById('byUserRows');
+    if (!d.commissions.byUser.length) {
+      btbody.innerHTML = '<tr><td colspan="3" class="empty">nenhuma comissão no período</td></tr>';
+    } else {
+      btbody.innerHTML = d.commissions.byUser
+        .sort((a, b) => b.amount - a.amount)
+        .map(u => `
+          <tr>
+            <td>${usersById[u.userId]?.name ?? u.userId.slice(0,8)}</td>
+            <td class="num">${fmtInt(u.count)}</td>
+            <td class="num">${fmtMoney(u.amount)}</td>
+          </tr>
+        `).join('');
+    }
+
+    summary.textContent = fmtPeriod(d.period);
+  } catch (err) {
+    summary.innerHTML = `<span class="err">${err.message}</span>`;
+  }
+}
+
+async function loadCommissions() {
+  const tbody = document.getElementById('commissionRows');
+  tbody.innerHTML = '<tr><td colspan="6" class="empty">carregando…</td></tr>';
+  try {
+    const { entries } = await api(`/finance/commissions?period=${currentPeriod}&status=RELEASED`);
+    if (!entries.length) {
+      tbody.innerHTML = '<tr><td colspan="6" class="empty">nada liberado para pagamento</td></tr>';
+      return;
+    }
+    tbody.innerHTML = entries.map(e => `
+      <tr>
+        <td>${fmtDay(e.scheduledFor)}</td>
+        <td>${usersById[e.userId]?.name ?? e.userId.slice(0,8)}</td>
+        <td><span class="mono">${e.contractId?.slice(0,8) ?? '—'}</span></td>
+        <td><span class="badge ${e.status}">${e.status}</span></td>
+        <td class="num">${fmtMoney(e.amount)}</td>
+        <td class="row-actions">
+          <button class="secondary" onclick="payEntry('${e.id}')">pagar</button>
+        </td>
+      </tr>
+    `).join('');
+  } catch (err) {
+    tbody.innerHTML = `<tr><td colspan="6" class="err">${err.message}</td></tr>`;
+  }
+}
+
+async function payEntry(id) {
+  const note = prompt('Nota (opcional):') ?? undefined;
+  const ok = await tryAction(
+    () => api(`/finance/commissions/${id}/pay`, {
+      method: 'POST',
+      body: JSON.stringify({ note }),
+    }),
+    'Comissão marcada como paga',
+  );
+  if (ok) { loadDashboard(); loadCommissions(); }
+}
+
+document.querySelectorAll('.filters button[data-period]').forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll('.filters button[data-period]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentPeriod = btn.dataset.period;
+    loadDashboard();
+    loadCommissions();
+  };
+});
+
+(async () => {
+  await loadUsers();
+  await Promise.all([loadDashboard(), loadCommissions()]);
+})();
+</script>
+</body>
+</html>

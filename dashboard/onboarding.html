@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<title>Orkestra · Onboarding</title>
+<link rel="stylesheet" href="app.css">
+<style>
+  .summary-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 16px; margin-bottom: 24px;
+  }
+  .summary-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 18px;
+    border-top: 3px solid var(--border);
+  }
+  .summary-card.open        { border-top-color: #6B6B73; }
+  .summary-card.in_progress { border-top-color: var(--warn); }
+  .summary-card.completed   { border-top-color: var(--emerald); }
+  .summary-label {
+    font-size: 10px; color: var(--text-2);
+    letter-spacing: 1.5px; text-transform: uppercase;
+  }
+  .summary-value { font-size: 30px; font-weight: 600; margin-top: 6px; }
+
+  .new-case {
+    display: flex; gap: 10px; margin-bottom: 18px;
+    background: var(--surface); border: 1px solid var(--border);
+    padding: 14px; border-radius: 10px;
+  }
+  .new-case input {
+    flex: 1; padding: 9px 12px; border-radius: 6px;
+    border: 1px solid var(--border); background: var(--bg);
+    color: var(--text);
+  }
+  .new-case input:focus { border-color: var(--gold); outline: none; }
+
+  .case-list {
+    display: flex; flex-direction: column; gap: 16px;
+  }
+  .case-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px;
+  }
+  .case-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 14px; flex-wrap: wrap; gap: 8px;
+  }
+  .case-head h3 { margin: 0; font-size: 16px; font-weight: 600; }
+  .case-meta { color: var(--text-2); font-size: 11px; letter-spacing: 0.5px; }
+
+  .tracks {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+  @media (max-width: 900px) {
+    .tracks { grid-template-columns: 1fr; }
+    .summary-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  .track {
+    background: #0B0B0C; border: 1px solid var(--border);
+    border-radius: 8px; padding: 12px;
+  }
+  .track h4 {
+    margin: 0 0 10px; font-size: 10px; font-weight: 600;
+    letter-spacing: 2px; text-transform: uppercase;
+    color: var(--text-2);
+    display: flex; justify-content: space-between;
+  }
+  .track.adm h4     { color: #A8A8AF; }
+  .track.finance h4 { color: var(--gold); }
+  .track.ops h4     { color: var(--emerald); }
+
+  .step {
+    padding: 8px 10px; border-radius: 6px;
+    margin-bottom: 6px; font-size: 12px;
+    display: flex; align-items: center; gap: 8px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .step:hover { border-color: var(--border); background: rgba(255,255,255,0.02); }
+  .step.pending     .step-dot { background: #3A3A40; }
+  .step.in_progress .step-dot { background: var(--warn); }
+  .step.done        .step-dot { background: var(--emerald); }
+  .step.done .step-label { text-decoration: line-through; color: var(--text-2); }
+  .step-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .step-label { flex: 1; }
+  .progress {
+    height: 3px; background: var(--border); border-radius: 2px;
+    margin-top: 8px; overflow: hidden;
+  }
+  .progress-bar {
+    height: 100%; background: var(--emerald); transition: width 0.3s;
+  }
+</style>
+</head>
+<body>
+<script src="app.js"></script>
+
+<main>
+  <div class="page-header">
+    <h1>Onboarding</h1>
+    <span class="muted" id="summary">…</span>
+  </div>
+
+  <div class="summary-grid">
+    <div class="summary-card open">
+      <div class="summary-label">Abertos</div>
+      <div class="summary-value" id="sumOpen">—</div>
+    </div>
+    <div class="summary-card in_progress">
+      <div class="summary-label">Em andamento</div>
+      <div class="summary-value" id="sumInProgress">—</div>
+    </div>
+    <div class="summary-card completed">
+      <div class="summary-label">Concluídos</div>
+      <div class="summary-value" id="sumCompleted">—</div>
+    </div>
+  </div>
+
+  <div class="new-case">
+    <input type="text" id="newClient" placeholder="Nome do cliente…">
+    <input type="text" id="newContract" placeholder="Contrato ID (opcional)" style="max-width:240px">
+    <button class="primary" onclick="createCase()">Abrir onboarding</button>
+  </div>
+
+  <div class="case-list" id="cases"></div>
+</main>
+
+<script>
+renderNav('onboarding.html');
+
+const TRACK_LABEL = {
+  adm: 'Administrativo',
+  finance: 'Financeiro',
+  ops: 'Operações',
+};
+const NEXT_STATUS = { pending: 'in_progress', in_progress: 'done', done: 'pending' };
+
+async function loadSummary() {
+  try {
+    const s = await api('/onboarding/summary');
+    document.getElementById('sumOpen').textContent = fmtInt(s.byStatus.open);
+    document.getElementById('sumInProgress').textContent = fmtInt(s.byStatus.in_progress);
+    document.getElementById('sumCompleted').textContent = fmtInt(s.byStatus.completed);
+    document.getElementById('summary').textContent = `${s.total} casos`;
+  } catch (err) {
+    document.getElementById('summary').innerHTML = `<span class="err">${err.message}</span>`;
+  }
+}
+
+async function loadCases() {
+  const wrap = document.getElementById('cases');
+  wrap.innerHTML = '<div class="empty">carregando…</div>';
+  try {
+    const { cases } = await api('/onboarding/cases');
+    if (!cases.length) {
+      wrap.innerHTML = '<div class="empty">nenhum onboarding aberto — clique em <b>Abrir onboarding</b></div>';
+      return;
+    }
+    wrap.innerHTML = cases.map(renderCase).join('');
+  } catch (err) {
+    wrap.innerHTML = `<div class="err">${err.message}</div>`;
+  }
+}
+
+function progressOf(c) {
+  const all = [...c.tracks.adm, ...c.tracks.finance, ...c.tracks.ops];
+  const done = all.filter(s => s.status === 'done').length;
+  return all.length ? Math.round((done / all.length) * 100) : 0;
+}
+
+function renderCase(c) {
+  const pct = progressOf(c);
+  return `
+    <div class="case-card">
+      <div class="case-head">
+        <div>
+          <h3>${c.clientName}</h3>
+          <div class="case-meta">
+            ${fmtDate(c.createdAt)}
+            ${c.contractId ? `· contrato <span class="mono">${c.contractId.slice(0,8)}</span>` : ''}
+          </div>
+        </div>
+        <span class="badge ${c.status}">${c.status}</span>
+      </div>
+
+      <div class="tracks">
+        ${['adm', 'finance', 'ops'].map(t => renderTrack(c.id, t, c.tracks[t])).join('')}
+      </div>
+
+      <div class="progress" title="${pct}% concluído">
+        <div class="progress-bar" style="width:${pct}%"></div>
+      </div>
+    </div>
+  `;
+}
+
+function renderTrack(caseId, track, steps) {
+  const done = steps.filter(s => s.status === 'done').length;
+  return `
+    <div class="track ${track}">
+      <h4>
+        <span>${TRACK_LABEL[track]}</span>
+        <span>${done}/${steps.length}</span>
+      </h4>
+      ${steps.map(s => `
+        <div class="step ${s.status}" onclick="toggleStep('${caseId}','${track}','${s.id}','${s.status}')" title="${s.note ?? ''}">
+          <span class="step-dot"></span>
+          <span class="step-label">${s.label}</span>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+async function toggleStep(caseId, track, stepId, current) {
+  const next = NEXT_STATUS[current];
+  await tryAction(
+    () => api(`/onboarding/cases/${caseId}/tracks/${track}/steps/${stepId}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status: next }),
+    }),
+    `Status → ${next}`,
+  );
+  await Promise.all([loadCases(), loadSummary()]);
+}
+
+async function createCase() {
+  const clientName = document.getElementById('newClient').value.trim();
+  if (!clientName) { toast('informe o nome do cliente', 'err'); return; }
+  const contractIdRaw = document.getElementById('newContract').value.trim();
+  const body = { clientName };
+  if (contractIdRaw) body.contractId = contractIdRaw;
+  const ok = await tryAction(
+    () => api('/onboarding/cases', { method: 'POST', body: JSON.stringify(body) }),
+    'Onboarding aberto',
+  );
+  if (ok) {
+    document.getElementById('newClient').value = '';
+    document.getElementById('newContract').value = '';
+    await Promise.all([loadCases(), loadSummary()]);
+  }
+}
+
+loadSummary();
+loadCases();
+</script>
+</body>
+</html>
