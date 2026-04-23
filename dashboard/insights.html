@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<title>Orkestra · Insights</title>
+<link rel="stylesheet" href="app.css">
+<style>
+  .sub-title {
+    color: var(--gold); font-size: 11px; letter-spacing: 4px;
+    text-transform: uppercase; margin-bottom: 4px;
+  }
+  h1 { font-size: 22px; letter-spacing: 1px; margin-bottom: 20px; }
+  .grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 14px; margin-bottom: 22px;
+  }
+  .kpi {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px 18px;
+    border-top: 3px solid var(--border);
+  }
+  .kpi.in    { border-top-color: var(--emerald); }
+  .kpi.out   { border-top-color: var(--warn); }
+  .kpi.net   { border-top-color: var(--gold); }
+  .kpi.alert { border-top-color: var(--danger); }
+  .kpi-label { color: var(--text-2); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
+  .kpi-val   { font-size: 22px; font-weight: 600; letter-spacing: -0.5px; }
+  .kpi-hint  { color: var(--text-2); font-size: 11px; margin-top: 4px; }
+
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 18px; margin-bottom: 18px;
+  }
+  .card h2 {
+    font-size: 13px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--text); margin-bottom: 12px;
+  }
+  .card .badge {
+    display: inline-block; background: var(--bg);
+    border: 1px solid var(--border); color: var(--text-2);
+    padding: 2px 10px; border-radius: 10px; font-size: 10px;
+    letter-spacing: 1px; margin-left: 8px;
+  }
+
+  .alert-row {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 10px 12px; border-radius: 8px;
+    border: 1px solid var(--border); margin-bottom: 8px;
+    background: var(--bg);
+  }
+  .alert-row.info   { border-left: 3px solid var(--gold); }
+  .alert-row.warn   { border-left: 3px solid var(--warn); }
+  .alert-row.danger { border-left: 3px solid var(--danger); }
+  .alert-row .title { font-size: 13px; color: var(--text); font-weight: 500; }
+  .alert-row .detail { font-size: 11px; color: var(--text-2); margin-top: 2px; }
+  .alert-row a { color: var(--gold); font-size: 10px; text-decoration: none; margin-left: auto; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th, td {
+    padding: 8px 10px; text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  th { color: var(--text-2); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; }
+  td.num { font-variant-numeric: tabular-nums; text-align: right; }
+  .delta-up   { color: var(--warn); }
+  .delta-down { color: var(--emerald); }
+  .muted { color: var(--text-2); font-size: 11px; text-align: center; padding: 16px; }
+
+  .bucket-row { display: flex; justify-content: space-between; gap: 12px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); }
+  .bucket-row:last-child { border-bottom: 0; }
+  .bucket-date { font-size: 11px; color: var(--text-2); min-width: 90px; }
+  .bucket-items { flex: 1; font-size: 12px; }
+  .bucket-net { font-size: 13px; font-weight: 500; min-width: 110px; text-align: right; font-variant-numeric: tabular-nums; }
+  .bucket-net.pos { color: var(--emerald); }
+  .bucket-net.neg { color: var(--warn); }
+
+  .openfinance-status {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 12px; border-radius: 20px; font-size: 11px;
+    letter-spacing: 1px; text-transform: uppercase;
+  }
+  .openfinance-status.mock  { background: var(--bg); color: var(--text-2); border: 1px solid var(--border); }
+  .openfinance-status.wired { background: rgba(0,179,138,0.1); color: var(--emerald); border: 1px solid var(--emerald); }
+</style>
+</head>
+<body>
+<script src="app.js"></script>
+
+<main>
+  <div class="sub-title">Finance · inteligência operacional</div>
+  <h1>Insights</h1>
+
+  <!-- KPIs -->
+  <div class="grid">
+    <div class="kpi in">
+      <div class="kpi-label">Entradas (30d)</div>
+      <div class="kpi-val" id="kpi-inflow">—</div>
+      <div class="kpi-hint">Parcelas previstas</div>
+    </div>
+    <div class="kpi out">
+      <div class="kpi-label">Saídas (30d)</div>
+      <div class="kpi-val" id="kpi-outflow">—</div>
+      <div class="kpi-hint">Comissões + provisões</div>
+    </div>
+    <div class="kpi net">
+      <div class="kpi-label">Net projetado</div>
+      <div class="kpi-val" id="kpi-net">—</div>
+      <div class="kpi-hint">Fluxo líquido estimado</div>
+    </div>
+    <div class="kpi alert">
+      <div class="kpi-label">Alertas abertos</div>
+      <div class="kpi-val" id="kpi-alerts">—</div>
+      <div class="kpi-hint">Atrasos · duplicidades · planos</div>
+    </div>
+  </div>
+
+  <!-- Alerts -->
+  <div class="card">
+    <h2>Alertas inteligentes <span class="badge" id="alerts-badge">0</span></h2>
+    <div id="alerts-list"><div class="muted">carregando…</div></div>
+  </div>
+
+  <!-- Cashflow -->
+  <div class="card">
+    <h2>Previsão de fluxo · próximos 30 dias</h2>
+    <div id="cashflow-list"><div class="muted">carregando…</div></div>
+  </div>
+
+  <!-- Categories -->
+  <div class="card">
+    <h2>Categorias · mês atual vs anterior</h2>
+    <div id="categories"><div class="muted">carregando…</div></div>
+  </div>
+
+  <!-- Subscriptions -->
+  <div class="card">
+    <h2>Recorrências detectadas <span class="badge">provisões que se repetem 3+ meses</span></h2>
+    <div id="subscriptions"><div class="muted">carregando…</div></div>
+  </div>
+
+  <!-- Open Finance -->
+  <div class="card">
+    <h2>
+      Open Finance
+      <span class="openfinance-status mock" id="of-status">mock</span>
+    </h2>
+    <div id="of-accounts"><div class="muted">conectando…</div></div>
+  </div>
+</main>
+
+<script>
+(async function () {
+  if (!TOKEN || !ME) { window.location.href = 'login.html'; return; }
+  renderNav('insights.html');
+
+  const brl = (v) => 'R$ ' + (v ?? 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+  // Fetch everything in parallel.
+  const [cashflow, alerts, subs, cats, of] = await Promise.all([
+    api('/finance/insights/cashflow?days=30').catch(() => null),
+    api('/finance/insights/alerts').catch(() => ({ alerts: [] })),
+    api('/finance/insights/subscriptions').catch(() => ({ subscriptions: [] })),
+    api('/finance/insights/categories').catch(() => ({ categories: [] })),
+    api('/finance/insights/openfinance').catch(() => ({ accounts: [], wired: false })),
+  ]);
+
+  // KPIs
+  document.getElementById('kpi-inflow').textContent  = brl(cashflow?.totalInflow);
+  document.getElementById('kpi-outflow').textContent = brl(cashflow?.totalOutflow);
+  const net = cashflow?.net ?? 0;
+  const netEl = document.getElementById('kpi-net');
+  netEl.textContent = brl(net);
+  netEl.style.color = net >= 0 ? 'var(--emerald)' : 'var(--warn)';
+  document.getElementById('kpi-alerts').textContent = (alerts?.alerts?.length ?? 0);
+
+  // Alerts
+  const alertsBox = document.getElementById('alerts-list');
+  const badge = document.getElementById('alerts-badge');
+  badge.textContent = alerts.alerts.length;
+  if (!alerts.alerts.length) {
+    alertsBox.innerHTML = '<div class="muted">Nenhum alerta aberto. Operação no compasso.</div>';
+  } else {
+    alertsBox.innerHTML = alerts.alerts.map(a => `
+      <div class="alert-row ${a.severity}">
+        <div>
+          <div class="title">${a.title}</div>
+          <div class="detail">${a.detail}</div>
+        </div>
+        ${a.link ? `<a href="${a.link}">abrir →</a>` : ''}
+      </div>
+    `).join('');
+  }
+
+  // Cashflow
+  const cfBox = document.getElementById('cashflow-list');
+  if (!cashflow?.buckets?.length) {
+    cfBox.innerHTML = '<div class="muted">Sem movimentações previstas nos próximos 30 dias.</div>';
+  } else {
+    cfBox.innerHTML = cashflow.buckets.slice(0, 30).map(b => `
+      <div class="bucket-row">
+        <div class="bucket-date">${b.date}</div>
+        <div class="bucket-items">${b.items.map(i => i.label).join(' · ') || '—'}</div>
+        <div class="bucket-net ${b.net >= 0 ? 'pos' : 'neg'}">${b.net >= 0 ? '+' : ''}${brl(b.net)}</div>
+      </div>
+    `).join('');
+  }
+
+  // Categories
+  const catBox = document.getElementById('categories');
+  if (!cats.categories.length) {
+    catBox.innerHTML = '<div class="muted">Sem provisões nos últimos meses.</div>';
+  } else {
+    catBox.innerHTML = `
+      <table>
+        <thead><tr>
+          <th>Categoria</th><th class="num">Atual (${cats.period.current})</th>
+          <th class="num">Anterior (${cats.period.previous})</th><th class="num">Δ</th>
+        </tr></thead>
+        <tbody>
+          ${cats.categories.map(c => {
+            const delta = c.deltaPct;
+            const deltaLabel = delta === null ? 'novo' :
+              (delta * 100).toFixed(1) + '%';
+            const cls = delta === null ? '' : (delta > 0 ? 'delta-up' : delta < 0 ? 'delta-down' : '');
+            return `<tr>
+              <td>${c.sourceType}</td>
+              <td class="num">${brl(c.current)}</td>
+              <td class="num">${brl(c.previous)}</td>
+              <td class="num ${cls}">${deltaLabel}</td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>`;
+  }
+
+  // Subscriptions
+  const subBox = document.getElementById('subscriptions');
+  if (!subs.subscriptions.length) {
+    subBox.innerHTML = '<div class="muted">Nenhuma recorrência detectada ainda.</div>';
+  } else {
+    subBox.innerHTML = `
+      <table>
+        <thead><tr><th>Beneficiário</th><th class="num">Valor/mês</th><th>Meses detectados</th></tr></thead>
+        <tbody>
+          ${subs.subscriptions.map(s => `
+            <tr>
+              <td>${s.beneficiaryId ?? '—'}</td>
+              <td class="num">${brl(s.monthlyEstimate)}</td>
+              <td>${s.months.length} · ${s.months.slice(-3).join(' · ')}</td>
+            </tr>`).join('')}
+        </tbody>
+      </table>`;
+  }
+
+  // Open Finance
+  const ofStatus = document.getElementById('of-status');
+  ofStatus.textContent = of.wired ? `ligado · ${of.provider}` : 'mock';
+  ofStatus.className = 'openfinance-status ' + (of.wired ? 'wired' : 'mock');
+  const ofBox = document.getElementById('of-accounts');
+  if (!of.accounts.length) {
+    ofBox.innerHTML = of.wired
+      ? '<div class="muted">Nenhuma conta conectada ainda. Configure uma instituição via Open Finance.</div>'
+      : '<div class="muted">Open Finance ainda não conectado. Defina PLUGGY_CLIENT_ID + PLUGGY_CLIENT_SECRET para ativar conciliação bancária automática.</div>';
+  } else {
+    ofBox.innerHTML = `
+      <table>
+        <thead><tr><th>Instituição</th><th>Tipo</th><th class="num">Saldo</th><th>Última sincronia</th></tr></thead>
+        <tbody>
+          ${of.accounts.map(a => `
+            <tr><td>${a.institution}</td><td>${a.type}</td><td class="num">${brl(a.balance)}</td><td>${a.lastSyncAt}</td></tr>
+          `).join('')}
+        </tbody>
+      </table>`;
+  }
+})();
+</script>
+</body>
+</html>

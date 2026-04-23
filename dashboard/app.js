@@ -57,6 +57,7 @@ const NAV = [
   { href: 'commercial.html',         label: 'Comercial',   icon: '💼', roles: ['admin', 'finance', 'manager'] },
   { href: 'onboarding.html',         label: 'Onboarding',  icon: '🚀', roles: ['admin', 'finance', 'manager', 'operator'] },
   { href: 'finance.html',            label: 'Financeiro',  icon: '💸', roles: ['admin', 'finance'] },
+  { href: 'insights.html',           label: 'Insights',    icon: '💡', roles: ['admin', 'finance', 'manager'] },
   { href: 'invoices.html',           label: 'Faturamento', icon: '🧾', roles: ['admin', 'finance', 'manager'] },
   { href: 'whatsapp.html',           label: 'WhatsApp',    icon: '💬', roles: ['admin', 'manager', 'operator'] },
   { href: 'marketing.html',          label: 'Marketing',   icon: '📣', roles: ['admin', 'manager', 'finance'] },

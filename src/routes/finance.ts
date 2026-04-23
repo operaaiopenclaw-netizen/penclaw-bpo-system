@@ -10,6 +10,14 @@ import {
   releaseDueLocks,
 } from "../services/commission-engine";
 import { computeBonusAccrual } from "../services/bonus-engine";
+import {
+  getCashflowForecast,
+  getAlerts,
+  getSubscriptions,
+  getCategoryBreakdown,
+  getOpenFinanceAccounts,
+  getOpenFinanceStatus,
+} from "../services/finance-insights";
 import { logger } from "../utils/logger";
 
 // Módulo Financeiro. Dono das comissões (despesa), pagamentos recebidos,
@@ -492,6 +500,63 @@ export async function financeRoutes(app: FastifyInstance): Promise<void> {
         },
         topContracts,
       };
+    },
+  );
+
+  // ─── INSIGHTS (read-only analytics — alerts, cashflow, categories) ─
+
+  app.get<{ Querystring: { days?: string } }>(
+    "/insights/cashflow",
+    { preHandler: requirePermission("commercial.dashboard.read") },
+    async (req) => {
+      const user = req.user;
+      if (!user) throw new AppError("Unauthenticated", 401, "UNAUTHORIZED");
+      const days = Math.min(Math.max(parseInt(req.query.days ?? "30", 10) || 30, 1), 180);
+      return await getCashflowForecast(user.tenantId, days);
+    },
+  );
+
+  app.get(
+    "/insights/alerts",
+    { preHandler: requirePermission("commercial.dashboard.read") },
+    async (req) => {
+      const user = req.user;
+      if (!user) throw new AppError("Unauthenticated", 401, "UNAUTHORIZED");
+      const alerts = await getAlerts(user.tenantId);
+      return { count: alerts.length, alerts };
+    },
+  );
+
+  app.get(
+    "/insights/subscriptions",
+    { preHandler: requirePermission("commercial.dashboard.read") },
+    async (req) => {
+      const user = req.user;
+      if (!user) throw new AppError("Unauthenticated", 401, "UNAUTHORIZED");
+      const subs = await getSubscriptions(user.tenantId);
+      return { count: subs.length, subscriptions: subs };
+    },
+  );
+
+  app.get<{ Querystring: { month?: string } }>(
+    "/insights/categories",
+    { preHandler: requirePermission("commercial.dashboard.read") },
+    async (req) => {
+      const user = req.user;
+      if (!user) throw new AppError("Unauthenticated", 401, "UNAUTHORIZED");
+      return await getCategoryBreakdown(user.tenantId, req.query.month);
+    },
+  );
+
+  app.get(
+    "/insights/openfinance",
+    { preHandler: requirePermission("commercial.dashboard.read") },
+    async (req) => {
+      const user = req.user;
+      if (!user) throw new AppError("Unauthenticated", 401, "UNAUTHORIZED");
+      const status = getOpenFinanceStatus();
+      const accounts = await getOpenFinanceAccounts(user.tenantId);
+      return { ...status, accounts };
     },
   );
 }
