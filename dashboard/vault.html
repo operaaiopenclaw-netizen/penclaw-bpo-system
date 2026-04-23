@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<title>Orkestra · Documentos</title>
+<link rel="stylesheet" href="app.css">
+<style>
+  .cats {
+    display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px;
+  }
+  .cats button {
+    padding: 7px 14px; border-radius: 6px;
+    border: 1px solid var(--border); background: transparent;
+    color: var(--text-2); cursor: pointer; font-size: 12px;
+    letter-spacing: 0.5px;
+  }
+  .cats button:hover { border-color: var(--gold); color: var(--text); }
+  .cats button.active { background: var(--gold); border-color: var(--gold); color: #0B0B0C; font-weight: 600; }
+
+  .upload-box {
+    border: 2px dashed var(--border); border-radius: 10px;
+    padding: 28px; text-align: center;
+    background: var(--surface); margin-bottom: 20px;
+    transition: border-color 0.15s;
+  }
+  .upload-box.drag { border-color: var(--gold); background: rgba(201,169,97,0.05); }
+  .upload-box input[type=file] { display: none; }
+  .upload-box label {
+    color: var(--gold); cursor: pointer; font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  .upload-box .hint { color: var(--text-2); font-size: 11px; margin-top: 6px; }
+
+  .docs-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 14px;
+  }
+  .doc-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .doc-card .fname {
+    font-size: 13px; font-weight: 500; color: var(--text);
+    word-break: break-word;
+  }
+  .doc-card .meta { font-size: 10px; color: var(--text-2); }
+  .doc-card .cat {
+    font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--gold);
+  }
+  .doc-card .actions { display: flex; gap: 6px; margin-top: 6px; }
+  .doc-card .actions a, .doc-card .actions button {
+    flex: 1; text-align: center;
+    padding: 6px 8px; font-size: 11px; border-radius: 4px;
+    border: 1px solid var(--border); background: transparent;
+    color: var(--text-2); cursor: pointer; text-decoration: none;
+  }
+  .doc-card .actions a:hover { border-color: var(--gold); color: var(--gold); }
+</style>
+</head>
+<body>
+<script src="app.js"></script>
+
+<main>
+  <div class="page-header">
+    <h1>Documentos</h1>
+    <span class="muted" id="summary">…</span>
+  </div>
+
+  <div class="cats" id="cats">
+    <button class="active" data-cat="">Todos</button>
+  </div>
+
+  <div class="upload-box" id="dropBox">
+    <label for="fileInput">Selecionar arquivo</label>
+    <input type="file" id="fileInput">
+    <div class="hint">ou arraste aqui · categoria selecionada abaixo</div>
+    <div style="margin-top:12px">
+      <select id="uploadCat"></select>
+    </div>
+  </div>
+
+  <div class="docs-grid" id="docs"></div>
+</main>
+
+<script>
+renderNav('vault.html');
+
+let CATEGORIES = [];
+let activeCat = '';
+
+async function loadCategories() {
+  try {
+    const r = await api('/vault/categories');
+    CATEGORIES = r.data || [];
+    const cats = document.getElementById('cats');
+    cats.innerHTML = '<button class="active" data-cat="">Todos</button>' +
+      CATEGORIES.map(c => `<button data-cat="${c}">${c.replace(/-/g, ' ')}</button>`).join('');
+    cats.querySelectorAll('button').forEach(btn => {
+      btn.onclick = () => {
+        cats.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeCat = btn.dataset.cat;
+        loadDocs();
+      };
+    });
+    const uploadCat = document.getElementById('uploadCat');
+    uploadCat.innerHTML = CATEGORIES.map(c => `<option value="${c}">${c}</option>`).join('');
+  } catch (err) { toast(err.message, 'err'); }
+}
+
+async function loadDocs() {
+  const wrap = document.getElementById('docs');
+  wrap.innerHTML = '<div class="empty">carregando…</div>';
+  try {
+    const qs = activeCat ? `?category=${activeCat}` : '';
+    const r = await api(`/vault/docs${qs}`);
+    const docs = r.data || [];
+    document.getElementById('summary').textContent = `${docs.length} documentos`;
+    if (!docs.length) {
+      wrap.innerHTML = '<div class="empty">nenhum documento</div>';
+      return;
+    }
+    wrap.innerHTML = docs.map(d => {
+      const name = d.filename.split('__').slice(1).join('__') || d.filename;
+      const kb = (d.size / 1024).toFixed(1);
+      return `
+        <div class="doc-card">
+          <div class="cat">${d.category}</div>
+          <div class="fname">${name}</div>
+          <div class="meta">${kb} KB · ${fmtDate(d.uploadedAt)}</div>
+          <div class="actions">
+            <a href="${API}/vault/docs/${d.id}/download" target="_blank">baixar</a>
+            <button onclick="del('${d.id}')">apagar</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  } catch (err) {
+    wrap.innerHTML = `<div class="err">${err.message}</div>`;
+  }
+}
+
+async function del(id) {
+  if (!confirm('Apagar este documento?')) return;
+  await tryAction(
+    () => api(`/vault/docs/${id}`, { method: 'DELETE' }),
+    'Apagado',
+  );
+  loadDocs();
+}
+
+async function uploadFile(file) {
+  const cat = document.getElementById('uploadCat').value;
+  const buf = await file.arrayBuffer();
+  const b64 = btoa(new Uint8Array(buf).reduce((s, b) => s + String.fromCharCode(b), ''));
+  const ok = await tryAction(
+    () => api('/vault/docs', {
+      method: 'POST',
+      body: JSON.stringify({
+        category: cat,
+        filename: file.name,
+        mime: file.type || 'application/octet-stream',
+        contentBase64: b64,
+      }),
+    }),
+    `${file.name} enviado`,
+  );
+  if (ok) loadDocs();
+}
+
+document.getElementById('fileInput').addEventListener('change', (e) => {
+  const f = e.target.files[0];
+  if (f) uploadFile(f);
+});
+
+const drop = document.getElementById('dropBox');
+['dragenter', 'dragover'].forEach(ev => drop.addEventListener(ev, (e) => {
+  e.preventDefault(); drop.classList.add('drag');
+}));
+['dragleave', 'drop'].forEach(ev => drop.addEventListener(ev, (e) => {
+  e.preventDefault(); drop.classList.remove('drag');
+}));
+drop.addEventListener('drop', (e) => {
+  const f = e.dataTransfer.files[0];
+  if (f) uploadFile(f);
+});
+
+loadCategories().then(loadDocs);
+</script>
+</body>
+</html>

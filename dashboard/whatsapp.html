@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<title>Orkestra · WhatsApp</title>
+<link rel="stylesheet" href="app.css">
+<style>
+  .wa-layout {
+    display: grid; grid-template-columns: 320px 1fr;
+    gap: 16px; height: calc(100vh - 160px);
+  }
+  @media (max-width: 900px) { .wa-layout { grid-template-columns: 1fr; height: auto; } }
+  .wa-list, .wa-thread {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; overflow: hidden; display: flex; flex-direction: column;
+  }
+  .wa-list-head, .wa-thread-head {
+    padding: 12px 14px; border-bottom: 1px solid var(--border);
+    font-size: 12px; letter-spacing: 1px; text-transform: uppercase;
+    color: var(--text-2); display: flex; justify-content: space-between;
+  }
+  .wa-convs { overflow-y: auto; flex: 1; }
+  .wa-conv {
+    padding: 12px 14px; border-bottom: 1px solid var(--border);
+    cursor: pointer; transition: background 0.15s;
+  }
+  .wa-conv:hover { background: rgba(255,255,255,0.02); }
+  .wa-conv.active { background: rgba(201,169,97,0.08); border-left: 3px solid var(--gold); padding-left: 11px; }
+  .wa-conv .phone { font-weight: 600; font-size: 13px; color: var(--text); }
+  .wa-conv .last { font-size: 11px; color: var(--text-2); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .wa-conv .time { font-size: 10px; color: var(--text-2); }
+  .badge-unread {
+    background: var(--gold); color: #0B0B0C; font-size: 10px;
+    padding: 1px 6px; border-radius: 8px; font-weight: 600;
+  }
+
+  .wa-messages {
+    flex: 1; overflow-y: auto; padding: 18px;
+    display: flex; flex-direction: column; gap: 8px;
+    background: #0B0B0C;
+  }
+  .msg { max-width: 75%; padding: 8px 12px; border-radius: 10px; font-size: 13px; }
+  .msg .time { font-size: 9px; color: var(--text-2); margin-top: 3px; }
+  .msg.in  { background: #1C1C1F; border: 1px solid var(--border); align-self: flex-start; }
+  .msg.out { background: #1F3A2E; align-self: flex-end; }
+  .wa-compose {
+    display: flex; gap: 10px; padding: 12px;
+    border-top: 1px solid var(--border); background: var(--surface);
+  }
+  .wa-compose input {
+    flex: 1; padding: 9px 12px; border-radius: 6px;
+    border: 1px solid var(--border); background: var(--bg);
+    color: var(--text);
+  }
+  .empty-thread {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    color: var(--text-2); font-size: 13px;
+  }
+</style>
+</head>
+<body>
+<script src="app.js"></script>
+
+<main>
+  <div class="page-header">
+    <h1>WhatsApp</h1>
+    <span class="muted" id="summary">…</span>
+  </div>
+
+  <div class="wa-layout">
+    <div class="wa-list">
+      <div class="wa-list-head">
+        <span>Conversas</span>
+        <button class="btn-link" onclick="newConv()">+ novo</button>
+      </div>
+      <div class="wa-convs" id="convs"></div>
+    </div>
+
+    <div class="wa-thread">
+      <div class="wa-thread-head" id="threadHead">selecione uma conversa</div>
+      <div class="wa-messages" id="messages">
+        <div class="empty-thread">—</div>
+      </div>
+      <form class="wa-compose" id="sendForm" style="display:none">
+        <input id="msgInput" placeholder="Digite uma mensagem…" required>
+        <button class="primary">Enviar</button>
+      </form>
+    </div>
+  </div>
+</main>
+
+<script>
+renderNav('whatsapp.html');
+
+let activePhone = null;
+
+async function loadConversations() {
+  try {
+    const r = await api('/whatsapp/conversations');
+    const list = r.data || [];
+    document.getElementById('summary').textContent =
+      `${list.length} conversas · provider ${r.meta?.provider ?? '—'}`;
+    const wrap = document.getElementById('convs');
+    if (!list.length) {
+      wrap.innerHTML = '<div class="empty" style="padding:16px">nenhuma conversa</div>';
+      return;
+    }
+    wrap.innerHTML = list.map(c => `
+      <div class="wa-conv ${c.phone === activePhone ? 'active' : ''}" onclick="openConv('${c.phone}')">
+        <div style="display:flex; justify-content:space-between">
+          <span class="phone">${c.phone}</span>
+          ${c.unread ? `<span class="badge-unread">${c.unread}</span>` : ''}
+        </div>
+        <div class="last">${c.lastDirection === 'out' ? '↑ ' : '↓ '}${c.lastMessage}</div>
+        <div class="time">${fmtDate(c.lastAt)}</div>
+      </div>
+    `).join('');
+  } catch (err) {
+    document.getElementById('summary').innerHTML = `<span class="err">${err.message}</span>`;
+  }
+}
+
+async function openConv(phone) {
+  activePhone = phone;
+  document.getElementById('threadHead').textContent = phone;
+  document.getElementById('sendForm').style.display = 'flex';
+  const wrap = document.getElementById('messages');
+  wrap.innerHTML = '<div class="empty-thread">carregando…</div>';
+  try {
+    const r = await api(`/whatsapp/messages?phone=${encodeURIComponent(phone)}`);
+    const msgs = r.data || [];
+    if (!msgs.length) {
+      wrap.innerHTML = '<div class="empty-thread">sem mensagens</div>';
+    } else {
+      wrap.innerHTML = msgs.map(m => `
+        <div class="msg ${m.direction}">
+          ${m.body}
+          <div class="time">${fmtDate(m.createdAt)} · ${m.status}</div>
+        </div>
+      `).join('');
+      wrap.scrollTop = wrap.scrollHeight;
+    }
+    loadConversations();
+  } catch (err) {
+    wrap.innerHTML = `<div class="err" style="padding:20px">${err.message}</div>`;
+  }
+}
+
+function newConv() {
+  const phone = prompt('Telefone (com DDD, ex: 5511999999999):');
+  if (phone) openConv(phone.replace(/\D/g, ''));
+}
+
+document.getElementById('sendForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  if (!activePhone) return;
+  const input = document.getElementById('msgInput');
+  const body = input.value.trim();
+  if (!body) return;
+  const ok = await tryAction(
+    () => api('/whatsapp/send', {
+      method: 'POST',
+      body: JSON.stringify({ phone: activePhone, body }),
+    }),
+    'Enviada',
+  );
+  if (ok) { input.value = ''; openConv(activePhone); }
+});
+
+loadConversations();
+</script>
+</body>
+</html>

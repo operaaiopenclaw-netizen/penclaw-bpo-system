@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<title>Orkestra · Calendário</title>
+<link rel="stylesheet" href="app.css">
+<style>
+  .cal-header {
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 18px; flex-wrap: wrap;
+  }
+  .cal-header h2 {
+    margin: 0; font-size: 18px; letter-spacing: 1px;
+    flex: 1;
+  }
+  .cal-nav { display: flex; gap: 6px; }
+  .cal-nav button {
+    padding: 7px 14px; border-radius: 6px;
+    border: 1px solid var(--border); background: transparent;
+    color: var(--text-2); cursor: pointer; font-size: 12px;
+  }
+  .cal-nav button:hover { border-color: var(--gold); color: var(--text); }
+  .cal-grid {
+    display: grid; grid-template-columns: repeat(7, 1fr);
+    gap: 2px; background: var(--border);
+    border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
+  }
+  .cal-weekday {
+    background: var(--surface); padding: 8px 10px;
+    font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--text-2); text-align: center;
+  }
+  .cal-day {
+    background: var(--bg); min-height: 110px;
+    padding: 8px 8px 4px; position: relative;
+    display: flex; flex-direction: column;
+  }
+  .cal-day.other { opacity: 0.35; }
+  .cal-day.today { background: rgba(201,169,97,0.06); }
+  .cal-day .d-num {
+    font-size: 11px; color: var(--text-2);
+    margin-bottom: 6px; font-variant-numeric: tabular-nums;
+  }
+  .cal-day.today .d-num { color: var(--gold); font-weight: 600; }
+  .item {
+    font-size: 10px; padding: 3px 6px;
+    border-radius: 3px; margin-bottom: 2px;
+    text-decoration: none; display: block;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    border-left: 2px solid var(--gold);
+    background: rgba(255,255,255,0.03);
+    color: var(--text);
+  }
+  .item.event              { border-color: var(--emerald); }
+  .item.service-order      { border-color: var(--gold); }
+  .item.production-order   { border-color: var(--warn); }
+  .item.execution          { border-color: #D4B674; }
+  .item:hover { background: rgba(201,169,97,0.1); }
+</style>
+</head>
+<body>
+<script src="app.js"></script>
+
+<main>
+  <div class="page-header">
+    <h1>Calendário</h1>
+    <span class="muted" id="summary">…</span>
+  </div>
+
+  <div class="cal-header">
+    <h2 id="calTitle">—</h2>
+    <div class="cal-nav">
+      <button onclick="shift(-1)">‹ Anterior</button>
+      <button onclick="today()">Hoje</button>
+      <button onclick="shift(1)">Próximo ›</button>
+    </div>
+  </div>
+
+  <div class="cal-grid" id="calGrid"></div>
+</main>
+
+<script>
+renderNav('calendar.html');
+
+const WEEKDAYS = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
+let viewDate = new Date();
+
+function firstOfMonth(d) { return new Date(d.getFullYear(), d.getMonth(), 1); }
+function lastOfMonth(d)  { return new Date(d.getFullYear(), d.getMonth() + 1, 0); }
+function toIso(d)        { return new Date(d).toISOString().slice(0, 10); }
+
+function shift(delta) {
+  viewDate = new Date(viewDate.getFullYear(), viewDate.getMonth() + delta, 1);
+  render();
+}
+function today() { viewDate = new Date(); render(); }
+
+async function render() {
+  const title = viewDate.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+  document.getElementById('calTitle').textContent = title;
+  const summary = document.getElementById('summary');
+  summary.textContent = 'carregando…';
+
+  const grid = document.getElementById('calGrid');
+  grid.innerHTML = WEEKDAYS.map(w => `<div class="cal-weekday">${w}</div>`).join('');
+
+  const first = firstOfMonth(viewDate);
+  const last  = lastOfMonth(viewDate);
+
+  // Monday-first offset
+  const offset = (first.getDay() + 6) % 7;
+  const gridStart = new Date(first);
+  gridStart.setDate(gridStart.getDate() - offset);
+  const totalCells = 42; // 6 weeks
+
+  const rangeFrom = toIso(gridStart);
+  const rangeTo   = toIso(new Date(gridStart.getTime() + (totalCells) * 86400000));
+
+  let items = [];
+  try {
+    const r = await api(`/calendar/range?from=${rangeFrom}&to=${rangeTo}`);
+    items = r.data || [];
+  } catch (err) {
+    summary.innerHTML = `<span class="err">${err.message}</span>`;
+    return;
+  }
+
+  const byDay = {};
+  for (const it of items) {
+    const k = it.start.slice(0, 10);
+    (byDay[k] ??= []).push(it);
+  }
+
+  const todayIso = toIso(new Date());
+  for (let i = 0; i < totalCells; i++) {
+    const d = new Date(gridStart.getTime() + i * 86400000);
+    const iso = toIso(d);
+    const otherMonth = d.getMonth() !== viewDate.getMonth();
+    const classes = ['cal-day'];
+    if (otherMonth) classes.push('other');
+    if (iso === todayIso) classes.push('today');
+    const dayItems = byDay[iso] || [];
+    grid.insertAdjacentHTML('beforeend', `
+      <div class="${classes.join(' ')}">
+        <div class="d-num">${d.getDate()}</div>
+        ${dayItems.slice(0, 4).map(it => `
+          <a href="${it.link}" class="item ${it.kind}" title="${it.subtitle ?? ''}">${it.title}</a>
+        `).join('')}
+        ${dayItems.length > 4 ? `<div class="item" style="border:0;color:var(--text-2)">+${dayItems.length - 4} mais</div>` : ''}
+      </div>
+    `);
+  }
+
+  summary.textContent = `${items.length} itens no mês`;
+}
+
+render();
+</script>
+</body>
+</html>

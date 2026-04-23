@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<title>Orkestra · Marketing</title>
+<link rel="stylesheet" href="app.css">
+<style>
+  .kpi-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 22px; }
+  .kpi { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px; border-top: 3px solid var(--gold); }
+  .kpi .label { font-size: 10px; color: var(--text-2); letter-spacing: 1.5px; text-transform: uppercase; }
+  .kpi .value { font-size: 22px; font-weight: 600; margin-top: 4px; font-variant-numeric: tabular-nums; }
+  @media (max-width: 1000px) { .kpi-grid { grid-template-columns: repeat(3, 1fr); } }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .channel { font-size: 10px; padding: 2px 8px; border-radius: 4px; letter-spacing: 1px; text-transform: uppercase; }
+  .channel.meta    { background: rgba(24,119,242,0.15); color: #4A9EFF; }
+  .channel.google  { background: rgba(234,67,53,0.15); color: #EA5A4A; }
+  .channel.tiktok  { background: rgba(254,44,85,0.15); color: #FE5F85; }
+  .channel.organic { background: rgba(0,179,138,0.15); color: var(--emerald); }
+</style>
+</head>
+<body>
+<script src="app.js"></script>
+
+<main>
+  <div class="page-header">
+    <h1>Marketing</h1>
+    <span class="muted" id="summary">…</span>
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi"><div class="label">Investimento</div><div class="value" id="kSpend">—</div></div>
+    <div class="kpi"><div class="label">Receita atribuída</div><div class="value" id="kRevenue">—</div></div>
+    <div class="kpi"><div class="label">ROAS</div><div class="value" id="kRoas">—</div></div>
+    <div class="kpi"><div class="label">CPA</div><div class="value" id="kCpa">—</div></div>
+    <div class="kpi"><div class="label">Campanhas</div><div class="value" id="kCount">—</div></div>
+  </div>
+
+  <section class="panel">
+    <h2>Nova campanha</h2>
+    <form id="form" class="form-row">
+      <div><label>Nome*</label><input name="name" required></div>
+      <div><label>Canal*</label>
+        <select name="channel" required>
+          <option value="meta">Meta (IG/FB)</option>
+          <option value="google">Google Ads</option>
+          <option value="tiktok">TikTok</option>
+          <option value="organic">Orgânico</option>
+        </select>
+      </div>
+      <div><label>Budget diário (R$)*</label><input name="budgetDaily" type="number" step="0.01" min="0" required></div>
+      <div><label>Criativos (vírgula)</label><input name="creatives" placeholder="banner1.png, video.mp4"></div>
+      <div><label>&nbsp;</label><button class="primary" type="submit">Criar</button></div>
+    </form>
+  </section>
+
+  <section class="panel">
+    <h2>Campanhas</h2>
+    <table>
+      <thead><tr>
+        <th>Nome</th><th>Canal</th><th>Status</th>
+        <th class="num">Budget/dia</th><th class="num">Gasto</th>
+        <th class="num">Impr</th><th class="num">Clicks</th>
+        <th class="num">Conv</th><th class="num">Receita</th>
+        <th></th>
+      </tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </section>
+</main>
+
+<script>
+renderNav('marketing.html');
+
+async function loadSummary() {
+  try {
+    const r = await api('/marketing/summary');
+    const d = r.data;
+    document.getElementById('kSpend').textContent = fmtMoney(d.totals.spend);
+    document.getElementById('kRevenue').textContent = fmtMoney(d.totals.revenue);
+    document.getElementById('kRoas').textContent = d.roas ? d.roas.toFixed(2) + 'x' : '—';
+    document.getElementById('kCpa').textContent = d.cpa ? fmtMoney(d.cpa) : '—';
+    document.getElementById('kCount').textContent = fmtInt(d.campaigns);
+    const prov = d.provider?.mode ?? 'mock';
+    document.getElementById('summary').textContent = `provider: ${prov}`;
+  } catch (err) {
+    document.getElementById('summary').innerHTML = `<span class="err">${err.message}</span>`;
+  }
+}
+
+async function loadCampaigns() {
+  const tbody = document.getElementById('rows');
+  tbody.innerHTML = '<tr><td colspan="10" class="empty">carregando…</td></tr>';
+  try {
+    const r = await api('/marketing/campaigns');
+    const list = r.data || [];
+    if (!list.length) { tbody.innerHTML = '<tr><td colspan="10" class="empty">sem campanhas</td></tr>'; return; }
+    tbody.innerHTML = list.map(c => `
+      <tr>
+        <td>${c.name}</td>
+        <td><span class="channel ${c.channel}">${c.channel}</span></td>
+        <td><span class="badge ${c.status}">${c.status}</span></td>
+        <td class="num">${fmtMoney(c.budgetDaily)}</td>
+        <td class="num">${fmtMoney(c.spendToDate)}</td>
+        <td class="num">${fmtInt(c.impressions)}</td>
+        <td class="num">${fmtInt(c.clicks)}</td>
+        <td class="num">${fmtInt(c.conversions)}</td>
+        <td class="num">${fmtMoney(c.revenueAttributed)}</td>
+        <td class="row-actions">
+          ${c.status === 'active'
+            ? `<button class="secondary" onclick="setStatus('${c.id}','paused')">pausar</button>`
+            : c.status === 'paused'
+              ? `<button class="secondary" onclick="setStatus('${c.id}','active')">retomar</button>`
+              : ''}
+          ${c.status !== 'ended' ? `<button class="danger" onclick="setStatus('${c.id}','ended')">encerrar</button>` : ''}
+        </td>
+      </tr>
+    `).join('');
+  } catch (err) {
+    tbody.innerHTML = `<tr><td colspan="10" class="err">${err.message}</td></tr>`;
+  }
+}
+
+async function setStatus(id, status) {
+  const ok = await tryAction(
+    () => api(`/marketing/campaigns/${id}`, { method: 'PATCH', body: JSON.stringify({ status }) }),
+    `Campanha ${status}`,
+  );
+  if (ok) { loadCampaigns(); loadSummary(); }
+}
+
+document.getElementById('form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const payload = {
+    name: fd.get('name'),
+    channel: fd.get('channel'),
+    budgetDaily: Number(fd.get('budgetDaily')),
+    creatives: (fd.get('creatives') || '').split(',').map(s => s.trim()).filter(Boolean),
+  };
+  const ok = await tryAction(
+    () => api('/marketing/campaigns', { method: 'POST', body: JSON.stringify(payload) }),
+    'Campanha criada',
+  );
+  if (ok) { e.target.reset(); loadCampaigns(); loadSummary(); }
+});
+
+loadSummary();
+loadCampaigns();
+</script>
+</body>
+</html>

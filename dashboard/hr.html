@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<title>Orkestra · RH</title>
+<link rel="stylesheet" href="app.css">
+<style>
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 1000px) { .split { grid-template-columns: 1fr; } }
+  .score { font-weight: 600; font-variant-numeric: tabular-nums; }
+  .score.HIGH   { color: var(--emerald); }
+  .score.MED    { color: var(--warn); }
+  .score.LOW    { color: var(--danger); }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body>
+<script src="app.js"></script>
+
+<main>
+  <div class="page-header">
+    <h1>Recursos Humanos</h1>
+    <span class="muted" id="summary">…</span>
+  </div>
+
+  <div class="split">
+    <section class="panel">
+      <h2>Nova vaga</h2>
+      <form id="openingForm" class="form-row">
+        <div><label>Título*</label><input name="title" required></div>
+        <div><label>Departamento*</label><input name="department" required></div>
+        <div style="grid-column: 1/-1"><label>Descrição*</label><textarea name="description" rows="3" required></textarea></div>
+        <div style="grid-column: 1/-1"><label>Requisitos (vírgula)</label><input name="requirements" placeholder="Node, SQL, 3+ anos"></div>
+        <div><label>&nbsp;</label><button class="primary" type="submit">Publicar vaga</button></div>
+      </form>
+    </section>
+
+    <section class="panel">
+      <h2>Novo candidato</h2>
+      <form id="candidateForm" class="form-row">
+        <div><label>Nome*</label><input name="name" required></div>
+        <div><label>E-mail</label><input name="email" type="email"></div>
+        <div><label>Telefone</label><input name="phone"></div>
+        <div><label>Vaga</label><select name="appliedTo" id="appliedTo"><option value="">—</option></select></div>
+        <div style="grid-column: 1/-1"><label>Currículo (texto)*</label><textarea name="resume" rows="5" required placeholder="Cole o currículo para pré-screening"></textarea></div>
+        <div><label>&nbsp;</label><button class="primary" type="submit">Adicionar</button></div>
+      </form>
+    </section>
+  </div>
+
+  <section class="panel" style="margin-top:20px">
+    <h2>Vagas abertas</h2>
+    <table>
+      <thead><tr><th>Título</th><th>Departamento</th><th>Status</th><th>Aberta em</th><th></th></tr></thead>
+      <tbody id="openings"></tbody>
+    </table>
+  </section>
+
+  <section class="panel" style="margin-top:20px">
+    <h2>Candidatos · ranqueados por score IA</h2>
+    <table>
+      <thead><tr><th>Nome</th><th>Vaga</th><th>Stage</th><th class="num">Score IA</th><th>Recomendação</th><th></th></tr></thead>
+      <tbody id="candidates"></tbody>
+    </table>
+  </section>
+</main>
+
+<script>
+renderNav('hr.html');
+
+const STAGES = ['new', 'screening', 'interview', 'offer', 'hired', 'rejected'];
+const openingsById = {};
+
+async function loadSummary() {
+  try {
+    const r = await api('/hr/summary');
+    const d = r.data;
+    document.getElementById('summary').textContent =
+      `${d.openings ?? '?'} vagas · ${d.candidates ?? '?'} candidatos`;
+  } catch {}
+}
+
+async function loadOpenings() {
+  const tbody = document.getElementById('openings');
+  tbody.innerHTML = '<tr><td colspan="5" class="empty">carregando…</td></tr>';
+  try {
+    const r = await api('/hr/openings');
+    const list = r.data || [];
+    // populate select
+    const sel = document.getElementById('appliedTo');
+    sel.innerHTML = '<option value="">—</option>' +
+      list.filter(o => o.status === 'open')
+          .map(o => `<option value="${o.id}">${o.title} · ${o.department}</option>`).join('');
+    list.forEach(o => { openingsById[o.id] = o; });
+    if (!list.length) { tbody.innerHTML = '<tr><td colspan="5" class="empty">nenhuma vaga</td></tr>'; return; }
+    tbody.innerHTML = list.map(o => `
+      <tr>
+        <td>${o.title}</td>
+        <td>${o.department}</td>
+        <td><span class="badge ${o.status}">${o.status}</span></td>
+        <td>${fmtDay(o.createdAt)}</td>
+        <td class="row-actions">
+          ${o.status === 'open' ? `<button class="secondary" onclick="setOpening('${o.id}','paused')">pausar</button>
+          <button class="danger" onclick="setOpening('${o.id}','closed')">fechar</button>` : ''}
+        </td>
+      </tr>
+    `).join('');
+  } catch (err) {
+    tbody.innerHTML = `<tr><td colspan="5" class="err">${err.message}</td></tr>`;
+  }
+}
+
+async function setOpening(id, status) {
+  const ok = await tryAction(
+    () => api(`/hr/openings/${id}`, { method: 'PATCH', body: JSON.stringify({ status }) }),
+    `Vaga ${status}`,
+  );
+  if (ok) loadOpenings();
+}
+
+async function loadCandidates() {
+  const tbody = document.getElementById('candidates');
+  tbody.innerHTML = '<tr><td colspan="6" class="empty">carregando…</td></tr>';
+  try {
+    const r = await api('/hr/candidates');
+    const list = r.data || [];
+    if (!list.length) { tbody.innerHTML = '<tr><td colspan="6" class="empty">sem candidatos</td></tr>'; return; }
+    tbody.innerHTML = list.map(c => {
+      const recoClass = c.aiRecommendation === 'hire' ? 'HIGH'
+                    : c.aiRecommendation === 'consider' ? 'MED'
+                    : c.aiRecommendation === 'pass' ? 'LOW' : '';
+      return `
+      <tr>
+        <td>${c.name}</td>
+        <td>${openingsById[c.appliedTo]?.title ?? '—'}</td>
+        <td>
+          <select onchange="setStage('${c.id}', this.value)">
+            ${STAGES.map(s => `<option value="${s}" ${s === c.stage ? 'selected' : ''}>${s}</option>`).join('')}
+          </select>
+        </td>
+        <td class="num score ${recoClass}">${c.aiScore != null ? c.aiScore.toFixed(0) : '—'}</td>
+        <td>${c.aiRecommendation ?? '—'}</td>
+        <td class="row-actions">
+          <button class="secondary" onclick="note('${c.id}')">nota</button>
+        </td>
+      </tr>`;
+    }).join('');
+  } catch (err) {
+    tbody.innerHTML = `<tr><td colspan="6" class="err">${err.message}</td></tr>`;
+  }
+}
+
+async function setStage(id, stage) {
+  await tryAction(
+    () => api(`/hr/candidates/${id}`, { method: 'PATCH', body: JSON.stringify({ stage }) }),
+    `Stage → ${stage}`,
+  );
+}
+
+async function note(id) {
+  const n = prompt('Nota:');
+  if (!n) return;
+  await tryAction(
+    () => api(`/hr/candidates/${id}`, { method: 'PATCH', body: JSON.stringify({ addNote: n }) }),
+    'Nota salva',
+  );
+}
+
+document.getElementById('openingForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const payload = {
+    title: fd.get('title'),
+    department: fd.get('department'),
+    description: fd.get('description'),
+    requirements: (fd.get('requirements') || '').split(',').map(s => s.trim()).filter(Boolean),
+  };
+  const ok = await tryAction(
+    () => api('/hr/openings', { method: 'POST', body: JSON.stringify(payload) }),
+    'Vaga publicada',
+  );
+  if (ok) { e.target.reset(); loadOpenings(); loadSummary(); }
+});
+
+document.getElementById('candidateForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const payload = {
+    name: fd.get('name'),
+    email: fd.get('email') || undefined,
+    phone: fd.get('phone') || undefined,
+    resume: fd.get('resume'),
+    appliedTo: fd.get('appliedTo') || undefined,
+  };
+  const ok = await tryAction(
+    () => api('/hr/candidates', { method: 'POST', body: JSON.stringify(payload) }),
+    'Candidato adicionado',
+  );
+  if (ok) { e.target.reset(); loadCandidates(); loadSummary(); }
+});
+
+loadSummary();
+loadOpenings().then(loadCandidates);
+</script>
+</body>
+</html>
