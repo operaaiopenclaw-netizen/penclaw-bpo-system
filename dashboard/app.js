@@ -54,6 +54,7 @@ const NAV = [
   { href: 'production-orders.html',  label: 'Produção',    icon: '🍳', roles: ['admin', 'manager', 'operator', 'kitchen'] },
   { href: 'kitchen.html',            label: 'Cozinha/CMV', icon: '🧂', roles: ['admin', 'manager', 'kitchen', 'finance'] },
   { href: 'execution.html',          label: 'Execução',    icon: '🎬', roles: ['admin', 'manager', 'operator'] },
+  { href: 'checklists.html',         label: 'Checklists',  icon: '✔️', roles: ['admin', 'manager', 'operator', 'kitchen'] },
   { href: 'commercial.html',         label: 'Comercial',   icon: '💼', roles: ['admin', 'finance', 'manager'] },
   { href: 'onboarding.html',         label: 'Onboarding',  icon: '🚀', roles: ['admin', 'finance', 'manager', 'operator'] },
   { href: 'finance.html',            label: 'Financeiro',  icon: '💸', roles: ['admin', 'finance'] },

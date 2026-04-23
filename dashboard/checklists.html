@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<title>Orkestra · Checklists</title>
+<link rel="stylesheet" href="app.css">
+<style>
+  .sub-title { color: var(--gold); font-size: 11px; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 4px; }
+  h1 { font-size: 22px; letter-spacing: 1px; margin-bottom: 20px; }
+
+  .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 22px; }
+  .kpi-tile {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 18px 20px;
+    position: relative; overflow: hidden;
+  }
+  .kpi-tile::before {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(135deg, var(--accent, rgba(201,169,97,0.12)) 0%, transparent 70%);
+  }
+  .kpi-tile.team    { --accent: rgba(138,110,255,0.18); }
+  .kpi-tile.runs    { --accent: rgba(74,158,255,0.18); }
+  .kpi-tile.overall { --accent: rgba(0,179,138,0.18); }
+  .kpi-tile.pending { --accent: rgba(255,138,59,0.18); }
+  .kpi-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-2); }
+  .kpi-val   { font-size: 30px; font-weight: 700; margin-top: 6px; letter-spacing: -0.5px; }
+  .kpi-hint  { font-size: 11px; color: var(--text-2); margin-top: 4px; }
+
+  .split { display: grid; grid-template-columns: 1.2fr 1fr; gap: 18px; }
+  @media (max-width: 1100px) { .split { grid-template-columns: 1fr; } }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px; margin-bottom: 18px; }
+  .card h2 { font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--text); margin-bottom: 14px; }
+
+  .tpl-card {
+    border: 1px solid var(--border); border-radius: 10px; padding: 14px;
+    background: var(--bg); margin-bottom: 10px;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  }
+  .tpl-card .title { font-weight: 600; font-size: 14px; }
+  .tpl-card .meta  { font-size: 11px; color: var(--text-2); margin-top: 3px; letter-spacing: 1px; text-transform: uppercase; }
+  .tpl-card .items { font-size: 11px; color: var(--text-2); }
+
+  .area-badge {
+    display: inline-block; padding: 2px 8px; border-radius: 10px;
+    font-size: 10px; letter-spacing: 1px; text-transform: uppercase;
+    border: 1px solid var(--border); background: var(--bg); color: var(--text-2);
+  }
+  .area-badge.cozinha    { border-color: #FE5F85; color: #FE5F85; }
+  .area-badge.salao      { border-color: #4A9EFF; color: #4A9EFF; }
+  .area-badge.bar        { border-color: #C9A961; color: #C9A961; }
+  .area-badge.montagem   { border-color: #8A6EFF; color: #8A6EFF; }
+  .area-badge.limpeza    { border-color: #00B38A; color: #00B38A; }
+  .area-badge.auditoria  { border-color: #FF8A3B; color: #FF8A3B; }
+  .area-badge.producao   { border-color: #EA5A4A; color: #EA5A4A; }
+  .area-badge.geral      { border-color: var(--text-2); }
+
+  .run-row {
+    display: grid; grid-template-columns: 2fr auto 140px auto; gap: 12px; align-items: center;
+    padding: 12px 14px; border-bottom: 1px solid var(--border);
+    cursor: pointer; transition: background 0.1s;
+  }
+  .run-row:hover { background: var(--bg); }
+  .run-row:last-child { border-bottom: 0; }
+  .run-row .name { font-weight: 500; font-size: 14px; }
+  .run-row .sched { font-size: 11px; color: var(--text-2); }
+
+  .progress-bar { background: var(--bg); border-radius: 6px; height: 6px; overflow: hidden; width: 140px; }
+  .progress-bar .fill { background: var(--emerald); height: 100%; transition: width 0.3s; }
+  .progress-bar .fill.low { background: var(--warn); }
+  .progress-bar .fill.mid { background: var(--gold); }
+
+  .item-row {
+    display: grid; grid-template-columns: 28px 1fr auto; gap: 12px; align-items: flex-start;
+    padding: 12px 0; border-bottom: 1px solid var(--border);
+  }
+  .item-row:last-child { border-bottom: 0; }
+  .item-row .title { font-size: 14px; color: var(--text); }
+  .item-row .desc  { font-size: 11px; color: var(--text-2); margin-top: 2px; }
+  .item-row.done .title { text-decoration: line-through; color: var(--text-2); }
+  .item-row .photo-thumb {
+    width: 60px; height: 60px; border-radius: 6px; object-fit: cover;
+    border: 1px solid var(--border); cursor: pointer;
+  }
+  .photo-required { font-size: 9px; color: var(--gold); letter-spacing: 1px; text-transform: uppercase; }
+
+  .check-box {
+    width: 22px; height: 22px; border: 2px solid var(--border); border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; background: var(--bg); transition: all 0.15s;
+  }
+  .check-box:hover { border-color: var(--emerald); }
+  .check-box.done { background: var(--emerald); border-color: var(--emerald); color: var(--bg); }
+  .check-box.done::after { content: '✓'; font-weight: 700; font-size: 14px; }
+
+  .ranking-row { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--border); align-items: center; }
+  .ranking-row:last-child { border-bottom: 0; }
+  .ranking-pos { font-size: 14px; font-weight: 600; color: var(--gold); width: 20px; }
+  .ranking-user { flex: 1; font-size: 13px; }
+  .ranking-count { font-size: 12px; color: var(--text-2); font-variant-numeric: tabular-nums; }
+
+  .new-item-row { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; margin-bottom: 6px; align-items: center; }
+  .new-item-row input { width: 100%; }
+  .new-item-row label { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--text-2); margin: 0; }
+
+  .muted { color: var(--text-2); font-size: 11px; text-align: center; padding: 16px; }
+</style>
+</head>
+<body>
+<script src="app.js"></script>
+
+<main>
+  <div class="sub-title">Operações · controle de qualidade com prova visual</div>
+  <h1>Checklists</h1>
+
+  <div class="kpi-row">
+    <div class="kpi-tile team">
+      <div class="kpi-label">Operadores do mês</div>
+      <div class="kpi-val" id="kpi-team">—</div>
+      <div class="kpi-hint">Pessoas concluindo tarefas</div>
+    </div>
+    <div class="kpi-tile runs">
+      <div class="kpi-label">Runs do mês</div>
+      <div class="kpi-val" id="kpi-runs">—</div>
+      <div class="kpi-hint">Checklists instanciados</div>
+    </div>
+    <div class="kpi-tile overall">
+      <div class="kpi-label">Conclusão</div>
+      <div class="kpi-val" id="kpi-pct">—</div>
+      <div class="kpi-hint">% itens concluídos no mês</div>
+    </div>
+    <div class="kpi-tile pending">
+      <div class="kpi-label">Pendentes</div>
+      <div class="kpi-val" id="kpi-pending">—</div>
+      <div class="kpi-hint">Runs em aberto</div>
+    </div>
+  </div>
+
+  <div class="split">
+    <div>
+      <div class="card">
+        <h2>Runs ativos</h2>
+        <div id="runs-list"><div class="muted">carregando…</div></div>
+      </div>
+
+      <div class="card" id="detail-card" style="display:none">
+        <h2 id="detail-title">—</h2>
+        <div id="detail-meta" class="muted" style="text-align:left;padding:0 0 12px 0"></div>
+        <div id="detail-items"></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card">
+        <h2>Iniciar run</h2>
+        <form id="run-form" class="form-row" style="display:grid;grid-template-columns:1fr;gap:8px">
+          <div>
+            <label>Template</label>
+            <select name="templateId" id="run-tpl" required></select>
+          </div>
+          <div>
+            <label>Data agendada</label>
+            <input name="scheduledFor" type="datetime-local" required>
+          </div>
+          <div>
+            <label>Evento (opcional)</label>
+            <input name="eventId" placeholder="ID do evento">
+          </div>
+          <button class="primary" type="submit">Instanciar checklist</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2>Ranking do mês</h2>
+        <div id="ranking-list"><div class="muted">carregando…</div></div>
+      </div>
+
+      <div class="card">
+        <h2>Templates <button class="secondary" style="float:right;font-size:11px" onclick="toggleNewTpl()">+ novo</button></h2>
+
+        <form id="tpl-form" style="display:none;margin-bottom:14px">
+          <div class="form-row" style="display:grid;grid-template-columns:1fr;gap:8px">
+            <div><label>Nome</label><input name="name" required></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+              <div><label>Área</label>
+                <select name="area" required>
+                  <option value="cozinha">Cozinha</option>
+                  <option value="salao">Salão</option>
+                  <option value="bar">Bar</option>
+                  <option value="montagem">Montagem</option>
+                  <option value="limpeza">Limpeza</option>
+                  <option value="auditoria">Auditoria</option>
+                  <option value="producao">Produção</option>
+                  <option value="geral">Geral</option>
+                </select>
+              </div>
+              <div><label>Turno</label>
+                <select name="shift" required>
+                  <option value="manha">Manhã</option>
+                  <option value="tarde">Tarde</option>
+                  <option value="noite">Noite</option>
+                  <option value="integral">Integral</option>
+                </select>
+              </div>
+            </div>
+            <div><label>Recorrência</label>
+              <select name="recurrence" required>
+                <option value="daily">Diária</option>
+                <option value="weekly">Semanal</option>
+                <option value="monthly">Mensal</option>
+                <option value="per-event">Por evento</option>
+                <option value="one-off">Única</option>
+              </select>
+            </div>
+            <div>
+              <label>Itens <button type="button" class="secondary" style="float:right;font-size:11px" onclick="addItemRow()">+ item</button></label>
+              <div id="items-rows"></div>
+            </div>
+            <div style="display:flex;gap:8px">
+              <button class="primary" type="submit">Salvar template</button>
+              <button class="secondary" type="button" onclick="toggleNewTpl()">Cancelar</button>
+            </div>
+          </div>
+        </form>
+
+        <div id="tpl-list"><div class="muted">carregando…</div></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+renderNav('checklists.html');
+
+const AREAS = ['cozinha','salao','bar','montagem','limpeza','auditoria','producao','geral'];
+let templates = [];
+let currentRunId = null;
+
+function areaLabel(a) {
+  const m = { cozinha:'Cozinha', salao:'Salão', bar:'Bar', montagem:'Montagem', limpeza:'Limpeza', auditoria:'Auditoria', producao:'Produção', geral:'Geral' };
+  return m[a] || a;
+}
+function shiftLabel(s) {
+  return { manha:'Manhã', tarde:'Tarde', noite:'Noite', integral:'Integral' }[s] || s;
+}
+function recLabel(r) {
+  return { daily:'Diário', weekly:'Semanal', monthly:'Mensal', 'per-event':'Por evento', 'one-off':'Único' }[r] || r;
+}
+
+// ── Summary ───────────────────────────────────────────────────
+async function loadSummary() {
+  try {
+    const { data } = await api('/checklists/summary');
+    document.getElementById('kpi-team').textContent = data.ranking?.length ?? 0;
+    document.getElementById('kpi-runs').textContent = data.monthRuns ?? 0;
+    document.getElementById('kpi-pct').textContent = `${data.overallPct}%`;
+    const pending = (data.byStatus?.pending ?? 0) + (data.byStatus?.in_progress ?? 0);
+    document.getElementById('kpi-pending').textContent = pending;
+
+    const rank = document.getElementById('ranking-list');
+    if (!data.ranking?.length) {
+      rank.innerHTML = '<div class="muted">Sem conclusões no mês.</div>';
+    } else {
+      rank.innerHTML = data.ranking.map((r, i) => `
+        <div class="ranking-row">
+          <div class="ranking-pos">${i + 1}º</div>
+          <div class="ranking-user">${r.user}</div>
+          <div class="ranking-count">${r.completed} · ${r.withPhoto}📷</div>
+        </div>
+      `).join('');
+    }
+  } catch (err) {
+    console.error('summary', err);
+  }
+}
+
+// ── Templates ─────────────────────────────────────────────────
+async function loadTemplates() {
+  try {
+    const { data } = await api('/checklists/templates?active=true');
+    templates = data;
+    const list = document.getElementById('tpl-list');
+    if (!data.length) {
+      list.innerHTML = '<div class="muted">Nenhum template ativo. Crie o primeiro.</div>';
+    } else {
+      list.innerHTML = data.map(t => `
+        <div class="tpl-card">
+          <div>
+            <div class="title">${t.name}</div>
+            <div class="meta">
+              <span class="area-badge ${t.area}">${areaLabel(t.area)}</span>
+              · ${shiftLabel(t.shift)} · ${recLabel(t.recurrence)}
+            </div>
+            <div class="items">${t.items.length} itens · ${t.items.filter(i=>i.photoRequired).length} com foto</div>
+          </div>
+          <button class="danger" onclick="delTemplate('${t.id}')" style="font-size:11px">excluir</button>
+        </div>
+      `).join('');
+    }
+
+    // Populate run form dropdown
+    const sel = document.getElementById('run-tpl');
+    sel.innerHTML = data.length
+      ? data.map(t => `<option value="${t.id}">${t.name} · ${areaLabel(t.area)} · ${shiftLabel(t.shift)}</option>`).join('')
+      : '<option disabled>nenhum template ativo</option>';
+  } catch (err) {
+    document.getElementById('tpl-list').innerHTML = `<div class="err">${err.message}</div>`;
+  }
+}
+
+function toggleNewTpl() {
+  const f = document.getElementById('tpl-form');
+  f.style.display = f.style.display === 'none' ? 'block' : 'none';
+  if (f.style.display === 'block' && !document.querySelector('.new-item-row')) addItemRow();
+}
+
+function addItemRow() {
+  const box = document.getElementById('items-rows');
+  const row = document.createElement('div');
+  row.className = 'new-item-row';
+  row.innerHTML = `
+    <input placeholder="título do item" class="item-title" required>
+    <label><input type="checkbox" class="item-photo" checked> foto</label>
+    <button type="button" class="danger" style="font-size:11px" onclick="this.parentElement.remove()">×</button>
+  `;
+  box.appendChild(row);
+}
+
+async function delTemplate(id) {
+  if (!confirm('Excluir este template?')) return;
+  await tryAction(() => api(`/checklists/templates/${id}`, { method: 'DELETE' }), 'Template excluído');
+  loadTemplates();
+}
+
+document.getElementById('tpl-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const rows = document.querySelectorAll('#items-rows .new-item-row');
+  const items = Array.from(rows).map(r => ({
+    title: r.querySelector('.item-title').value.trim(),
+    photoRequired: r.querySelector('.item-photo').checked,
+  })).filter(i => i.title);
+
+  if (!items.length) { toast('Adicione pelo menos 1 item', 'err'); return; }
+
+  const payload = {
+    name: fd.get('name'),
+    area: fd.get('area'),
+    shift: fd.get('shift'),
+    recurrence: fd.get('recurrence'),
+    items,
+  };
+  const ok = await tryAction(
+    () => api('/checklists/templates', { method: 'POST', body: JSON.stringify(payload) }),
+    'Template criado',
+  );
+  if (ok) {
+    e.target.reset();
+    document.getElementById('items-rows').innerHTML = '';
+    toggleNewTpl();
+    loadTemplates();
+  }
+});
+
+// ── Runs ──────────────────────────────────────────────────────
+async function loadRuns() {
+  try {
+    const { data } = await api('/checklists/runs');
+    const box = document.getElementById('runs-list');
+    if (!data.length) {
+      box.innerHTML = '<div class="muted">Nenhum run aberto. Instancie um template.</div>';
+      return;
+    }
+    box.innerHTML = data
+      .sort((a, b) => b.scheduledFor.localeCompare(a.scheduledFor))
+      .map(r => {
+        const pct = r.completionPct ?? 0;
+        const fillCls = pct < 33 ? 'low' : pct < 80 ? 'mid' : '';
+        return `
+          <div class="run-row" onclick="openRun('${r.id}')">
+            <div>
+              <div class="name">${r.name}</div>
+              <div class="sched">${areaLabel(r.area)} · ${shiftLabel(r.shift)} · ${fmtDate(r.scheduledFor)}</div>
+            </div>
+            <span class="area-badge ${r.area}">${areaLabel(r.area)}</span>
+            <div>
+              <div class="progress-bar"><div class="fill ${fillCls}" style="width:${pct}%"></div></div>
+              <div class="sched" style="margin-top:4px">${pct}% · ${r.status}</div>
+            </div>
+            <button class="secondary" onclick="event.stopPropagation(); delRun('${r.id}')" style="font-size:11px">×</button>
+          </div>
+        `;
+      }).join('');
+  } catch (err) {
+    document.getElementById('runs-list').innerHTML = `<div class="err">${err.message}</div>`;
+  }
+}
+
+async function openRun(id) {
+  currentRunId = id;
+  const card = document.getElementById('detail-card');
+  card.style.display = 'block';
+  const { data } = await api(`/checklists/runs/${id}`);
+  renderRunDetail(data);
+}
+
+function renderRunDetail(run) {
+  document.getElementById('detail-title').textContent = run.name;
+  document.getElementById('detail-meta').textContent =
+    `${areaLabel(run.area)} · ${shiftLabel(run.shift)} · agendado ${fmtDate(run.scheduledFor)} · ${run.completionPct}% concluído`;
+
+  const items = [...run.items].sort((a, b) => a.order - b.order);
+  document.getElementById('detail-items').innerHTML = items.map(i => `
+    <div class="item-row ${i.completed ? 'done' : ''}" data-id="${i.id}">
+      <div class="check-box ${i.completed ? 'done' : ''}" onclick="toggleItem('${run.id}','${i.id}',${!i.completed})"></div>
+      <div>
+        <div class="title">${i.title}</div>
+        ${i.description ? `<div class="desc">${i.description}</div>` : ''}
+        ${i.photoRequired && !i.photoUrl ? '<div class="photo-required">foto obrigatória</div>' : ''}
+        ${i.completedBy ? `<div class="desc">por ${i.completedBy} · ${fmtDate(i.completedAt)}</div>` : ''}
+        ${i.notes ? `<div class="desc">${i.notes}</div>` : ''}
+      </div>
+      <div style="text-align:right">
+        ${i.photoUrl
+          ? `<img class="photo-thumb" src="${i.photoUrl}" onclick="window.open('${i.photoUrl}','_blank')">`
+          : `<button class="secondary" style="font-size:11px" onclick="attachPhoto('${run.id}','${i.id}')">+ foto</button>`}
+      </div>
+    </div>
+  `).join('');
+}
+
+async function toggleItem(runId, itemId, shouldComplete) {
+  if (shouldComplete) {
+    // Check if photo required and not yet attached
+    const { data } = await api(`/checklists/runs/${runId}`);
+    const item = data.items.find(i => i.id === itemId);
+    if (item.photoRequired && !item.photoUrl) {
+      toast('Foto obrigatória. Anexe antes de concluir.', 'err');
+      return;
+    }
+    const who = ME?.name || prompt('Seu nome?') || 'anonymous';
+    try {
+      await api(`/checklists/runs/${runId}/items/${itemId}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ completed: true, completedBy: who }),
+      });
+      openRun(runId);
+      loadRuns();
+      loadSummary();
+    } catch (err) { toast(err.message, 'err'); }
+  } else {
+    try {
+      await api(`/checklists/runs/${runId}/items/${itemId}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ completed: false }),
+      });
+      openRun(runId);
+      loadRuns();
+      loadSummary();
+    } catch (err) { toast(err.message, 'err'); }
+  }
+}
+
+async function attachPhoto(runId, itemId) {
+  const file = await pickFile();
+  if (!file) return;
+  const dataUrl = await fileToBase64(file);
+  const base64 = dataUrl.split(',')[1];
+  try {
+    const { data: doc } = await api('/vault/docs', {
+      method: 'POST',
+      body: JSON.stringify({
+        category: 'midia',
+        filename: file.name,
+        mime: file.type,
+        contentBase64: base64,
+        tags: ['checklist', runId],
+      }),
+    });
+    const photoUrl = `${API}/vault/docs/${doc.id}/download`;
+    await api(`/checklists/runs/${runId}/items/${itemId}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ completed: false, photoUrl }),
+    });
+    toast('Foto anexada — agora você pode concluir', 'ok');
+    openRun(runId);
+  } catch (err) { toast(err.message, 'err'); }
+}
+
+function pickFile() {
+  return new Promise(resolve => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.capture = 'environment';
+    input.onchange = () => resolve(input.files[0] || null);
+    input.click();
+  });
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(r.result);
+    r.onerror = reject;
+    r.readAsDataURL(file);
+  });
+}
+
+async function delRun(id) {
+  if (!confirm('Excluir este run?')) return;
+  await tryAction(() => api(`/checklists/runs/${id}`, { method: 'DELETE' }), 'Run excluído');
+  if (currentRunId === id) {
+    document.getElementById('detail-card').style.display = 'none';
+    currentRunId = null;
+  }
+  loadRuns();
+  loadSummary();
+}
+
+document.getElementById('run-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const payload = {
+    templateId: fd.get('templateId'),
+    scheduledFor: new Date(fd.get('scheduledFor')).toISOString(),
+    eventId: fd.get('eventId') || undefined,
+  };
+  const ok = await tryAction(
+    () => api('/checklists/runs', { method: 'POST', body: JSON.stringify(payload) }),
+    'Checklist instanciado',
+  );
+  if (ok) { e.target.reset(); loadRuns(); loadSummary(); }
+});
+
+loadSummary();
+loadTemplates();
+loadRuns();
+</script>
+</body>
+</html>
