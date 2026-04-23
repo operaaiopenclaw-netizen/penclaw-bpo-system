@@ -46,7 +46,7 @@ window.fmtInt = window.fmtInt || ((n) => n == null ? '—' : Number(n).toLocaleS
 
 // Role-based navigation. Each entry: { href, label, icon, roles: string[] | '*' }.
 const NAV = [
-  { href: 'index.html',             label: 'Financeiro',  icon: '📊', roles: ['admin', 'finance', 'manager'] },
+  { href: 'index.html',             label: 'Visão Geral', icon: '📊', roles: ['admin', 'finance', 'manager'] },
   { href: 'calendar.html',           label: 'Calendário',  icon: '📅', roles: '*' },
   { href: 'crm.html',                label: 'CRM',         icon: '🤝', roles: ['admin', 'manager', 'finance'] },
   { href: 'events.html',             label: 'Eventos',     icon: '🎉', roles: ['admin', 'manager', 'finance', 'operator'] },
