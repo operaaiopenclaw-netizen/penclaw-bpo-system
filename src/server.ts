@@ -55,8 +55,10 @@ async function bootstrap() {
     },
   });
 
-  // Friendly root — bounce to the login page.
-  app.get("/", async (_req, reply) => reply.redirect("/ui/login.html", 302));
+  // Friendly root — bounce to the public landing.
+  // Auth-protected pages live under /ui/* and redirect to /ui/login.html themselves.
+  app.get("/", async (_req, reply) => reply.redirect("/ui/landing.html", 302));
+  app.get("/login", async (_req, reply) => reply.redirect("/ui/login.html", 302));
 
   // Audit hook (records every mutating request after response)
   registerAuditHook(app);
