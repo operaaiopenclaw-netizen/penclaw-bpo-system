@@ -10,22 +10,8 @@
   h1 { font-size: 22px; letter-spacing: 1px; margin-bottom: 20px; }
 
   .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 22px; }
-  .kpi-tile {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 14px; padding: 18px 20px;
-    position: relative; overflow: hidden;
-  }
-  .kpi-tile::before {
-    content: ''; position: absolute; inset: 0; pointer-events: none;
-    background: linear-gradient(135deg, var(--accent, rgba(201,169,97,0.12)) 0%, transparent 70%);
-  }
-  .kpi-tile.team    { --accent: rgba(138,110,255,0.18); }
-  .kpi-tile.runs    { --accent: rgba(74,158,255,0.18); }
-  .kpi-tile.overall { --accent: rgba(0,179,138,0.18); }
-  .kpi-tile.pending { --accent: rgba(255,138,59,0.18); }
-  .kpi-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-2); }
-  .kpi-val   { font-size: 30px; font-weight: 700; margin-top: 6px; letter-spacing: -0.5px; }
-  .kpi-hint  { font-size: 11px; color: var(--text-2); margin-top: 4px; }
+  /* KPI tint variants come from app.css; override value size here. */
+  .kpi-row .kpi .value { font-size: 30px; }
 
   .split { display: grid; grid-template-columns: 1.2fr 1fr; gap: 18px; }
   @media (max-width: 1100px) { .split { grid-template-columns: 1fr; } }

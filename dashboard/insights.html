@@ -15,15 +15,8 @@
     display: grid; grid-template-columns: repeat(4, 1fr);
     gap: 14px; margin-bottom: 22px;
   }
-  .kpi {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 12px; padding: 16px 18px;
-    border-top: 3px solid var(--border);
-  }
-  .kpi.in    { border-top-color: var(--emerald); }
-  .kpi.out   { border-top-color: var(--warn); }
-  .kpi.net   { border-top-color: var(--gold); }
-  .kpi.alert { border-top-color: var(--danger); }
+  /* KPI variants come from app.css (.kpi.tint.emerald etc.). Only
+     the label/value sizing differs from the global baseline. */
   .kpi-label { color: var(--text-2); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
   .kpi-val   { font-size: 22px; font-weight: 600; letter-spacing: -0.5px; }
   .kpi-hint  { color: var(--text-2); font-size: 11px; margin-top: 4px; }
@@ -93,22 +86,22 @@
 
   <!-- KPIs -->
   <div class="grid">
-    <div class="kpi in">
+    <div class="kpi tint emerald">
       <div class="kpi-label">Entradas (30d)</div>
       <div class="kpi-val" id="kpi-inflow">—</div>
       <div class="kpi-hint">Parcelas previstas</div>
     </div>
-    <div class="kpi out">
+    <div class="kpi tint warn">
       <div class="kpi-label">Saídas (30d)</div>
       <div class="kpi-val" id="kpi-outflow">—</div>
       <div class="kpi-hint">Comissões + provisões</div>
     </div>
-    <div class="kpi net">
+    <div class="kpi tint gold">
       <div class="kpi-label">Net projetado</div>
       <div class="kpi-val" id="kpi-net">—</div>
       <div class="kpi-hint">Fluxo líquido estimado</div>
     </div>
-    <div class="kpi alert">
+    <div class="kpi tint danger">
       <div class="kpi-label">Alertas abertos</div>
       <div class="kpi-val" id="kpi-alerts">—</div>
       <div class="kpi-hint">Atrasos · duplicidades · planos</div>

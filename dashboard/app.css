@@ -162,6 +162,53 @@ main { padding: 28px; max-width: 1400px; margin: 0 auto; }
   color: var(--text-2); font-size: 11px; margin-top: 4px;
 }
 
+/* ─── KPI tinted variants (v2) ───────────────────────
+   Use .kpi with a modifier for per-category tint. The
+   .kpi::before underline stays as a subtle gold wash;
+   these rules add a diagonal radial gradient in the
+   accent color + colored border-top. */
+.kpi.tint {
+  border-top: 2px solid var(--kpi-accent, var(--gold));
+}
+.kpi.tint::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    140% 90% at 100% 0%,
+    var(--kpi-accent-soft, rgba(201,169,97,0.12)) 0%,
+    transparent 55%
+  );
+}
+.kpi.tint.emerald { --kpi-accent: var(--emerald);     --kpi-accent-soft: rgba(0,179,138,0.18); }
+.kpi.tint.gold    { --kpi-accent: var(--gold);        --kpi-accent-soft: rgba(201,169,97,0.18); }
+.kpi.tint.warn    { --kpi-accent: var(--warn);        --kpi-accent-soft: rgba(212,160,23,0.18); }
+.kpi.tint.danger  { --kpi-accent: var(--danger);      --kpi-accent-soft: rgba(224,71,76,0.18); }
+.kpi.tint.info    { --kpi-accent: var(--info);        --kpi-accent-soft: rgba(123,168,196,0.18); }
+.kpi.tint.violet  { --kpi-accent: #8A6EFF;            --kpi-accent-soft: rgba(138,110,255,0.18); }
+.kpi.tint.pink    { --kpi-accent: #FE5F85;            --kpi-accent-soft: rgba(254,95,133,0.18); }
+.kpi.tint.blue    { --kpi-accent: #4A9EFF;            --kpi-accent-soft: rgba(74,158,255,0.18); }
+.kpi.tint .label, .kpi.tint .value, .kpi.tint .sub { position: relative; z-index: 1; }
+
+/* ─── Status dots (reusable, matches integrations page) ─── */
+.ork-dot {
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: middle;
+  background: var(--text-3);
+}
+.ork-dot.ok    { background: var(--emerald); box-shadow: 0 0 0 2px rgba(0,179,138,0.18), 0 0 8px rgba(0,179,138,0.5); }
+.ork-dot.warn  { background: var(--warn);    box-shadow: 0 0 0 2px rgba(212,160,23,0.18); }
+.ork-dot.err   { background: var(--danger);  box-shadow: 0 0 0 2px rgba(224,71,76,0.18); animation: ork-dot-blink 1.2s ease-in-out infinite; }
+.ork-dot.idle  { background: var(--text-3); }
+@keyframes ork-dot-blink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.35; }
+}
+
 /* ─── Table ──────────────────────────────────────── */
 table { width: 100%; border-collapse: collapse; font-size: 13px; }
 th, td {
