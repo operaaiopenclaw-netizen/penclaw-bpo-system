@@ -21,7 +21,15 @@
   </div>
 
   <div class="panel">
-    <h2>Criar lead</h2>
+    <h2>Criar lead <span class="muted" style="font-size:11px;letter-spacing:1px">· cole uma conversa e extraia com IA</span></h2>
+    <div style="margin-bottom:12px">
+      <label>Texto bruto do cliente (WhatsApp / email / ligação)</label>
+      <textarea id="extractText" rows="3" style="width:100%;font-family:inherit" placeholder="Ex: Oi, preciso de orçamento pra festa de 15 anos da Yohanna dia 15/05/2026, cerca de 150 convidados, orçamento 40 mil. WhatsApp (11) 99999-9999."></textarea>
+      <div style="margin-top:6px;display:flex;gap:8px;align-items:center">
+        <button type="button" class="secondary" id="extractBtn">Extrair com IA</button>
+        <span class="muted" id="extractStatus" style="font-size:11px"></span>
+      </div>
+    </div>
     <form id="leadForm">
       <div class="form-row">
         <div><label>Contato*</label><input name="contactName" required></div>
@@ -216,6 +224,35 @@ document.getElementById('leadForm').addEventListener('submit', async (e) => {
     method: 'POST', body: JSON.stringify(payload),
   }), 'Lead criado');
   if (ok) { e.target.reset(); loadLeads(); loadPipeline(); }
+});
+
+document.getElementById('extractBtn').addEventListener('click', async () => {
+  const text = document.getElementById('extractText').value.trim();
+  const status = document.getElementById('extractStatus');
+  if (text.length < 10) { status.textContent = 'cole pelo menos 10 caracteres'; return; }
+
+  status.textContent = 'extraindo com IA…';
+  try {
+    const { data } = await api('/crm/extract-brief', {
+      method: 'POST', body: JSON.stringify({ text }),
+    });
+    const form = document.getElementById('leadForm');
+    const setIf = (name, val) => {
+      if (val == null || val === '') return;
+      const el = form.elements[name];
+      if (el && !el.value) el.value = val;
+    };
+    setIf('contactName', data.contactName);
+    setIf('companyName', data.companyName);
+    setIf('email', data.email);
+    setIf('phone', data.phone);
+    setIf('budget', data.budget);
+    setIf('need', data.need ?? data.eventName);
+    const conf = typeof data.confidence === 'number' ? Math.round(data.confidence * 100) : null;
+    status.textContent = conf !== null ? `pronto · confiança ${conf}%` : 'pronto — revise antes de criar';
+  } catch (err) {
+    status.textContent = `erro: ${err.message}`;
+  }
 });
 
 loadPipeline();

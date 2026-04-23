@@ -3,8 +3,39 @@ import { z } from "zod";
 import { prisma } from "../db";
 import { logger } from "../utils/logger";
 import { config } from "../config/env";
+import { analyzeWithClaude, isClaudeAvailable } from "../services/claude-client";
 
 const DEFAULT_TENANT = config.DEFAULT_TENANT_ID;
+
+const EXTRACT_SYSTEM = `Você é um assistente da Orkestra.AI, BPO para eventos. Recebe trechos brutos (WhatsApp, email, transcrição de ligação) de um possível cliente e devolve APENAS um objeto JSON com as seguintes chaves:
+
+{
+  "contactName": string | null,
+  "companyName": string | null,
+  "email": string | null,
+  "phone": string | null,
+  "eventName": string | null,
+  "eventType": "casamento" | "aniversario" | "corporativo" | "formatura" | "social" | "outro" | null,
+  "eventDate": string | null,      // ISO date YYYY-MM-DD quando identificável
+  "guests": number | null,
+  "budget": number | null,          // em BRL, apenas o número
+  "need": string | null,            // resumo em 1-2 frases do que o cliente pede
+  "timeline": string | null,        // prazo solicitado se houver
+  "confidence": number              // 0 a 1, quão certo está da extração
+}
+
+Regras:
+- Não invente. Se não houver evidência explícita no texto, use null.
+- Datas relativas (ex: "próxima sexta") são null — só aceite datas absolutas.
+- Valores em R$ vêm só como número. "40 mil" → 40000. "R$ 3,5k" → 3500.
+- Nunca inclua markdown, comentários ou texto fora do JSON.
+- Responda em português brasileiro.`;
+
+function stripJsonFence(s: string): string {
+  const t = s.trim();
+  if (t.startsWith("```")) return t.replace(/^```(?:json)?\s*/, "").replace(/\s*```\s*$/, "");
+  return t;
+}
 
 export async function crmRoutes(fastify: FastifyInstance): Promise<void> {
 
@@ -280,6 +311,49 @@ export async function crmRoutes(fastify: FastifyInstance): Promise<void> {
     const body = z.object({ eventId: z.string() }).parse(req.body);
     const contract = await prisma.contract.update({ where: { id: req.params.id }, data: { eventId: body.eventId } });
     return reply.send({ success: true, data: contract });
+  });
+
+  // ─── AI BRIEF EXTRACTOR ──────────────────────────────────────
+  // Takes unstructured client text and returns a structured brief
+  // that can pre-fill a Lead form. Read-only — does NOT create records.
+  fastify.post("/extract-brief", async (req: FastifyRequest<{ Body: unknown }>, reply: FastifyReply) => {
+    const body = z.object({ text: z.string().min(10).max(6000) }).parse(req.body);
+
+    if (!isClaudeAvailable()) {
+      return reply.status(503).send({
+        success: false,
+        error: "ANTHROPIC_API_KEY not configured",
+      });
+    }
+
+    try {
+      const res = await analyzeWithClaude({
+        systemPrompt: EXTRACT_SYSTEM,
+        userContent: body.text,
+        maxTokens: 600,
+      });
+      let parsed: Record<string, unknown> = {};
+      try {
+        parsed = JSON.parse(stripJsonFence(res.text));
+      } catch (err) {
+        logger.warn(
+          { err: err instanceof Error ? err.message : String(err), preview: res.text.slice(0, 120) },
+          "crm/extract-brief: invalid JSON from Claude",
+        );
+        return reply.status(502).send({ success: false, error: "AI returned invalid JSON" });
+      }
+      return reply.send({
+        success: true,
+        data: parsed,
+        meta: { tokens: { input: res.inputTokens, output: res.outputTokens, cached: res.cached ?? false } },
+      });
+    } catch (err) {
+      logger.error(
+        { err: err instanceof Error ? err.message : String(err) },
+        "crm/extract-brief: Claude call failed",
+      );
+      return reply.status(502).send({ success: false, error: "AI extraction failed" });
+    }
   });
 
   // ─── CRM PIPELINE STATS ───────────────────────────────────────
