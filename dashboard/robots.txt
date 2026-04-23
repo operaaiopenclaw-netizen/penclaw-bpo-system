@@ -1,0 +1,19 @@
+User-agent: *
+Allow: /$
+Allow: /ui/landing.html
+Allow: /ui/privacy.html
+Allow: /ui/og-image.png
+Allow: /ui/favicon.svg
+Disallow: /ui/login.html
+Disallow: /ui/
+Disallow: /auth/
+Disallow: /api/
+Disallow: /agent-runs/
+Disallow: /commercial/
+Disallow: /finance/
+Disallow: /onboarding/
+Disallow: /kitchen/
+Disallow: /users/
+Disallow: /approvals/
+
+Sitemap: https://orkestra-api-production.up.railway.app/sitemap.xml

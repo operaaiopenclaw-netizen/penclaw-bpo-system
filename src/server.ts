@@ -1,5 +1,6 @@
 import "dotenv/config";
 import path from "node:path";
+import { promises as fs } from "node:fs";
 import Fastify from "fastify";
 import cors from "@fastify/cors";
 import helmet from "@fastify/helmet";
@@ -59,6 +60,17 @@ async function bootstrap() {
   // Auth-protected pages live under /ui/* and redirect to /ui/login.html themselves.
   app.get("/", async (_req, reply) => reply.redirect("/ui/landing.html", 302));
   app.get("/login", async (_req, reply) => reply.redirect("/ui/login.html", 302));
+
+  // SEO files must live at root per convention — crawlers don't look under /ui/.
+  const dashboardRoot = path.resolve(process.cwd(), "dashboard");
+  app.get("/robots.txt", async (_req, reply) => {
+    const buf = await fs.readFile(path.join(dashboardRoot, "robots.txt"));
+    reply.type("text/plain").send(buf);
+  });
+  app.get("/sitemap.xml", async (_req, reply) => {
+    const buf = await fs.readFile(path.join(dashboardRoot, "sitemap.xml"));
+    reply.type("application/xml").send(buf);
+  });
 
   // Audit hook (records every mutating request after response)
   registerAuditHook(app);
