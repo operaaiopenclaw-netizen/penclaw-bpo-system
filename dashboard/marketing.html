@@ -17,6 +17,14 @@
   .channel.google  { background: rgba(234,67,53,0.15); color: #EA5A4A; }
   .channel.tiktok  { background: rgba(254,44,85,0.15); color: #FE5F85; }
   .channel.organic { background: rgba(0,179,138,0.15); color: var(--emerald); }
+  .lp-status { font-size: 10px; padding: 2px 8px; border-radius: 4px; letter-spacing: 1px; text-transform: uppercase; }
+  .lp-status.draft     { background: var(--bg); color: var(--text-2); border: 1px solid var(--border); }
+  .lp-status.published { background: rgba(0,179,138,0.12); color: var(--emerald); border: 1px solid var(--emerald); }
+  .lp-status.archived  { background: rgba(168,168,175,0.08); color: var(--text-2); border: 1px solid var(--border); }
+  .lp-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .lp-form-grid .full { grid-column: 1 / -1; }
+  .lp-form-grid textarea { min-height: 70px; font-family: inherit; }
+  .lp-url { font-family: ui-monospace, monospace; font-size: 11px; color: var(--gold); }
 </style>
 </head>
 <body>
@@ -52,6 +60,39 @@
       <div><label>Criativos (vírgula)</label><input name="creatives" placeholder="banner1.png, video.mp4"></div>
       <div><label>&nbsp;</label><button class="primary" type="submit">Criar</button></div>
     </form>
+  </section>
+
+  <section class="panel">
+    <h2>Landing pages <span class="muted" id="lp-count"></span></h2>
+    <form id="lp-form" class="lp-form-grid">
+      <div><label>Produto/serviço*</label><input name="product" required placeholder="BPO operacional para eventos"></div>
+      <div><label>Público*</label><input name="audience" required placeholder="Agências de eventos premium em SP"></div>
+      <div class="full"><label>Problema que resolve*</label><textarea name="problem" required placeholder="Gestão fragmentada do pedido ao fechamento fiscal"></textarea></div>
+      <div class="full"><label>Oferta*</label><textarea name="offer" required placeholder="Orquestramos CRM, OS, cozinha, execução e financeiro em uma única operação"></textarea></div>
+      <div><label>CTA*</label><input name="cta" required placeholder="Agendar diagnóstico"></div>
+      <div><label>CTA link*</label><input name="ctaHref" required placeholder="https://wa.me/5511999999999"></div>
+      <div><label>Tom</label>
+        <select name="tone">
+          <option value="direto">Direto</option>
+          <option value="formal">Formal</option>
+          <option value="acolhedor">Acolhedor</option>
+          <option value="premium">Premium</option>
+        </select>
+      </div>
+      <div><label>Slug (opcional)</label><input name="slug" placeholder="bpo-eventos"></div>
+      <div class="full"><label>Destaques (um por linha)</label><textarea name="highlights" placeholder="CMV por evento em tempo real&#10;Comissões automáticas 40/60&#10;Auditoria fiscal sem esforço"></textarea></div>
+      <div><label>E-mail de contato</label><input name="contactEmail" type="email"></div>
+      <div><label>WhatsApp</label><input name="contactPhone" placeholder="+5511999999999"></div>
+      <div class="full"><button class="primary" type="submit">Gerar landing page</button></div>
+    </form>
+
+    <table style="margin-top:18px">
+      <thead><tr>
+        <th>Produto</th><th>Slug</th><th>Status</th>
+        <th class="num">Views</th><th>Criada</th><th></th>
+      </tr></thead>
+      <tbody id="lp-rows"></tbody>
+    </table>
   </section>
 
   <section class="panel">
@@ -145,8 +186,91 @@ document.getElementById('form').addEventListener('submit', async (e) => {
   if (ok) { e.target.reset(); loadCampaigns(); loadSummary(); }
 });
 
+async function loadLPs() {
+  const tbody = document.getElementById('lp-rows');
+  tbody.innerHTML = '<tr><td colspan="6" class="empty">carregando…</td></tr>';
+  try {
+    const r = await api('/marketing/landing-pages');
+    const list = r.data || [];
+    document.getElementById('lp-count').textContent = list.length ? `· ${list.length}` : '';
+    if (!list.length) { tbody.innerHTML = '<tr><td colspan="6" class="empty">nenhuma landing page ainda</td></tr>'; return; }
+    tbody.innerHTML = list.map(lp => {
+      const publicUrl = `${window.location.origin}/lp/${lp.slug}`;
+      return `
+        <tr>
+          <td>${lp.brief?.product || '—'}</td>
+          <td><a class="lp-url" href="${publicUrl}" target="_blank" rel="noopener">/lp/${lp.slug}</a></td>
+          <td><span class="lp-status ${lp.status}">${lp.status}</span></td>
+          <td class="num">${fmtInt(lp.views)}</td>
+          <td>${fmtDate(lp.createdAt)}</td>
+          <td class="row-actions">
+            ${lp.status !== 'published'
+              ? `<button class="primary" onclick="setLPStatus('${lp.id}','published')">publicar</button>`
+              : `<button class="secondary" onclick="setLPStatus('${lp.id}','draft')">despublicar</button>`}
+            <button class="secondary" onclick="regenLP('${lp.id}')">regerar</button>
+            <button class="danger" onclick="delLP('${lp.id}')">excluir</button>
+          </td>
+        </tr>`;
+    }).join('');
+  } catch (err) {
+    tbody.innerHTML = `<tr><td colspan="6" class="err">${err.message}</td></tr>`;
+  }
+}
+
+async function setLPStatus(id, status) {
+  const ok = await tryAction(
+    () => api(`/marketing/landing-pages/${id}`, { method: 'PATCH', body: JSON.stringify({ status }) }),
+    `Landing ${status}`,
+  );
+  if (ok) loadLPs();
+}
+
+async function regenLP(id) {
+  const ok = await tryAction(
+    () => api(`/marketing/landing-pages/${id}`, { method: 'PATCH', body: JSON.stringify({ regenerate: true }) }),
+    'Copy regerada',
+  );
+  if (ok) loadLPs();
+}
+
+async function delLP(id) {
+  if (!confirm('Excluir esta landing page?')) return;
+  const ok = await tryAction(
+    () => api(`/marketing/landing-pages/${id}`, { method: 'DELETE' }),
+    'Landing excluída',
+  );
+  if (ok) loadLPs();
+}
+
+document.getElementById('lp-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const highlights = (fd.get('highlights') || '').split('\n').map(s => s.trim()).filter(Boolean);
+  const payload = {
+    slug: fd.get('slug') || undefined,
+    brief: {
+      product: fd.get('product'),
+      audience: fd.get('audience'),
+      problem: fd.get('problem'),
+      offer: fd.get('offer'),
+      cta: fd.get('cta'),
+      ctaHref: fd.get('ctaHref'),
+      tone: fd.get('tone'),
+      highlights,
+      contactEmail: fd.get('contactEmail') || undefined,
+      contactPhone: fd.get('contactPhone') || undefined,
+    },
+  };
+  const ok = await tryAction(
+    () => api('/marketing/landing-pages', { method: 'POST', body: JSON.stringify(payload) }),
+    'Landing page gerada',
+  );
+  if (ok) { e.target.reset(); loadLPs(); }
+});
+
 loadSummary();
 loadCampaigns();
+loadLPs();
 </script>
 </body>
 </html>

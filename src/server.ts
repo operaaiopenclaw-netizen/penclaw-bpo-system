@@ -10,6 +10,7 @@ import swaggerUi from "@fastify/swagger-ui";
 import { config } from "./config/env";
 import { prisma } from "./db";
 import { agentRunsRoutes, approvalsRoutes, memoryRoutes, artifactsRoutes, dashboardRoutes, metricsRoutes, eventsRoutes, statesRoutes, kitchenRoutes, intelligenceRoutes, crmRoutes, serviceOrdersRoutes, productionOrdersRoutes, executionRoutes, operationsRoutes, authRoutes, usersRoutes, commercialRoutes, aiChatRoutes, calendarRoutes, vaultRoutes, invoicesRoutes, whatsappRoutes, marketingRoutes, lgpdRoutes, hrRoutes, financeRoutes, onboardingRoutes } from "./routes";
+import { findPublishedLP, incrementLPView } from "./routes/marketing";
 import { registerAuditHook } from "./middleware/audit";
 import { errorHandler, notFoundHandler } from "./utils/error-handler";
 import { logger } from "./utils/logger";
@@ -70,6 +71,19 @@ export async function bootstrap() {
   app.get("/sitemap.xml", async (_req, reply) => {
     const buf = await fs.readFile(path.join(dashboardRoot, "sitemap.xml"));
     reply.type("application/xml").send(buf);
+  });
+
+  // Public landing pages — generated via /marketing/landing-pages and served
+  // at /lp/:slug when status=published. No auth. View counter bumped async.
+  app.get<{ Params: { slug: string } }>("/lp/:slug", async (req, reply) => {
+    const lp = await findPublishedLP(req.params.slug);
+    if (!lp) return reply.status(404).type("text/html").send(
+      `<!doctype html><meta charset="utf-8"><title>Não encontrada</title>
+       <body style="font-family:system-ui;padding:60px;background:#0B0B0C;color:#F5F3EF">
+       <h1>Landing page não encontrada</h1><p>Verifique o link ou fale com quem enviou.</p></body>`,
+    );
+    void incrementLPView(lp).catch(() => {});
+    return reply.type("text/html").send(lp.html);
   });
 
   // Audit hook (records every mutating request after response)
